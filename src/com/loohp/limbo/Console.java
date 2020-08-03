@@ -37,17 +37,7 @@ public class Console {
 				String[] input = CustomStringUtils.splitStringToArgs(reader.readLine());
 				
 				if (input[0].equalsIgnoreCase("stop")) {
-					for (ClientConnection client : Limbo.getInstance().getServerConnection().getClients()) {
-						client.getSocket().close();
-						while (client.getSocket().isConnected()) {
-							try {
-								TimeUnit.MILLISECONDS.sleep(500);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-					System.exit(0);
+					Limbo.getInstance().stopServer();
 				} else if (input[0].equalsIgnoreCase("say")) {
 					if (input.length > 1) {
 						String message = "[Server] " + String.join(" ", Arrays.copyOfRange(input, 1, input.length));

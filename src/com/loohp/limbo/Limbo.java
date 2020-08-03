@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -16,6 +17,7 @@ import org.json.simple.parser.ParseException;
 
 import com.loohp.limbo.File.ServerProperties;
 import com.loohp.limbo.Location.Location;
+import com.loohp.limbo.Server.ClientConnection;
 import com.loohp.limbo.Server.ServerConnection;
 import com.loohp.limbo.Server.Packets.Packet;
 import com.loohp.limbo.Server.Packets.PacketIn;
@@ -193,6 +195,27 @@ public class Limbo {
 		}
 		
 		return base;
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void stopServer() {
+		Limbo.getInstance().getConsole().sendMessage("Stopping Server...");
+		for (ClientConnection client : Limbo.getInstance().getServerConnection().getClients()) {
+			try {
+				client.getSocket().close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				client.destroy();
+			}
+		}
+		while (!Limbo.getInstance().getServerConnection().getClients().isEmpty()) {
+			try {
+				TimeUnit.MILLISECONDS.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		System.exit(0);
 	}
 
 }
