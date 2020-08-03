@@ -37,6 +37,7 @@ import com.loohp.limbo.Server.Packets.PacketStatusInPing;
 import com.loohp.limbo.Server.Packets.PacketStatusInRequest;
 import com.loohp.limbo.Server.Packets.PacketStatusOutPong;
 import com.loohp.limbo.Server.Packets.PacketStatusOutResponse;
+import com.loohp.limbo.Utils.CustomStringUtils;
 import com.loohp.limbo.Utils.DataTypeIO;
 import com.loohp.limbo.Utils.SkinUtils;
 import com.loohp.limbo.Utils.SkinUtils.SkinResponse;
@@ -44,6 +45,7 @@ import com.loohp.limbo.World.BlockPosition;
 import com.loohp.limbo.World.DimensionRegistry;
 import com.loohp.limbo.World.World;
 
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -120,6 +122,18 @@ public class ClientConnection extends Thread {
 	
 	public void sendMessage(BaseComponent component) {
 		sendMessage(new BaseComponent[] {component});
+	}
+	
+	public void teleport(Location location) {
+		try {
+			DataOutputStream output = new DataOutputStream(client_socket.getOutputStream());
+			PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch(), 1);
+			byte[] packetByte = positionLook.getBytes();
+			DataTypeIO.writeVarInt(output, packetByte.length);
+			output.write(packetByte);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void sendMessage(BaseComponent[] component) {
@@ -229,6 +243,7 @@ public class ClientConnection extends Thread {
 				packetByte = spawnPos.getBytes();
 				DataTypeIO.writeVarInt(output, packetByte.length);
 				output.write(packetByte);
+				
 				PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(s.getX(), s.getY(), s.getZ(), s.getYaw(), s.getPitch(), 1);
 				location = new Location(world, s.getX(), s.getY(), s.getZ(), s.getYaw(), s.getPitch());
 				packetByte = positionLook.getBytes();
@@ -302,6 +317,12 @@ public class ClientConnection extends Thread {
 							PacketPlayInChat chat = new PacketPlayInChat(input);
 							if (chat.getMessage().startsWith("/")) {
 								//TO-DO COMMANDS
+								String[] command = CustomStringUtils.splitStringToArgs(chat.getMessage().substring(1));
+								if (command[0].equalsIgnoreCase("spawn")) {
+									teleport(p.getWorldSpawn());
+									Limbo.getInstance().getConsole().sendMessage(username + " executed server command: /spawn");
+									sendMessage(new TextComponent(ChatColor.GOLD + "Teleporting you to spawn!"));
+								}
 							} else {
 								String message = "<" + username + "> " + chat.getMessage();
 								Limbo.getInstance().getConsole().sendMessage(message);
