@@ -29,9 +29,9 @@ public class DimensionRegistry {
 		overworld.putString("infiniburn", "");
 		
 		CompoundTag nether = new CompoundTag();
-		nether.putString("name", "minecraft:nether");
+		nether.putString("name", "minecraft:the_nether");
 		nether.putByte("natural", (byte) 0);
-		nether.putFloat("ambient_light", 0.6F);
+		nether.putFloat("ambient_light", 0.3F);
 		nether.putByte("has_ceiling", (byte) 1);
 		nether.putByte("has_skylight", (byte) 0);
 		nether.putLong("fixed_time", 0);
@@ -41,7 +41,7 @@ public class DimensionRegistry {
 		nether.putByte("respawn_anchor_works", (byte) 1);
 		nether.putByte("bed_works", (byte) 0);
 		nether.putByte("piglin_safe", (byte) 1);
-		nether.putInt("logical_height", 256);
+		nether.putInt("logical_height", 128);
 		nether.putString("infiniburn", "");
 		
 		CompoundTag the_end = new CompoundTag();

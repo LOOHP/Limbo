@@ -61,7 +61,7 @@ public class PacketPlayOutMapChunk extends Packet {
 		//	output.writeInt(i);
 		//}
 		for (int i = 0; i < 1024; i++) {
-			output.writeInt(17);
+			output.writeInt(127);
 		}
 		
 		ByteArrayOutputStream dataBuffer = new ByteArrayOutputStream();
