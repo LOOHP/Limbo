@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import com.loohp.limbo.Utils.DataTypeIO;
 
-public class PacketPlayOutUpdateViewPosition extends Packet {
+public class PacketPlayOutUpdateViewPosition extends PacketOut {
 	
 	private int chunkX;
 	private int chunkZ;
@@ -24,6 +24,7 @@ public class PacketPlayOutUpdateViewPosition extends Packet {
 		return chunkZ;
 	}
 	
+	@Override
 	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		

@@ -10,7 +10,7 @@ import com.loohp.limbo.Utils.GameMode;
 
 import net.querz.nbt.tag.CompoundTag;
 
-public class PacketPlayOutLogin extends Packet {
+public class PacketPlayOutLogin extends PacketOut {
 	
 	private int entityId;
 	private boolean isHardcore;
@@ -103,6 +103,7 @@ public class PacketPlayOutLogin extends Packet {
 		return isFlat;
 	}
 	
+	@Override
 	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		

@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import com.loohp.limbo.Utils.DataTypeIO;
 
-public class PacketLoginOutLoginSuccess extends Packet {
+public class PacketLoginOutLoginSuccess extends PacketOut {
 	
 	private UUID uuid;
 	private String username;
@@ -26,6 +26,7 @@ public class PacketLoginOutLoginSuccess extends Packet {
 		return username;
 	}
 	
+	@Override
 	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		

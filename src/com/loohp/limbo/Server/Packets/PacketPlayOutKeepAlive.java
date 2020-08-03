@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class PacketPlayOutKeepAlive extends Packet {
+public class PacketPlayOutKeepAlive extends PacketOut {
 	
 	long payload;
 	
@@ -16,6 +16,7 @@ public class PacketPlayOutKeepAlive extends Packet {
 		return payload;
 	}
 	
+	@Override
 	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		

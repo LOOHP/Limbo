@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import com.loohp.limbo.Utils.DataTypeIO;
 
-public class PacketPlayInChat extends Packet {
+public class PacketPlayInChat extends PacketIn {
 	
 	private String message;
 	

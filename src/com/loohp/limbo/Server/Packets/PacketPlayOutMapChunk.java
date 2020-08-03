@@ -14,7 +14,7 @@ import net.querz.mca.Section;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 
-public class PacketPlayOutMapChunk extends Packet {
+public class PacketPlayOutMapChunk extends PacketOut {
 
 	private int chunkX;
 	private int chunkZ;
@@ -38,6 +38,7 @@ public class PacketPlayOutMapChunk extends Packet {
 		return chunkZ;
 	}
 	
+	@Override
 	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		

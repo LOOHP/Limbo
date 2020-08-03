@@ -1,6 +1,7 @@
 package com.loohp.limbo;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -9,31 +10,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import com.loohp.limbo.File.ServerProperties;
 import com.loohp.limbo.Location.Location;
 import com.loohp.limbo.Server.ServerConnection;
 import com.loohp.limbo.Server.Packets.Packet;
-import com.loohp.limbo.Server.Packets.PacketHandshakingIn;
-import com.loohp.limbo.Server.Packets.PacketLoginInLoginStart;
-import com.loohp.limbo.Server.Packets.PacketLoginOutLoginSuccess;
-import com.loohp.limbo.Server.Packets.PacketPlayInChat;
-import com.loohp.limbo.Server.Packets.PacketPlayInKeepAlive;
-import com.loohp.limbo.Server.Packets.PacketPlayInPosition;
-import com.loohp.limbo.Server.Packets.PacketPlayInPositionAndLook;
-import com.loohp.limbo.Server.Packets.PacketPlayOutChat;
-import com.loohp.limbo.Server.Packets.PacketPlayOutKeepAlive;
-import com.loohp.limbo.Server.Packets.PacketPlayOutLogin;
-import com.loohp.limbo.Server.Packets.PacketPlayOutMapChunk;
-import com.loohp.limbo.Server.Packets.PacketPlayOutPlayerAbilities;
-import com.loohp.limbo.Server.Packets.PacketPlayOutPlayerInfo;
-import com.loohp.limbo.Server.Packets.PacketPlayOutPositionAndLook;
-import com.loohp.limbo.Server.Packets.PacketPlayOutShowPlayerSkins;
-import com.loohp.limbo.Server.Packets.PacketPlayOutSpawnPosition;
-import com.loohp.limbo.Server.Packets.PacketPlayOutUpdateViewPosition;
-import com.loohp.limbo.Server.Packets.PacketStatusInPing;
-import com.loohp.limbo.Server.Packets.PacketStatusInRequest;
-import com.loohp.limbo.Server.Packets.PacketStatusOutPong;
-import com.loohp.limbo.Server.Packets.PacketStatusOutResponse;
+import com.loohp.limbo.Server.Packets.PacketIn;
+import com.loohp.limbo.Server.Packets.PacketOut;
 import com.loohp.limbo.Utils.ImageUtils;
 import com.loohp.limbo.World.Schematic;
 import com.loohp.limbo.World.World;
@@ -45,7 +31,7 @@ public class Limbo {
 	
 	private static Limbo instance;
 	
-	public static void main(String args[]) throws IOException {
+	public static void main(String args[]) throws IOException, ParseException, NumberFormatException, ClassNotFoundException {
 		new Limbo();
 	}
 	
@@ -62,7 +48,8 @@ public class Limbo {
 	
 	private ServerProperties properties;
 	
-	public Limbo() throws IOException {
+	@SuppressWarnings("unchecked")
+	public Limbo() throws IOException, ParseException, NumberFormatException, ClassNotFoundException {
 		instance = this;
 		
 		console = new Console(System.in, System.out);
@@ -78,46 +65,67 @@ public class Limbo {
         }
         properties = new ServerProperties(sp);
 		
-		Map<Integer, Class<? extends Packet>> HandshakeIn = new HashMap<>();
-		HandshakeIn.put(0x00, PacketHandshakingIn.class);
+        String mappingName = "mapping.json";
+        File mappingFile = new File(mappingName);
+        if (!mappingFile.exists()) {
+        	try (InputStream in = getClass().getClassLoader().getResourceAsStream(mappingName)) {
+                Files.copy(in, mappingFile.toPath());
+            } catch (IOException e) {
+            	e.printStackTrace();
+            }
+        }
+        
+        JSONObject json = (JSONObject) new JSONParser().parse(new FileReader(mappingFile));
+        
+        String classPrefix = Packet.class.getName().substring(0, Packet.class.getName().lastIndexOf(".") + 1);
+        
+		Map<Integer, Class<? extends PacketIn>> HandshakeIn = new HashMap<>();
+		for (Object key : ((JSONObject) json.get("HandshakeIn")).keySet()) {
+			int packetId = Integer.decode((String) key);
+			HandshakeIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + (String) ((JSONObject) json.get("HandshakeIn")).get(key)));
+		}
 		Packet.setHandshakeIn(HandshakeIn);
 		
-		Map<Integer, Class<? extends Packet>> StatusIn = new HashMap<>();
-		StatusIn.put(0x00, PacketStatusInRequest.class);
-		StatusIn.put(0x01, PacketStatusInPing.class);
+		Map<Integer, Class<? extends PacketIn>> StatusIn = new HashMap<>();
+		for (Object key : ((JSONObject) json.get("StatusIn")).keySet()) {
+			int packetId = Integer.decode((String) key);
+			StatusIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + (String) ((JSONObject) json.get("StatusIn")).get(key)));
+		}
 		Packet.setStatusIn(StatusIn);
 		
-		Map<Class<? extends Packet>, Integer> StatusOut = new HashMap<>();
-		StatusOut.put(PacketStatusOutResponse.class, 0x00);
-		StatusOut.put(PacketStatusOutPong.class, 0x01);
+		Map<Class<? extends PacketOut>, Integer> StatusOut = new HashMap<>();
+		for (Object key : ((JSONObject) json.get("StatusOut")).keySet()) {
+			Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + (String) key);
+			StatusOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("StatusOut")).get(key)));
+		}
 		Packet.setStatusOut(StatusOut);
 		
-		Map<Integer, Class<? extends Packet>> LoginIn = new HashMap<>();
-		LoginIn.put(0x00, PacketLoginInLoginStart.class);
+		Map<Integer, Class<? extends PacketIn>> LoginIn = new HashMap<>();
+		for (Object key : ((JSONObject) json.get("LoginIn")).keySet()) {
+			int packetId = Integer.decode((String) key);
+			LoginIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + (String) ((JSONObject) json.get("LoginIn")).get(key)));
+		}
 		Packet.setLoginIn(LoginIn);
 		
-		Map<Class<? extends Packet>, Integer> LoginOut = new HashMap<>();
-		LoginOut.put(PacketLoginOutLoginSuccess.class, 0x02);
+		Map<Class<? extends PacketOut>, Integer> LoginOut = new HashMap<>();
+		for (Object key : ((JSONObject) json.get("LoginOut")).keySet()) {
+			Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + (String) key);
+			LoginOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("LoginOut")).get(key)));
+		}
 		Packet.setLoginOut(LoginOut);
 		
-		Map<Integer, Class<? extends Packet>> PlayIn = new HashMap<>();
-		PlayIn.put(0x10, PacketPlayInKeepAlive.class);
-		PlayIn.put(0x12, PacketPlayInPosition.class);
-		PlayIn.put(0x13, PacketPlayInPositionAndLook.class);
-		PlayIn.put(0x03, PacketPlayInChat.class);
+		Map<Integer, Class<? extends PacketIn>> PlayIn = new HashMap<>();
+		for (Object key : ((JSONObject) json.get("PlayIn")).keySet()) {
+			int packetId = Integer.decode((String) key);
+			PlayIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + (String) ((JSONObject) json.get("PlayIn")).get(key)));
+		}
 		Packet.setPlayIn(PlayIn);
 		
-		Map<Class<? extends Packet>, Integer> PlayOut = new HashMap<>();
-		PlayOut.put(PacketPlayOutLogin.class, 0x25);
-		PlayOut.put(PacketPlayOutSpawnPosition.class, 0x42);
-		PlayOut.put(PacketPlayOutPositionAndLook.class, 0x35);
-		PlayOut.put(PacketPlayOutMapChunk.class, 0x21);
-		PlayOut.put(PacketPlayOutKeepAlive.class, 0x20);
-		PlayOut.put(PacketPlayOutUpdateViewPosition.class, 0x40);
-		PlayOut.put(PacketPlayOutPlayerInfo.class, 0x33);
-		PlayOut.put(PacketPlayOutShowPlayerSkins.class, 0x44);
-		PlayOut.put(PacketPlayOutPlayerAbilities.class, 0x31);
-		PlayOut.put(PacketPlayOutChat.class, 0x0E);
+		Map<Class<? extends PacketOut>, Integer> PlayOut = new HashMap<>();
+		for (Object key : ((JSONObject) json.get("PlayOut")).keySet()) {
+			Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + (String) key);
+			PlayOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("PlayOut")).get(key)));
+		}
 		Packet.setPlayOut(PlayOut);
 		
 		worlds.add(loadDefaultWorld());

@@ -3,7 +3,7 @@ package com.loohp.limbo.Server.Packets;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-public class PacketPlayInKeepAlive extends Packet {
+public class PacketPlayInKeepAlive extends PacketIn {
 	
 	long payload;
 	

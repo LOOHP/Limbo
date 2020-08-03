@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import com.loohp.limbo.Utils.DataTypeIO;
 
-public class PacketLoginInLoginStart extends Packet {
+public class PacketLoginInLoginStart extends PacketIn {
 	
 	private String username;
 	

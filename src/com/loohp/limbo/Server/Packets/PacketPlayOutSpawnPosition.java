@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import com.loohp.limbo.World.BlockPosition;
 
-public class PacketPlayOutSpawnPosition extends Packet {
+public class PacketPlayOutSpawnPosition extends PacketOut {
 	
 	private BlockPosition position;
 	

@@ -1,0 +1,37 @@
+{
+  "HandshakeIn": {
+    "0x00": "PacketHandshakingIn"
+  },
+  "LoginIn": {
+    "0x00": "PacketLoginInLoginStart"
+  },
+  "LoginOut": {
+    "PacketLoginOutLoginSuccess": "0x02"
+  },
+  "PlayIn": {
+    "0x10": "PacketPlayInKeepAlive",
+    "0x03": "PacketPlayInChat",
+    "0x13": "PacketPlayInPositionAndLook",
+    "0x12": "PacketPlayInPosition"
+  },
+  "PlayOut": {
+    "PacketPlayOutLogin": "0x25",
+    "PacketPlayOutPositionAndLook": "0x35",
+    "PacketPlayOutSpawnPosition": "0x42",
+    "PacketPlayOutChat": "0x0E",
+    "PacketPlayOutPlayerAbilities": "0x31",
+    "PacketPlayOutMapChunk": "0x21",
+    "PacketPlayOutKeepAlive": "0x20",
+    "PacketPlayOutPlayerInfo": "0x33",
+    "PacketPlayOutUpdateViewPosition": "0x40",
+    "PacketPlayOutShowPlayerSkins": "0x44"
+  },
+  "StatusIn": {
+    "0x01": "PacketStatusInPing",
+    "0x00": "PacketStatusInRequest"
+  },
+  "StatusOut": {
+    "PacketStatusOutResponse": "0x00",
+    "PacketStatusOutPong": "0x01"
+  }
+}

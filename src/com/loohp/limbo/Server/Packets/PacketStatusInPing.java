@@ -3,7 +3,7 @@ package com.loohp.limbo.Server.Packets;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-public class PacketStatusInPing extends Packet {
+public class PacketStatusInPing extends PacketIn {
 	
 	private long payload;
 	

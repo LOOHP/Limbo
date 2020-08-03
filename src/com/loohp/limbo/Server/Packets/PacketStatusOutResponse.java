@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 
 import com.loohp.limbo.Utils.DataTypeIO;
 
-public class PacketStatusOutResponse extends Packet {
+public class PacketStatusOutResponse extends PacketOut {
 	
 	private String json;
 	
@@ -19,6 +19,7 @@ public class PacketStatusOutResponse extends Packet {
 		return json;
 	}
 	
+	@Override
 	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		

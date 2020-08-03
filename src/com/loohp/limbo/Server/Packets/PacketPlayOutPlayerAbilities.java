@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class PacketPlayOutPlayerAbilities extends Packet {
+public class PacketPlayOutPlayerAbilities extends PacketOut {
 	
 	public enum PlayerAbilityFlags {
 		INVULNERABLE(0x01),
@@ -45,6 +45,7 @@ public class PacketPlayOutPlayerAbilities extends Packet {
 		return fieldOfField;
 	}
 	
+	@Override
 	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		

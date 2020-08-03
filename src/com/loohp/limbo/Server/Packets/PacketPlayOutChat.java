@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import com.loohp.limbo.Utils.DataTypeIO;
 
-public class PacketPlayOutChat extends Packet {
+public class PacketPlayOutChat extends PacketOut {
 	
 	private String json;
 	private int position;
@@ -32,6 +32,7 @@ public class PacketPlayOutChat extends Packet {
 		return sender;
 	}
 	
+	@Override
 	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		

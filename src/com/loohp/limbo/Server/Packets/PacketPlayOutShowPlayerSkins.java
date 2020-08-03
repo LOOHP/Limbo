@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import com.loohp.limbo.Utils.DataTypeIO;
 
-public class PacketPlayOutShowPlayerSkins extends Packet {
+public class PacketPlayOutShowPlayerSkins extends PacketOut {
 
 	private int entityId;
 
@@ -18,6 +18,7 @@ public class PacketPlayOutShowPlayerSkins extends Packet {
 		return entityId;
 	}
 	
+	@Override
 	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		

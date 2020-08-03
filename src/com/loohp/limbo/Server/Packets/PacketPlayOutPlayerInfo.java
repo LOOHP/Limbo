@@ -11,7 +11,7 @@ import com.loohp.limbo.Server.Packets.PacketPlayOutPlayerInfo.PlayerInfoData.Pla
 import com.loohp.limbo.Utils.DataTypeIO;
 import com.loohp.limbo.Utils.GameMode;
 
-public class PacketPlayOutPlayerInfo extends Packet {
+public class PacketPlayOutPlayerInfo extends PacketOut {
 
 	public enum PlayerInfoAction {
 		ADD_PLAYER(0), UPDATE_GAMEMODE(1), UPDATE_LATENCY(2), UPDATE_DISPLAY_NAME(3), REMOVE_PLAYER(4);
@@ -49,6 +49,7 @@ public class PacketPlayOutPlayerInfo extends Packet {
 		return data;
 	}
 	
+	@Override
 	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		

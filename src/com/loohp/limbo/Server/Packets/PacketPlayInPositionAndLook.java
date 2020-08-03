@@ -3,7 +3,7 @@ package com.loohp.limbo.Server.Packets;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-public class PacketPlayInPositionAndLook extends Packet {
+public class PacketPlayInPositionAndLook extends PacketIn {
 	
 	private double x;
     private double y;

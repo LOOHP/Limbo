@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import com.loohp.limbo.Utils.DataTypeIO;
 
-public class PacketHandshakingIn extends Packet {
+public class PacketHandshakingIn extends PacketIn {
 	
 	public static enum HandshakeType {
 		STATUS(1),

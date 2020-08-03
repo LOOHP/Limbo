@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import com.loohp.limbo.Utils.DataTypeIO;
 
-public class PacketPlayOutPositionAndLook extends Packet {
+public class PacketPlayOutPositionAndLook extends PacketOut {
 	
 	public enum PlayerTeleportFlags {
 		X((byte) 0x01),
@@ -75,6 +75,7 @@ public class PacketPlayOutPositionAndLook extends Packet {
 		return teleportId;
 	}
 	
+	@Override
 	public byte[] getBytes() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
