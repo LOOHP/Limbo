@@ -37,4 +37,31 @@ public class CustomStringUtils {
 		return tokens.toArray(new String[tokens.size()]);
 	}
 	
+	public static int getIndexOfArg(String str, int ordinal) {
+		StringBuilder sb = new StringBuilder();
+
+		boolean insideQuote = false;
+		
+		int pos = 0;
+		int found = 0;
+		for (char c : str.toCharArray()) {
+		    if (c == '"') {
+		        insideQuote = !insideQuote;
+		    } else if (c == ' ' && !insideQuote) {
+		    	if (sb.length() > 0) {
+					found++;
+				}
+		        sb.delete(0, sb.length());
+		    } else {
+		        sb.append(c);
+		    }
+		    if (found == ordinal) {
+		    	return pos;
+		    }
+		    pos++;
+		}
+		
+		return -1;
+	}
+	
 }

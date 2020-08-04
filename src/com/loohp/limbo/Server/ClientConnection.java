@@ -6,10 +6,13 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import com.loohp.limbo.DeclareCommands;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.File.ServerProperties;
 import com.loohp.limbo.Location.Location;
@@ -25,6 +28,8 @@ import com.loohp.limbo.Server.Packets.PacketPlayInKeepAlive;
 import com.loohp.limbo.Server.Packets.PacketPlayInPosition;
 import com.loohp.limbo.Server.Packets.PacketPlayInPositionAndLook;
 import com.loohp.limbo.Server.Packets.PacketPlayInRotation;
+import com.loohp.limbo.Server.Packets.PacketPlayInTabComplete;
+import com.loohp.limbo.Server.Packets.PacketPlayOutDeclareCommands;
 import com.loohp.limbo.Server.Packets.PacketPlayOutDisconnect;
 import com.loohp.limbo.Server.Packets.PacketPlayOutLogin;
 import com.loohp.limbo.Server.Packets.PacketPlayOutMapChunk;
@@ -37,6 +42,8 @@ import com.loohp.limbo.Server.Packets.PacketPlayOutPlayerInfo.PlayerInfoData.Pla
 import com.loohp.limbo.Server.Packets.PacketPlayOutPositionAndLook;
 import com.loohp.limbo.Server.Packets.PacketPlayOutShowPlayerSkins;
 import com.loohp.limbo.Server.Packets.PacketPlayOutSpawnPosition;
+import com.loohp.limbo.Server.Packets.PacketPlayOutTabComplete;
+import com.loohp.limbo.Server.Packets.PacketPlayOutTabComplete.TabCompleteMatches;
 import com.loohp.limbo.Server.Packets.PacketPlayOutUpdateViewPosition;
 import com.loohp.limbo.Server.Packets.PacketStatusInPing;
 import com.loohp.limbo.Server.Packets.PacketStatusInRequest;
@@ -73,7 +80,8 @@ public class ClientConnection extends Thread {
     private Player player;	
 	private long lastKeepAlivePayLoad;
 	
-	private DataOutputStream output;
+	protected DataOutputStream output;
+	protected DataInputStream input;
 	
 	private InetAddress iNetAddress;
 	
@@ -156,7 +164,7 @@ public class ClientConnection extends Thread {
         state = ClientState.HANDSHAKE;
     	try {
     		client_socket.setKeepAlive(true);
-    		DataInputStream input = new DataInputStream(client_socket.getInputStream());
+    		input = new DataInputStream(client_socket.getInputStream());
     		output = new DataOutputStream(client_socket.getOutputStream());
 		    DataTypeIO.readVarInt(input);
 		    
@@ -236,6 +244,8 @@ public class ClientConnection extends Thread {
 						Limbo.getInstance().addPlayer(player);
 						
 						break;
+					} else {
+						input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
 					}
 	    		}
 				break;
@@ -299,13 +309,15 @@ public class ClientConnection extends Thread {
 				String str = client_socket.getInetAddress().getHostName() + ":" + client_socket.getPort() + "|" + player.getName();
 				Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had connected to the Limbo server!");
 				
+				PacketPlayOutDeclareCommands declare = DeclareCommands.getDeclareCommandPacket();
+				sendPacket(declare);
+				
 				while (client_socket.isConnected()) {
-					try {						
+					try {					
 						int size = DataTypeIO.readVarInt(input);
 						int packetId = DataTypeIO.readVarInt(input);
 						Class<? extends Packet> packetType = Packet.getPlayIn().get(packetId);
-						//System.out.println(packetId);
-						
+						//System.out.println(packetType);
 						if (packetType == null) {
 							input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
 						} else if (packetType.equals(PacketPlayInPositionAndLook.class)) {					
@@ -332,6 +344,30 @@ public class ClientConnection extends Thread {
 								Limbo.getInstance().getConsole().sendMessage("Incorrect Payload recieved in KeepAlive packet for player " + player.getName());
 								break;
 							}
+						} else if (packetType.equals(PacketPlayInTabComplete.class)) {
+							PacketPlayInTabComplete request = new PacketPlayInTabComplete(input);
+							String[] command = CustomStringUtils.splitStringToArgs(request.getText());
+							System.out.println(request.getText());
+							List<TabCompleteMatches> matches = new ArrayList<TabCompleteMatches>();
+							
+							TabCompleteMatches spawn = new TabCompleteMatches("spawn", new TextComponent(ChatColor.GOLD + "Teleports you back to the Limbo spawn!"));
+							
+							switch (command.length) {
+							case 0:
+								matches.add(spawn);
+								break;
+							case 1:
+								if ("spawn".startsWith(command[0])) {
+									matches.add(spawn);
+								}
+								break;
+							}
+							
+							int start = CustomStringUtils.getIndexOfArg(request.getText(), command.length - 1);
+							int length = command[command.length - 1].length();
+							
+							PacketPlayOutTabComplete response = new PacketPlayOutTabComplete(request.getId(), start, length, matches.toArray(new TabCompleteMatches[matches.size()]));
+							sendPacket(response);
 						} else if (packetType.equals(PacketPlayInChat.class)) {
 							PacketPlayInChat chat = new PacketPlayInChat(input);
 							if (chat.getMessage().startsWith("/")) {
@@ -349,6 +385,8 @@ public class ClientConnection extends Thread {
 									each.sendMessage(message);
 								}
 							}
+						} else {
+							input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
 						}
 						
 					} catch (Exception e) {

@@ -27,7 +27,7 @@ public class ServerConnection extends Thread {
 	public void run() {
 		try {
 			serverSocket = new ServerSocket(port, 50, InetAddress.getByName(ip));
-			System.out.println("Server listening on [" + serverSocket.getInetAddress().getHostName() + ":" + serverSocket.getLocalPort() + "]");
+			System.out.println("Limbo server listening on /" + serverSocket.getInetAddress().getHostName() + ":" + serverSocket.getLocalPort());
 	        while (true) {
 	            Socket connection = serverSocket.accept();
 	            //String str = connection.getInetAddress().getHostName() + ":" + connection.getPort();

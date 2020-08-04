@@ -1,6 +1,5 @@
 package com.loohp.limbo.Server;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -12,9 +11,10 @@ import com.loohp.limbo.Utils.DataTypeIO;
 
 public class KeepAliveSender extends Thread {
 	
-	private Random random = new Random();
+	private Random random;
 	
 	public KeepAliveSender() {
+		random = new Random();
 		start();
 	}
 	
@@ -25,11 +25,10 @@ public class KeepAliveSender extends Thread {
 				for (ClientConnection client : Limbo.getInstance().getServerConnection().getClients()) {
 					if (client.getClientState().equals(ClientState.PLAY)) {
 						try {
-							DataOutputStream output = new DataOutputStream(client.getSocket().getOutputStream());
 							PacketPlayOutKeepAlive packet = new PacketPlayOutKeepAlive(random.nextLong());
 							byte[] packetByte = packet.serializePacket();
-							DataTypeIO.writeVarInt(output, packetByte.length);
-							output.write(packetByte);
+							DataTypeIO.writeVarInt(client.output, packetByte.length);
+							client.output.write(packetByte);
 							client.setLastKeepAlivePayLoad(packet.getPayload());
 						} catch (IOException ignore) {}
 					}

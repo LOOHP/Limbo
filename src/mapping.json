@@ -17,7 +17,8 @@
     "0x13": "PacketPlayInPositionAndLook",
     "0x12": "PacketPlayInPosition",
     "0x14": "PacketPlayInRotation",
-    "0x0B": "PacketPlayInPluginMessaging"
+    "0x0B": "PacketPlayInPluginMessaging",
+    "0x06": "PacketPlayInTabComplete"
   },
   "PlayOut": {
     "PacketPlayOutLogin": "0x25",
@@ -31,7 +32,9 @@
     "PacketPlayOutUpdateViewPosition": "0x40",
     "PacketPlayOutShowPlayerSkins": "0x44",
     "PacketPlayOutDisconnect": "0x1A",
-    "PacketPlayOutPluginMessaging": "0x17"
+    "PacketPlayOutPluginMessaging": "0x17",
+    "PacketPlayOutTabComplete": "0x10",
+    "PacketPlayOutDeclareCommands": "0x11"
   },
   "StatusIn": {
     "0x01": "PacketStatusInPing",

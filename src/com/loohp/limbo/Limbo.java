@@ -27,6 +27,7 @@ import com.loohp.limbo.Server.Packets.Packet;
 import com.loohp.limbo.Server.Packets.PacketIn;
 import com.loohp.limbo.Server.Packets.PacketOut;
 import com.loohp.limbo.Utils.ImageUtils;
+import com.loohp.limbo.Utils.NetworkUtils;
 import com.loohp.limbo.World.Schematic;
 import com.loohp.limbo.World.World;
 
@@ -74,6 +75,12 @@ public class Limbo {
             }
         }
         properties = new ServerProperties(sp);
+        
+        if (!properties.isBungeecord()) {
+        	console.sendMessage("If you are using bungeecord, consider turning that on in the settings!");
+        } else {
+        	console.sendMessage("Starting Limbo server in bungeecord mode!");
+        }
 		
         String mappingName = "mapping.json";
         File mappingFile = new File(mappingName);
@@ -85,9 +92,12 @@ public class Limbo {
             }
         }
         
+        console.sendMessage("Loading packet id mappings from mapping.json ...");
+        
         JSONObject json = (JSONObject) new JSONParser().parse(new FileReader(mappingFile));
         
         String classPrefix = Packet.class.getName().substring(0, Packet.class.getName().lastIndexOf(".") + 1);
+        int mappingsCount = 0;
         
 		Map<Integer, Class<? extends PacketIn>> HandshakeIn = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("HandshakeIn")).keySet()) {
@@ -95,6 +105,7 @@ public class Limbo {
 			HandshakeIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + (String) ((JSONObject) json.get("HandshakeIn")).get(key)));
 		}
 		Packet.setHandshakeIn(HandshakeIn);
+		mappingsCount += HandshakeIn.size();
 		
 		Map<Integer, Class<? extends PacketIn>> StatusIn = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("StatusIn")).keySet()) {
@@ -102,6 +113,7 @@ public class Limbo {
 			StatusIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + (String) ((JSONObject) json.get("StatusIn")).get(key)));
 		}
 		Packet.setStatusIn(StatusIn);
+		mappingsCount += StatusIn.size();
 		
 		Map<Class<? extends PacketOut>, Integer> StatusOut = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("StatusOut")).keySet()) {
@@ -109,6 +121,7 @@ public class Limbo {
 			StatusOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("StatusOut")).get(key)));
 		}
 		Packet.setStatusOut(StatusOut);
+		mappingsCount += StatusOut.size();
 		
 		Map<Integer, Class<? extends PacketIn>> LoginIn = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("LoginIn")).keySet()) {
@@ -116,6 +129,7 @@ public class Limbo {
 			LoginIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + (String) ((JSONObject) json.get("LoginIn")).get(key)));
 		}
 		Packet.setLoginIn(LoginIn);
+		mappingsCount += LoginIn.size();
 		
 		Map<Class<? extends PacketOut>, Integer> LoginOut = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("LoginOut")).keySet()) {
@@ -123,6 +137,7 @@ public class Limbo {
 			LoginOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("LoginOut")).get(key)));
 		}
 		Packet.setLoginOut(LoginOut);
+		mappingsCount += LoginOut.size();
 		
 		Map<Integer, Class<? extends PacketIn>> PlayIn = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("PlayIn")).keySet()) {
@@ -130,6 +145,7 @@ public class Limbo {
 			PlayIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + (String) ((JSONObject) json.get("PlayIn")).get(key)));
 		}
 		Packet.setPlayIn(PlayIn);
+		mappingsCount += PlayIn.size();
 		
 		Map<Class<? extends PacketOut>, Integer> PlayOut = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("PlayOut")).keySet()) {
@@ -137,27 +153,43 @@ public class Limbo {
 			PlayOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("PlayOut")).get(key)));
 		}
 		Packet.setPlayOut(PlayOut);
+		mappingsCount += PlayOut.size();
+		
+		console.sendMessage("Loaded all " + mappingsCount + " packet id mappings!");
 		
 		worlds.add(loadDefaultWorld());
 		Location spawn = properties.getWorldSpawn();
 		properties.setWorldSpawn(new Location(getWorld(properties.getLevelName().getKey()), spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch()));
+		
+		if (!NetworkUtils.available(properties.getServerPort())) {
+			console.sendMessage("");
+			console.sendMessage("*****FAILED TO BIND PORT [" + properties.getServerPort() + "]*****");
+			console.sendMessage("*****PORT ALREADY IN USE*****");
+			console.sendMessage("*****PERHAPS ANOTHER INSTANCE OF THE SERVER IS ALREADY RUNNING?*****");
+			console.sendMessage("");
+			System.exit(2);
+		}
 		
 		server = new ServerConnection(properties.getServerIp(), properties.getServerPort());
 		
 		console.run();
 	}
 	
-	private World loadDefaultWorld() throws IOException {		
+	private World loadDefaultWorld() throws IOException {
+		console.sendMessage("Loading world " + properties.getLevelName() + " with the schematic file " + properties.getSchemFileName() + " ...");
+		
 		File schem = new File(properties.getSchemFileName());
 		
 		if (!schem.exists()) {
-			System.out.println("Schemetic file " + properties.getSchemFileName() + " for world " + properties.getLevelName() + " not found!");
+			console.sendMessage("Schemetic file " + properties.getSchemFileName() + " for world " + properties.getLevelName() + " not found!");
+			console.sendMessage("Server will exit!");
+			System.exit(1);
 			return null;
 		}
 		
 		World world = Schematic.toWorld(properties.getLevelName().getKey(), (CompoundTag) NBTUtil.read(schem).getTag());
 		
-		System.out.println("Loaded world " + properties.getLevelName() + " with the schematic file " + properties.getSchemFileName());
+		console.sendMessage("Loaded world " + properties.getLevelName() + "!");
 		
 		return world;		
 	}
