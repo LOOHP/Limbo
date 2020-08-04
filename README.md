@@ -1,8 +1,6 @@
 # Limbo
 ## Standalone Limbo Minecraft Server 1.16.1
 
-***
-
 ### Starting the server
 Use the following command lines to start the limbo server just like any other minecraft server
 ```
