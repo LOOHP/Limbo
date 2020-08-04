@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
 
 import com.loohp.limbo.Player.Player;
 import com.loohp.limbo.Utils.CustomStringUtils;
@@ -66,10 +67,76 @@ public class Console {
 	}
 	
 	public class ConsoleOutputStream extends PrintStream {
-
-	    public ConsoleOutputStream(OutputStream out) {
+		
+		public ConsoleOutputStream(OutputStream out) {
 	        super(out);
 	    }
+
+		@Override
+		public PrintStream printf(Locale l, String format, Object... args) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+			return super.printf(l, "[" + date + "] " + format, args);
+		}
+
+		@Override
+		public PrintStream printf(String format, Object... args) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+			return super.printf("[" + date + "] " + format, args);
+		}
+
+		@Override
+		public void println() {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+	        super.println("[" + date + "] ");
+		}
+
+		@Override
+		public void println(boolean x) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+	        super.println("[" + date + "] " + x);
+		}
+
+		@Override
+		public void println(char x) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+	        super.println("[" + date + "] " + x);
+		}
+
+		@Override
+		public void println(char[] x) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+	        super.println("[" + date + "] " + String.valueOf(x));
+		}
+
+		@Override
+		public void println(double x) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+	        super.println("[" + date + "] " + x);
+		}
+
+		@Override
+		public void println(float x) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+	        super.println("[" + date + "] " + x);
+		}
+
+		@Override
+		public void println(int x) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+	        super.println("[" + date + "] " + x);
+		}
+
+		@Override
+		public void println(long x) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+	        super.println("[" + date + "] " + x);
+		}
+
+		@Override
+		public void println(Object x) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+	        super.println("[" + date + "] " + x);
+		}
 
 	    @Override
 	    public void println(String string) {

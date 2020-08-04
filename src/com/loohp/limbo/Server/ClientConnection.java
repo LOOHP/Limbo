@@ -3,6 +3,7 @@ package com.loohp.limbo.Server;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import com.loohp.limbo.Player.Player;
 import com.loohp.limbo.Server.Packets.Packet;
 import com.loohp.limbo.Server.Packets.PacketHandshakingIn;
 import com.loohp.limbo.Server.Packets.PacketLoginInLoginStart;
+import com.loohp.limbo.Server.Packets.PacketLoginOutDisconnect;
 import com.loohp.limbo.Server.Packets.PacketLoginOutLoginSuccess;
 import com.loohp.limbo.Server.Packets.PacketOut;
 import com.loohp.limbo.Server.Packets.PacketPlayInChat;
@@ -42,8 +44,8 @@ import com.loohp.limbo.Server.Packets.PacketStatusOutPong;
 import com.loohp.limbo.Server.Packets.PacketStatusOutResponse;
 import com.loohp.limbo.Utils.CustomStringUtils;
 import com.loohp.limbo.Utils.DataTypeIO;
-import com.loohp.limbo.Utils.SkinUtils;
-import com.loohp.limbo.Utils.SkinUtils.SkinResponse;
+import com.loohp.limbo.Utils.MojangAPIUtils;
+import com.loohp.limbo.Utils.MojangAPIUtils.SkinResponse;
 import com.loohp.limbo.World.BlockPosition;
 import com.loohp.limbo.World.DimensionRegistry;
 import com.loohp.limbo.World.World;
@@ -73,10 +75,17 @@ public class ClientConnection extends Thread {
 	
 	private DataOutputStream output;
 	
+	private InetAddress iNetAddress;
+	
     public ClientConnection(Socket client_socket) {
         this.client_socket = client_socket;
+        this.iNetAddress = client_socket.getInetAddress();
     }
 	
+	public InetAddress getiNetAddress() {
+		return iNetAddress;
+	}
+
 	public long getLastKeepAlivePayLoad() {
 		return lastKeepAlivePayLoad;
 	}
@@ -123,6 +132,23 @@ public class ClientConnection extends Thread {
 			e.printStackTrace();
 		}
 	}
+	
+	public void disconnectDuringLogin(BaseComponent[] reason) {
+		try {
+			PacketLoginOutDisconnect packet = new PacketLoginOutDisconnect(ComponentSerializer.toString(reason));
+			byte[] packetByte = packet.serializePacket();
+			DataTypeIO.writeVarInt(output, packetByte.length);
+			output.write(packetByte);
+			output.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			client_socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Override
     public void run() {
@@ -133,8 +159,17 @@ public class ClientConnection extends Thread {
     		DataInputStream input = new DataInputStream(client_socket.getInputStream());
     		output = new DataOutputStream(client_socket.getOutputStream());
 		    DataTypeIO.readVarInt(input);
-		    int handShakeId = DataTypeIO.readVarInt(input);
-		    PacketHandshakingIn handshake = (PacketHandshakingIn) Packet.getHandshakeIn().get(handShakeId).getConstructor(DataInputStream.class).newInstance(input);
+		    
+		    //int handShakeId = DataTypeIO.readVarInt(input);
+		    DataTypeIO.readVarInt(input);
+		    
+		    PacketHandshakingIn handshake = new PacketHandshakingIn(input);
+		    
+		    boolean isBungeecord = Limbo.getInstance().getServerProperties().isBungeecord();		    
+		    String bungeeForwarding = handshake.getServerAddress();
+		    UUID bungeeUUID = null;
+		    SkinResponse bungeeSkin = null;
+		    
 		    switch (handshake.getHandshakeType()) {
 		    case STATUS:
 				state = ClientState.STATUS;
@@ -146,7 +181,7 @@ public class ClientConnection extends Thread {
 						//do nothing
 					} else if (packetType.equals(PacketStatusInRequest.class)) {
 						String str = client_socket.getInetAddress().getHostName() + ":" + client_socket.getPort();
-						System.out.println("[/" + str + "] <-> InitialHandler has pinged");
+						Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Handshake Status has pinged");
 						PacketStatusOutResponse packet = new PacketStatusOutResponse(Limbo.getInstance().getServerListResponseJson());
 						sendPacket(packet);
 					} else if (packetType.equals(PacketStatusInPing.class)) {
@@ -159,6 +194,27 @@ public class ClientConnection extends Thread {
 				break;
 			case LOGIN:
 				state = ClientState.LOGIN;
+				
+				if (isBungeecord) {
+					try {
+				    	String[] data = bungeeForwarding.split("\\x00");
+				    	//String host = data[0];
+				    	String ip = data[1];
+				    	
+				    	bungeeUUID = UUID.fromString(data[2].replaceFirst("([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)", "$1-$2-$3-$4-$5"));
+				    	iNetAddress = InetAddress.getByName(ip);
+				    	
+				    	String skinJson = data[3];
+				    	
+				    	String skin = skinJson.split("\"value\":\"")[1].split("\"")[0];
+			            String signature = skinJson.split("\"signature\":\"")[1].split("\"")[0];
+				    	bungeeSkin = new SkinResponse(skin, signature);
+					} catch (Exception e) {
+						Limbo.getInstance().getConsole().sendMessage("If you wish to use bungeecord's IP forwarding, please enable that in your bungeecord config.yml as well!");
+						disconnectDuringLogin(new BaseComponent[] {new TextComponent(ChatColor.RED + "Please connect from the proxy!")});
+					}
+			    }
+				
 				while (client_socket.isConnected()) {
 					int size = DataTypeIO.readVarInt(input);
 					int packetId = DataTypeIO.readVarInt(input);
@@ -169,7 +225,8 @@ public class ClientConnection extends Thread {
 					} else if (packetType.equals(PacketLoginInLoginStart.class)) {
 						PacketLoginInLoginStart start = new PacketLoginInLoginStart(input);
 						String username = start.getUsername();
-						UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
+						UUID uuid = isBungeecord ? bungeeUUID : UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
+						
 						PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(uuid, username);
 						sendPacket(success);
 						
@@ -216,7 +273,7 @@ public class ClientConnection extends Thread {
 				player.setLocation(new Location(world, s.getX(), s.getY(), s.getZ(), s.getYaw(), s.getPitch()));
 				sendPacket(positionLook);
 				
-				SkinResponse skinresponce = SkinUtils.getSkinFromMojangServer(player.getName());
+				SkinResponse skinresponce = isBungeecord ? bungeeSkin : MojangAPIUtils.getSkinFromMojangServer(player.getName());
 				PlayerSkinProperty skin = skinresponce != null ? new PlayerSkinProperty(skinresponce.getSkin(), skinresponce.getSignature()) : null;
 				PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(PlayerInfoAction.ADD_PLAYER, player.getUUID(), new PlayerInfoData.PlayerInfoDataAddPlayer(player.getName(), Optional.ofNullable(skin), p.getDefaultGamemode(), 0, false, Optional.empty()));
 				sendPacket(info);
@@ -240,7 +297,7 @@ public class ClientConnection extends Thread {
 				sendPacket(abilities);
 				
 				String str = client_socket.getInetAddress().getHostName() + ":" + client_socket.getPort() + "|" + player.getName();
-				System.out.println("[/" + str + "] <-> Player had connected to the Limbo server!");
+				Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had connected to the Limbo server!");
 				
 				while (client_socket.isConnected()) {
 					try {						
@@ -272,7 +329,7 @@ public class ClientConnection extends Thread {
 						} else if (packetType.equals(PacketPlayInKeepAlive.class)) {
 							PacketPlayInKeepAlive alive = new PacketPlayInKeepAlive(input);
 							if (alive.getPayload() != lastKeepAlivePayLoad) {
-								System.out.println("Incorrect Payload recieved in KeepAlive packet for player " + player.getName());
+								Limbo.getInstance().getConsole().sendMessage("Incorrect Payload recieved in KeepAlive packet for player " + player.getName());
 								break;
 							}
 						} else if (packetType.equals(PacketPlayInChat.class)) {
@@ -299,7 +356,7 @@ public class ClientConnection extends Thread {
 					}
 	    		}
 				str = client_socket.getInetAddress().getHostName() + ":" + client_socket.getPort() + "|" + player.getName();
-				System.out.println("[/" + str + "] <-> Player had disconnected!");
+				Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had disconnected!");
 	    	}
 		    
     	} catch (Exception e) {}

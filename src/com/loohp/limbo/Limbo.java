@@ -215,7 +215,7 @@ public class Limbo {
 		base = base.replace("%PROTOCOL%", String.valueOf(properties.getProtocol()));
 		base = base.replace("%MOTD%", properties.getMotdJson());
 		base = base.replace("%MAXPLAYERS%", String.valueOf(properties.getMaxPlayers()));
-		base = base.replace("%ONLINECLIENTS%", String.valueOf(server.getClients().size()));
+		base = base.replace("%ONLINECLIENTS%", String.valueOf(getPlayers().size()));
 		
 		if (properties.getFavicon().isPresent()) {
 			String icon = "\"favicon\":\"data:image/png;base64," + ImageUtils.imgToBase64String(properties.getFavicon().get(), "png") + "\",";

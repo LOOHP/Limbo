@@ -3,18 +3,21 @@
     "0x00": "PacketHandshakingIn"
   },
   "LoginIn": {
-    "0x00": "PacketLoginInLoginStart"
+    "0x00": "PacketLoginInLoginStart",
+    "0x02": "PacketLoginInPluginMessaging"
   },
   "LoginOut": {
     "PacketLoginOutLoginSuccess": "0x02",
-    "PacketLoginOutDisconnect": "0x00"
+    "PacketLoginOutDisconnect": "0x00",
+    "PacketLoginOutPluginMessaging": "0x04",
   },
   "PlayIn": {
     "0x10": "PacketPlayInKeepAlive",
     "0x03": "PacketPlayInChat",
     "0x13": "PacketPlayInPositionAndLook",
     "0x12": "PacketPlayInPosition",
-    "0x14": "PacketPlayInRotation"
+    "0x14": "PacketPlayInRotation",
+    "0x0B": "PacketPlayInPluginMessaging"
   },
   "PlayOut": {
     "PacketPlayOutLogin": "0x25",
@@ -27,7 +30,8 @@
     "PacketPlayOutPlayerInfo": "0x33",
     "PacketPlayOutUpdateViewPosition": "0x40",
     "PacketPlayOutShowPlayerSkins": "0x44",
-    "PacketPlayOutDisconnect": "0x1A"
+    "PacketPlayOutDisconnect": "0x1A",
+    "PacketPlayOutPluginMessaging": "0x17"
   },
   "StatusIn": {
     "0x01": "PacketStatusInPing",

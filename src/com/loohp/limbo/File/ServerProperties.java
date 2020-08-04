@@ -33,6 +33,7 @@ public class ServerProperties {
 	String motdJson;
 	String versionString;
 	int protocol;
+	boolean bungeecord;
 	
 	Optional<BufferedImage> favicon;
 
@@ -63,6 +64,7 @@ public class ServerProperties {
 		allowFlight = Boolean.parseBoolean(prop.getProperty("allow-flight"));
 		motdJson = prop.getProperty("motd");
 		versionString = prop.getProperty("version");
+		bungeecord = Boolean.parseBoolean(prop.getProperty("bungeecord"));
 		
 		File png = new File("server-icon.png");
 		if (png.exists()) {
@@ -82,6 +84,10 @@ public class ServerProperties {
 		}
 
 		System.out.println("Loaded server.properties");
+	}
+
+	public boolean isBungeecord() {
+		return bungeecord;
 	}
 
 	public Optional<BufferedImage> getFavicon() {

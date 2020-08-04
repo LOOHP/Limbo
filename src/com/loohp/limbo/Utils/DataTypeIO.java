@@ -40,6 +40,11 @@ public class DataTypeIO {
 	    return new String(b);
 	}
 	
+	public static int getStringLength(String string, Charset charset) throws IOException {
+	    byte[] bytes = string.getBytes(charset);
+	    return bytes.length;
+	}
+	
 	public static void writeString(DataOutputStream out, String string, Charset charset) throws IOException {
 	    byte[] bytes = string.getBytes(charset);
 	    writeVarInt(out, bytes.length);

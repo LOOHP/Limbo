@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class SkinUtils {
+public class MojangAPIUtils {
 	
 	public static class SkinResponse {
 
@@ -31,7 +31,7 @@ public class SkinUtils {
 		
 	}
 	
-	public static SkinResponse getSkinFromMojangServer(String username) {
+	public static UUID getOnlineUUIDOfPlayerFromMojang(String username) {
 		try {	    	
 	        URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + username);
 	        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
@@ -42,8 +42,12 @@ public class SkinUtils {
             connection.addRequestProperty("Pragma", "no-cache");
 	        if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
 	            String reply = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine();
-	            String uuid = reply.split("\"id\":\"")[1].split("\"")[0];
-	            return getSkinFromMojangServer(UUID.fromString(uuid.replaceFirst( "([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)", "$1-$2-$3-$4-$5" )));
+	            if (!reply.contains("\"error\":\"BadRequestException\"")) {
+	            	String uuid = reply.split("\"id\":\"")[1].split("\"")[0];
+		            return UUID.fromString(uuid.replaceFirst("([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)", "$1-$2-$3-$4-$5"));
+	            } else {
+	            	return null;
+	            }
 	        } else {
 	            System.out.println("Connection could not be opened (Response code " + connection.getResponseCode() + ", " + connection.getResponseMessage() + ")");
 	            return null;
@@ -52,6 +56,14 @@ public class SkinUtils {
 	        e.printStackTrace();
 	        return null;
 	    }
+	}
+	
+	public static SkinResponse getSkinFromMojangServer(String username) {
+		UUID uuid = getOnlineUUIDOfPlayerFromMojang(username);
+		if (uuid == null) {
+			return null;
+		}
+		return getSkinFromMojangServer(uuid);
 	}
 	
 	public static SkinResponse getSkinFromMojangServer(UUID uuid) {
