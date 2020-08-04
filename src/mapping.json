@@ -13,7 +13,8 @@
     "0x10": "PacketPlayInKeepAlive",
     "0x03": "PacketPlayInChat",
     "0x13": "PacketPlayInPositionAndLook",
-    "0x12": "PacketPlayInPosition"
+    "0x12": "PacketPlayInPosition",
+    "0x14": "PacketPlayInRotation"
   },
   "PlayOut": {
     "PacketPlayOutLogin": "0x25",

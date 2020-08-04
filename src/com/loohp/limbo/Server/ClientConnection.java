@@ -22,6 +22,7 @@ import com.loohp.limbo.Server.Packets.PacketPlayInChat;
 import com.loohp.limbo.Server.Packets.PacketPlayInKeepAlive;
 import com.loohp.limbo.Server.Packets.PacketPlayInPosition;
 import com.loohp.limbo.Server.Packets.PacketPlayInPositionAndLook;
+import com.loohp.limbo.Server.Packets.PacketPlayInRotation;
 import com.loohp.limbo.Server.Packets.PacketPlayOutDisconnect;
 import com.loohp.limbo.Server.Packets.PacketPlayOutLogin;
 import com.loohp.limbo.Server.Packets.PacketPlayOutMapChunk;
@@ -149,7 +150,7 @@ public class ClientConnection extends Thread {
 						PacketStatusOutResponse packet = new PacketStatusOutResponse(Limbo.getInstance().getServerListResponseJson());
 						sendPacket(packet);
 					} else if (packetType.equals(PacketStatusInPing.class)) {
-						PacketStatusInPing ping = (PacketStatusInPing) packetType.getConstructor(DataInputStream.class).newInstance(input);
+						PacketStatusInPing ping = new PacketStatusInPing(input);
 						PacketStatusOutPong packet = new PacketStatusOutPong(ping.getPayload());
 						sendPacket(packet);
 						break;
@@ -166,7 +167,7 @@ public class ClientConnection extends Thread {
 					if (packetType == null) {
 						input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
 					} else if (packetType.equals(PacketLoginInLoginStart.class)) {
-						PacketLoginInLoginStart start = (PacketLoginInLoginStart) packetType.getConstructor(DataInputStream.class).newInstance(input);
+						PacketLoginInLoginStart start = new PacketLoginInLoginStart(input);
 						String username = start.getUsername();
 						UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
 						PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(uuid, username);
@@ -262,6 +263,12 @@ public class ClientConnection extends Thread {
 							
 							PacketPlayOutUpdateViewPosition response = new PacketPlayOutUpdateViewPosition((int) player.getLocation().getX() >> 4, (int) player.getLocation().getZ() >> 4);
 							sendPacket(response);
+						} else if (packetType.equals(PacketPlayInRotation.class)) {
+							PacketPlayInRotation pos = new PacketPlayInRotation(input);
+							player.setLocation(new Location(player.getWorld(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), pos.getYaw(), pos.getPitch()));
+							
+							PacketPlayOutUpdateViewPosition response = new PacketPlayOutUpdateViewPosition((int) player.getLocation().getX() >> 4, (int) player.getLocation().getZ() >> 4);
+							sendPacket(response);
 						} else if (packetType.equals(PacketPlayInKeepAlive.class)) {
 							PacketPlayInKeepAlive alive = new PacketPlayInKeepAlive(input);
 							if (alive.getPayload() != lastKeepAlivePayLoad) {
@@ -293,7 +300,6 @@ public class ClientConnection extends Thread {
 	    		}
 				str = client_socket.getInetAddress().getHostName() + ":" + client_socket.getPort() + "|" + player.getName();
 				System.out.println("[/" + str + "] <-> Player had disconnected!");
-				Limbo.getInstance().removePlayer(player);
 	    	}
 		    
     	} catch (Exception e) {}
@@ -302,6 +308,9 @@ public class ClientConnection extends Thread {
 			client_socket.close();
 		} catch (IOException e) {}
     	state = ClientState.DISCONNECTED;
+    	if (player != null) {
+    		Limbo.getInstance().removePlayer(player);
+    	}
     	Limbo.getInstance().getServerConnection().getClients().remove(this);
 		running = false;
 	}

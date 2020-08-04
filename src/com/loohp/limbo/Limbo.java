@@ -142,7 +142,7 @@ public class Limbo {
 		Location spawn = properties.getWorldSpawn();
 		properties.setWorldSpawn(new Location(getWorld(properties.getLevelName().getKey()), spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch()));
 		
-		server = new ServerConnection(properties.getServerIp(), properties.getServerPort());	
+		server = new ServerConnection(properties.getServerIp(), properties.getServerPort());
 		
 		console.run();
 	}
