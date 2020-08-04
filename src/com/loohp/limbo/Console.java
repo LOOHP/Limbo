@@ -9,10 +9,8 @@ import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
-import com.loohp.limbo.Server.ClientConnection;
-import com.loohp.limbo.Server.ClientConnection.ClientState;
+import com.loohp.limbo.Player.Player;
 import com.loohp.limbo.Utils.CustomStringUtils;
 
 public class Console {
@@ -42,11 +40,23 @@ public class Console {
 					if (input.length > 1) {
 						String message = "[Server] " + String.join(" ", Arrays.copyOfRange(input, 1, input.length));
 						sendMessage(message);
-						for (ClientConnection client : Limbo.getInstance().getServerConnection().getClients()) {
-							if (client.getClientState().equals(ClientState.PLAY)) {
-								client.sendMessage(message);
-							}
+						for (Player each : Limbo.getInstance().getPlayers()) {
+							each.sendMessage(message);
 						}
+					}
+				} else if (input[0].equalsIgnoreCase("kick")) {
+					String reason = "Disconnected!";
+					Player player = input.length > 1 ? Limbo.getInstance().getPlayer(input[1]) : null;
+					if (player != null) {
+						if (input.length < 2) {
+							player.disconnect();
+						} else {
+							reason = String.join(" ", Arrays.copyOfRange(input, 2, input.length));
+							player.disconnect(reason);
+						}
+						sendMessage("Kicked the player " + input[1] + " for the reason: " + reason);
+					} else {
+						sendMessage("Player is not online!");
 					}
 				}
 			} catch (IOException e) {

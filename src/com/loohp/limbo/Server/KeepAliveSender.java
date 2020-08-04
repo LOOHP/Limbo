@@ -27,7 +27,7 @@ public class KeepAliveSender extends Thread {
 						try {
 							DataOutputStream output = new DataOutputStream(client.getSocket().getOutputStream());
 							PacketPlayOutKeepAlive packet = new PacketPlayOutKeepAlive(random.nextLong());
-							byte[] packetByte = packet.getBytes();
+							byte[] packetByte = packet.serializePacket();
 							DataTypeIO.writeVarInt(output, packetByte.length);
 							output.write(packetByte);
 							client.setLastKeepAlivePayLoad(packet.getPayload());

@@ -7,9 +7,13 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -17,7 +21,7 @@ import org.json.simple.parser.ParseException;
 
 import com.loohp.limbo.File.ServerProperties;
 import com.loohp.limbo.Location.Location;
-import com.loohp.limbo.Server.ClientConnection;
+import com.loohp.limbo.Player.Player;
 import com.loohp.limbo.Server.ServerConnection;
 import com.loohp.limbo.Server.Packets.Packet;
 import com.loohp.limbo.Server.Packets.PacketIn;
@@ -47,8 +51,12 @@ public class Limbo {
 	private Console console;
 	
 	private List<World> worlds = new ArrayList<>();
+	private Map<String, Player> playersByName = new HashMap<>();
+	private Map<UUID, Player> playersByUUID = new HashMap<>();
 	
 	private ServerProperties properties;
+	
+	public AtomicInteger entityCount = new AtomicInteger();
 	
 	@SuppressWarnings("unchecked")
 	public Limbo() throws IOException, ParseException, NumberFormatException, ClassNotFoundException {
@@ -166,6 +174,28 @@ public class Limbo {
 		return console;
 	}
 	
+	public Set<Player> getPlayers() {
+		return new HashSet<>(playersByUUID.values());
+	}
+	
+	public Player getPlayer(String name) {
+		return playersByName.get(name);
+	}
+	
+	public Player getPlayer(UUID uuid) {
+		return playersByUUID.get(uuid);
+	}
+	
+	public void addPlayer(Player player) {
+		playersByName.put(player.getName(), player);
+		playersByUUID.put(player.getUUID(), player);
+	}
+	
+	public void removePlayer(Player player) {
+		playersByName.remove(player.getName());
+		playersByUUID.remove(player.getUUID());
+	}
+	
 	public List<World> getWorlds() {
 		return new ArrayList<>(worlds);
 	}
@@ -197,18 +227,12 @@ public class Limbo {
 		return base;
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void stopServer() {
 		Limbo.getInstance().getConsole().sendMessage("Stopping Server...");
-		for (ClientConnection client : Limbo.getInstance().getServerConnection().getClients()) {
-			try {
-				client.getSocket().close();
-			} catch (IOException e) {
-				e.printStackTrace();
-				client.destroy();
-			}
+		for (Player player : getPlayers()) {
+			player.disconnect("Server closed");
 		}
-		while (!Limbo.getInstance().getServerConnection().getClients().isEmpty()) {
+		while (!getPlayers().isEmpty()) {
 			try {
 				TimeUnit.MILLISECONDS.sleep(500);
 			} catch (InterruptedException e) {

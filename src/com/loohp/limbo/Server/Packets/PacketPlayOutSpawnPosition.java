@@ -18,7 +18,7 @@ public class PacketPlayOutSpawnPosition extends PacketOut {
 		return position;
 	}
 	
-	public byte[] getBytes() throws IOException {
+	public byte[] serializePacket() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);

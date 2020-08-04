@@ -20,7 +20,7 @@ public class PacketStatusOutResponse extends PacketOut {
 	}
 	
 	@Override
-	public byte[] getBytes() throws IOException {
+	public byte[] serializePacket() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);

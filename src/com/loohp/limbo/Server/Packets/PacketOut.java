@@ -4,6 +4,6 @@ import java.io.IOException;
 
 public abstract class PacketOut extends Packet {
 	
-	public abstract byte[] getBytes() throws IOException;
+	public abstract byte[] serializePacket() throws IOException;
 
 }

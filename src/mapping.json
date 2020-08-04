@@ -6,7 +6,8 @@
     "0x00": "PacketLoginInLoginStart"
   },
   "LoginOut": {
-    "PacketLoginOutLoginSuccess": "0x02"
+    "PacketLoginOutLoginSuccess": "0x02",
+    "PacketLoginOutDisconnect": "0x00"
   },
   "PlayIn": {
     "0x10": "PacketPlayInKeepAlive",
@@ -24,7 +25,8 @@
     "PacketPlayOutKeepAlive": "0x20",
     "PacketPlayOutPlayerInfo": "0x33",
     "PacketPlayOutUpdateViewPosition": "0x40",
-    "PacketPlayOutShowPlayerSkins": "0x44"
+    "PacketPlayOutShowPlayerSkins": "0x44",
+    "PacketPlayOutDisconnect": "0x1A"
   },
   "StatusIn": {
     "0x01": "PacketStatusInPing",
