@@ -1,5 +1,6 @@
 package com.loohp.limbo;
 
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -26,6 +27,7 @@ import org.json.simple.parser.ParseException;
 import com.loohp.limbo.Commands.CommandSender;
 import com.loohp.limbo.Events.EventsManager;
 import com.loohp.limbo.File.ServerProperties;
+import com.loohp.limbo.GUI.GUI;
 import com.loohp.limbo.Location.Location;
 import com.loohp.limbo.Permissions.PermissionsManager;
 import com.loohp.limbo.Player.Player;
@@ -47,8 +49,34 @@ import net.querz.nbt.tag.CompoundTag;
 public class Limbo {
 	
 	private static Limbo instance;
+	public static boolean noGui = false;
 	
-	public static void main(String args[]) throws IOException, ParseException, NumberFormatException, ClassNotFoundException {
+	public static void main(String args[]) throws IOException, ParseException, NumberFormatException, ClassNotFoundException, InterruptedException {
+		for (String flag : args) {
+			if (flag.equals("--nogui")) {
+				noGui = true;
+			} else {
+				System.out.println("Accepted flags:");
+				System.out.println(" --nogui ");
+				System.out.println();
+				System.out.println("Press [enter] to quit");
+				System.exit(0);
+			}
+		}
+		if (GraphicsEnvironment.isHeadless()) {
+			noGui = true;
+		}
+		if (!noGui) {
+			System.out.println("Launching Server GUI.. Add \"--nogui\" in launch arguments to disable");
+			Thread t1 = new Thread(new Runnable() {
+			    @Override
+			    public void run() {
+			    	GUI.main();
+			    }
+			});  
+			t1.start();
+		}
+		
 		new Limbo();
 	}
 	
@@ -75,8 +103,14 @@ public class Limbo {
 	public AtomicInteger entityIdCount = new AtomicInteger();
 	
 	@SuppressWarnings("unchecked")
-	public Limbo() throws IOException, ParseException, NumberFormatException, ClassNotFoundException {
+	public Limbo() throws IOException, ParseException, NumberFormatException, ClassNotFoundException, InterruptedException {
 		instance = this;
+		
+		if (!noGui) {
+			while (!GUI.loadFinish) {
+				TimeUnit.MILLISECONDS.sleep(500);
+			}
+		}
 		
 		console = new Console(System.in, System.out, System.err);
 		

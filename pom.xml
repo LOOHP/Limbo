@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>Limbo</groupId>
 	<artifactId>Limbo</artifactId>
-	<version>0.2.0-ALPHA</version>
+	<version>0.2.1-ALPHA</version>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<resources>
