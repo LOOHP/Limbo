@@ -57,6 +57,7 @@ import com.loohp.limbo.Utils.CustomStringUtils;
 import com.loohp.limbo.Utils.DataTypeIO;
 import com.loohp.limbo.Utils.MojangAPIUtils;
 import com.loohp.limbo.Utils.MojangAPIUtils.SkinResponse;
+import com.loohp.limbo.Utils.NamespacedKey;
 import com.loohp.limbo.World.BlockPosition;
 import com.loohp.limbo.World.DimensionRegistry;
 import com.loohp.limbo.World.World;
@@ -154,6 +155,7 @@ public class ClientConnection extends Thread {
 		} catch (IOException e) {}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
     public void run() {
         running = true;
@@ -258,8 +260,9 @@ public class ClientConnection extends Thread {
 		    	TimeUnit.MILLISECONDS.sleep(500);
 		    	
 		    	ServerProperties p = Limbo.getInstance().getServerProperties();
-    			PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, p.getDefaultGamemode(), new String[] {p.getLevelName().toString()}, DimensionRegistry.getCodec(), p.getLevelDimension().toString(), p.getLevelName().toString(), 0, (byte) p.getMaxPlayers(), 8, p.isReducedDebugInfo(), true, false, false);
+    			PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, p.getDefaultGamemode(), Limbo.getInstance().getWorlds().stream().map(each -> new NamespacedKey(each.getName()).toString()).collect(Collectors.toList()).toArray(new String[Limbo.getInstance().getWorlds().size()]), DimensionRegistry.getCodec(), p.getWorldSpawn().getWorld(), 0, (byte) p.getMaxPlayers(), 8, p.isReducedDebugInfo(), true, false, false);
     			sendPacket(join);
+    			player.setGamemodeSilent(p.getDefaultGamemode());
 				
 				Location s = p.getWorldSpawn();
 				

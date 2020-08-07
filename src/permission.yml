@@ -3,6 +3,7 @@ groups:
     - limboserver.stop
     - limboserver.kick
     - limboserver.say
+    - limboserver.gamemode
   default:
     - limboserver.spawn
 

@@ -7,6 +7,8 @@ import java.nio.charset.StandardCharsets;
 
 import com.loohp.limbo.Utils.DataTypeIO;
 import com.loohp.limbo.Utils.GameMode;
+import com.loohp.limbo.Utils.NamespacedKey;
+import com.loohp.limbo.World.World;
 
 import net.querz.nbt.tag.CompoundTag;
 
@@ -28,7 +30,7 @@ public class PacketPlayOutLogin extends PacketOut {
 	private boolean isFlat;
 
 	public PacketPlayOutLogin(int entityId, boolean isHardcore, GameMode gamemode,
-			String[] worldsNames, CompoundTag dimensionCodec, String dimension, String worldName, long hashedSeed,
+			String[] worldsNames, CompoundTag dimensionCodec, World world, long hashedSeed,
 			byte maxPlayers, int viewDistance, boolean reducedDebugInfo, boolean enableRespawnScreen, boolean isDebug,
 			boolean isFlat) {
 		this.entityId = entityId;
@@ -36,8 +38,8 @@ public class PacketPlayOutLogin extends PacketOut {
 		this.gamemode = gamemode;
 		this.worldsNames = worldsNames;
 		this.dimensionCodec = dimensionCodec;
-		this.dimension = dimension;
-		this.worldName = worldName;
+		this.dimension = world.getEnvironment().getNamespacedKey().toString();
+		this.worldName = new NamespacedKey(world.getName()).toString();
 		this.hashedSeed = hashedSeed;
 		this.maxPlayers = maxPlayers;
 		this.viewDistance = viewDistance;

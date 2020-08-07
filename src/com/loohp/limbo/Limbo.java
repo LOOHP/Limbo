@@ -42,6 +42,7 @@ import com.loohp.limbo.Utils.ImageUtils;
 import com.loohp.limbo.Utils.NetworkUtils;
 import com.loohp.limbo.World.Schematic;
 import com.loohp.limbo.World.World;
+import com.loohp.limbo.World.World.Environment;
 
 import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.tag.CompoundTag;
@@ -285,7 +286,7 @@ public class Limbo {
 			return null;
 		}
 		
-		World world = Schematic.toWorld(properties.getLevelName().getKey(), (CompoundTag) NBTUtil.read(schem).getTag());
+		World world = Schematic.toWorld(properties.getLevelName().getKey(), Environment.fromNamespacedKey(properties.getLevelDimension()), (CompoundTag) NBTUtil.read(schem).getTag());
 		
 		console.sendMessage("Loaded world " + properties.getLevelName() + "!");
 		

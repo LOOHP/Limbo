@@ -34,7 +34,9 @@
     "PacketPlayOutDisconnect": "0x1A",
     "PacketPlayOutPluginMessaging": "0x17",
     "PacketPlayOutTabComplete": "0x10",
-    "PacketPlayOutDeclareCommands": "0x11"
+    "PacketPlayOutDeclareCommands": "0x11",
+    "PacketPlayOutRespawn": "0x3A",
+    "PacketPlayOutGameState": "0x1E"
   },
   "StatusIn": {
     "0x01": "PacketStatusInPing",

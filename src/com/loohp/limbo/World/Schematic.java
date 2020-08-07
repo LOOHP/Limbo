@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.loohp.limbo.Utils.SchematicConvertionUtils;
+import com.loohp.limbo.World.World.Environment;
 
 import net.querz.mca.Chunk;
 import net.querz.nbt.tag.CompoundTag;
@@ -13,7 +14,7 @@ import net.querz.nbt.tag.ListTag;
 
 public class Schematic {
 	
-	public static World toWorld(String name, CompoundTag nbt) {
+	public static World toWorld(String name, Environment environment, CompoundTag nbt) {
 		short width = nbt.getShort("Width");
 		short length = nbt.getShort("Length");
 		short height = nbt.getShort("Height");
@@ -25,7 +26,7 @@ public class Schematic {
 			mapping.put(palette.getInt(key), key);
 		}
 		
-		World world = new World(name, width, length);
+		World world = new World(name, width, length, environment);
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				for (int z = 0; z < length; z++) {

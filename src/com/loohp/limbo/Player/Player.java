@@ -9,7 +9,10 @@ import com.loohp.limbo.Events.PlayerChatEvent;
 import com.loohp.limbo.Location.Location;
 import com.loohp.limbo.Server.ClientConnection;
 import com.loohp.limbo.Server.Packets.PacketPlayOutChat;
+import com.loohp.limbo.Server.Packets.PacketPlayOutGameState;
 import com.loohp.limbo.Server.Packets.PacketPlayOutPositionAndLook;
+import com.loohp.limbo.Server.Packets.PacketPlayOutRespawn;
+import com.loohp.limbo.Utils.GameMode;
 import com.loohp.limbo.World.World;
 
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -22,6 +25,7 @@ public class Player implements CommandSender {
 
 	private final String username;
 	private final UUID uuid;
+	private GameMode gamemode;
 	
 	private int entityId;
 
@@ -35,10 +39,32 @@ public class Player implements CommandSender {
 		this.location = location.clone();
 	}
 	
+	public GameMode getGamemode() {
+		return gamemode;
+	}
+
+	public void setGamemode(GameMode gamemode) {
+		if (!this.gamemode.equals(gamemode)) {
+			try {
+				PacketPlayOutGameState state = new PacketPlayOutGameState(3, gamemode.getId());
+				clientConnection.sendPacket(state);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		this.gamemode = gamemode;
+	}
+	
+	@Deprecated
+	public void setGamemodeSilent(GameMode gamemode) {
+		this.gamemode = gamemode;
+	}
+
 	public World getWorld() {
 		return location.clone().getWorld();
 	}
 
+	@Deprecated
 	public void setEntityId(int entityId) {
 		this.entityId = entityId;
 	}
@@ -77,8 +103,11 @@ public class Player implements CommandSender {
 
 	public void teleport(Location location) {
 		try {
-			PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(location.getX(),
-					location.getY(), location.getZ(), location.getYaw(), location.getPitch(), 1);
+			if (!this.location.getWorld().equals(location.getWorld())) {
+				PacketPlayOutRespawn respawn = new PacketPlayOutRespawn(location.getWorld(), 0, gamemode, false, false, true);
+				clientConnection.sendPacket(respawn);
+			}
+			PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch(), 1);
 			clientConnection.sendPacket(positionLook);
 		} catch (IOException e) {
 			e.printStackTrace();
