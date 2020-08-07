@@ -1,9 +1,13 @@
 package com.loohp.limbo;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -195,9 +199,17 @@ public class Limbo {
         permissionManager.loadDefaultPermissionFile(permissionFile);     
         
         eventsManager = new EventsManager();
-		
-		pluginFolder = new File("plugins");
-		pluginFolder.mkdirs();
+        
+        pluginFolder = new File("plugins");
+        pluginFolder.mkdirs();
+        
+        File defaultCommandsJar = new File(pluginFolder, "LimboDefaultCmd.jar");
+        defaultCommandsJar.delete();
+        System.out.println("Downloading limbo default commands module from github...");
+        ReadableByteChannel rbc = Channels.newChannel(new URL("https://github.com/LOOHP/Limbo/raw/master/modules/LimboDefaultCmd.jar").openStream());
+	    FileOutputStream fos = new FileOutputStream(defaultCommandsJar);
+	    fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+	    fos.close();
 		
 		pluginManager = new PluginManager(pluginFolder);
 		
