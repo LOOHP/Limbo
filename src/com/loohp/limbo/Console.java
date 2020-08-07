@@ -1,6 +1,8 @@
 package com.loohp.limbo;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,19 +12,54 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
-import com.loohp.limbo.Player.Player;
+import com.loohp.limbo.Commands.CommandSender;
 import com.loohp.limbo.Utils.CustomStringUtils;
 
-public class Console {
+import net.md_5.bungee.api.chat.BaseComponent;
+
+public class Console implements CommandSender {
 	
 	private InputStream in;
 	private PrintStream out;
+	@SuppressWarnings("unused")
+	private PrintStream err;
+	protected PrintStream logs;
 	
-	public Console(InputStream in, PrintStream out) {
+	private final String CONSOLE = "CONSOLE";
+	
+	public Console(InputStream in, PrintStream out, PrintStream err) throws FileNotFoundException {
+		String fileName = new SimpleDateFormat("yyyy'-'MM'-'dd'_'HH'-'mm'-'ss'_'zzz'.log'").format(new Date());
+        File dir = new File("logs");
+        dir.mkdirs();
+        File logs = new File(dir, fileName);
+        this.logs = new PrintStream(logs);
+        
+		System.setIn(in);
 		this.in = in;
-		System.setOut(new ConsoleOutputStream(out));
+		System.setOut(new ConsoleOutputStream(out, this.logs));
 		this.out = System.out;
+		System.setErr(new ConsoleErrorStream(err, this.logs));
+		this.err = System.err;
+	}
+	
+	public String getName() {
+		return CONSOLE;
+	}
+
+	@Override
+	public void sendMessage(BaseComponent component) {
+		sendMessage(new BaseComponent[] {component});
+	}
+	
+	@Override
+	public void sendMessage(BaseComponent[] component) {
+		sendMessage(String.join("", Arrays.asList(component).stream().map(each -> each.toLegacyText()).collect(Collectors.toList())));
+	}
+	
+	public boolean hasPermission(String permission) {
+		return Limbo.getInstance().getPermissionsManager().hasPermission(this, permission);
 	}
 	
 	public void sendMessage(String message) {
@@ -33,115 +70,199 @@ public class Console {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		while (true) {
 			try {
-				String[] input = CustomStringUtils.splitStringToArgs(reader.readLine());
-				
-				if (input[0].equalsIgnoreCase("stop")) {
-					Limbo.getInstance().stopServer();
-				} else if (input[0].equalsIgnoreCase("say")) {
-					if (input.length > 1) {
-						String message = "[Server] " + String.join(" ", Arrays.copyOfRange(input, 1, input.length));
-						sendMessage(message);
-						for (Player each : Limbo.getInstance().getPlayers()) {
-							each.sendMessage(message);
-						}
-					}
-				} else if (input[0].equalsIgnoreCase("kick")) {
-					String reason = "Disconnected!";
-					Player player = input.length > 1 ? Limbo.getInstance().getPlayer(input[1]) : null;
-					if (player != null) {
-						if (input.length < 2) {
-							player.disconnect();
-						} else {
-							reason = String.join(" ", Arrays.copyOfRange(input, 2, input.length));
-							player.disconnect(reason);
-						}
-						sendMessage("Kicked the player " + input[1] + " for the reason: " + reason);
-					} else {
-						sendMessage("Player is not online!");
-					}
-				}
+				String[] input = CustomStringUtils.splitStringToArgs(reader.readLine());				
+				Limbo.getInstance().dispatchCommand(this, input);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 	
-	public class ConsoleOutputStream extends PrintStream {
+	public static class ConsoleOutputStream extends PrintStream {
 		
-		public ConsoleOutputStream(OutputStream out) {
+		private PrintStream logs;
+		
+		public ConsoleOutputStream(OutputStream out, PrintStream logs) {
 	        super(out);
+	        this.logs = logs;
 	    }
 
 		@Override
 		public PrintStream printf(Locale l, String format, Object... args) {
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			return super.printf(l, "[" + date + "] " + format, args);
+			logs.printf(l, "[" + date + " INFO]" + format, args);
+			return super.printf(l, "[" + date + " INFO]" + format, args);
 		}
 
 		@Override
 		public PrintStream printf(String format, Object... args) {
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			return super.printf("[" + date + "] " + format, args);
+			logs.printf("[" + date + " INFO]" + format, args);
+			return super.printf("[" + date + " INFO]" + format, args);
 		}
 
 		@Override
 		public void println() {
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-	        super.println("[" + date + "] ");
+			logs.println("[" + date + " INFO]");
+	        super.println("[" + date + " INFO]");
 		}
 
 		@Override
 		public void println(boolean x) {
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-	        super.println("[" + date + "] " + x);
+			logs.println("[" + date + " INFO]" + x);
+	        super.println("[" + date + " INFO]" + x);
 		}
 
 		@Override
 		public void println(char x) {
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-	        super.println("[" + date + "] " + x);
+			logs.println("[" + date + " INFO]" + x);
+	        super.println("[" + date + " INFO]" + x);
 		}
 
 		@Override
 		public void println(char[] x) {
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-	        super.println("[" + date + "] " + String.valueOf(x));
+			logs.println("[" + date + " INFO]" + String.valueOf(x));
+	        super.println("[" + date + " INFO]" + String.valueOf(x));
 		}
 
 		@Override
 		public void println(double x) {
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-	        super.println("[" + date + "] " + x);
+			logs.println("[" + date + " INFO]" + x);
+	        super.println("[" + date + " INFO]" + x);
 		}
 
 		@Override
 		public void println(float x) {
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-	        super.println("[" + date + "] " + x);
+			logs.println("[" + date + " INFO]" + x);
+	        super.println("[" + date + " INFO]" + x);
 		}
 
 		@Override
 		public void println(int x) {
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-	        super.println("[" + date + "] " + x);
+			logs.println("[" + date + " INFO]" + x);
+	        super.println("[" + date + " INFO]" + x);
 		}
 
 		@Override
 		public void println(long x) {
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-	        super.println("[" + date + "] " + x);
+			logs.println("[" + date + " INFO]" + x);
+	        super.println("[" + date + " INFO]" + x);
 		}
 
 		@Override
 		public void println(Object x) {
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-	        super.println("[" + date + "] " + x);
+			logs.println("[" + date + " INFO]" + x);
+	        super.println("[" + date + " INFO]" + x);
 		}
 
 	    @Override
 	    public void println(String string) {
 	    	String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-	        super.println("[" + date + "] " + string);
+	    	logs.println("[" + date + " INFO] " + string);
+	        super.println("[" + date + " INFO] " + string);
+	    }
+	}
+	
+	public static class ConsoleErrorStream extends PrintStream {
+		
+		private PrintStream logs;
+		
+		public ConsoleErrorStream(OutputStream out, PrintStream logs) {
+	        super(out);
+	        this.logs = logs;
+	    }
+
+		@Override
+		public PrintStream printf(Locale l, String format, Object... args) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+			logs.printf(l, "[" + date + " Error]" + format, args);
+			return super.printf(l, "[" + date + " Error]" + format, args);
+		}
+
+		@Override
+		public PrintStream printf(String format, Object... args) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+			logs.printf("[" + date + " Error]" + format, args);
+			return super.printf("[" + date + " Error]" + format, args);
+		}
+
+		@Override
+		public void println() {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+			logs.println("[" + date + " Error]");
+	        super.println("[" + date + " Error]");
+		}
+
+		@Override
+		public void println(boolean x) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+			logs.println("[" + date + " Error]" + x);
+	        super.println("[" + date + " Error]" + x);
+		}
+
+		@Override
+		public void println(char x) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+			logs.println("[" + date + " Error]" + x);
+	        super.println("[" + date + " Error]" + x);
+		}
+
+		@Override
+		public void println(char[] x) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+			logs.println("[" + date + " Error]" + String.valueOf(x));
+	        super.println("[" + date + " Error]" + String.valueOf(x));
+		}
+
+		@Override
+		public void println(double x) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+			logs.println("[" + date + " Error]" + x);
+	        super.println("[" + date + " Error]" + x);
+		}
+
+		@Override
+		public void println(float x) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+			logs.println("[" + date + " Error]" + x);
+	        super.println("[" + date + " Error]" + x);
+		}
+
+		@Override
+		public void println(int x) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+			logs.println("[" + date + " Error]" + x);
+	        super.println("[" + date + " Error]" + x);
+		}
+
+		@Override
+		public void println(long x) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+			logs.println("[" + date + " Error]" + x);
+	        super.println("[" + date + " Error]" + x);
+		}
+
+		@Override
+		public void println(Object x) {
+			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+			logs.println("[" + date + " Error]" + x);
+	        super.println("[" + date + " Error]" + x);
+		}
+
+	    @Override
+	    public void println(String string) {
+	    	String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+	    	logs.println("[" + date + " Error] " + string);
+	        super.println("[" + date + " Error] " + string);
 	    }
 	}
 

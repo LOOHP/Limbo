@@ -1,0 +1,11 @@
+groups:
+  admin:
+    - limboserver.stop
+    - limboserver.kick
+    - limboserver.say
+  default:
+    - limboserver.spawn
+
+players:
+  LOOHP: 
+    - admin

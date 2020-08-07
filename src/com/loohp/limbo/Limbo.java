@@ -19,13 +19,19 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.loohp.limbo.Commands.CommandSender;
+import com.loohp.limbo.Events.EventsManager;
 import com.loohp.limbo.File.ServerProperties;
 import com.loohp.limbo.Location.Location;
+import com.loohp.limbo.Permissions.PermissionsManager;
 import com.loohp.limbo.Player.Player;
+import com.loohp.limbo.Plugins.LimboPlugin;
+import com.loohp.limbo.Plugins.PluginManager;
 import com.loohp.limbo.Server.ServerConnection;
 import com.loohp.limbo.Server.Packets.Packet;
 import com.loohp.limbo.Server.Packets.PacketIn;
 import com.loohp.limbo.Server.Packets.PacketOut;
+import com.loohp.limbo.Utils.CustomStringUtils;
 import com.loohp.limbo.Utils.ImageUtils;
 import com.loohp.limbo.Utils.NetworkUtils;
 import com.loohp.limbo.World.Schematic;
@@ -57,13 +63,18 @@ public class Limbo {
 	
 	private ServerProperties properties;
 	
-	public AtomicInteger entityCount = new AtomicInteger();
+	private PluginManager pluginManager;
+	private EventsManager eventsManager;
+	private PermissionsManager permissionManager;
+	private File pluginFolder;
+	
+	public AtomicInteger entityIdCount = new AtomicInteger();
 	
 	@SuppressWarnings("unchecked")
 	public Limbo() throws IOException, ParseException, NumberFormatException, ClassNotFoundException {
 		instance = this;
 		
-		console = new Console(System.in, System.out);
+		console = new Console(System.in, System.out, System.err);
 		
 		String spName = "server.properties";
         File sp = new File(spName);
@@ -170,11 +181,52 @@ public class Limbo {
 			System.exit(2);
 		}
 		
+		String permissionName = "permission.yml";
+        File permissionFile = new File(permissionName);
+        if (!permissionFile.exists()) {
+        	try (InputStream in = getClass().getClassLoader().getResourceAsStream(permissionName)) {
+                Files.copy(in, permissionFile.toPath());
+            } catch (IOException e) {
+            	e.printStackTrace();
+            }
+        }
+        
+        permissionManager = new PermissionsManager();
+        permissionManager.loadDefaultPermissionFile(permissionFile);     
+        
+        eventsManager = new EventsManager();
+		
+		pluginFolder = new File("plugins");
+		pluginFolder.mkdirs();
+		
+		pluginManager = new PluginManager(pluginFolder);
+		
+		for (LimboPlugin plugin : Limbo.getInstance().getPluginManager().getPlugins()) {
+			console.sendMessage("Enabling plugin " + plugin.getName() + " " + plugin.getInfo().getVersion());
+			plugin.onEnable();
+		}
+		
 		server = new ServerConnection(properties.getServerIp(), properties.getServerPort());
 		
 		console.run();
 	}
 	
+	public EventsManager getEventsManager() {
+		return eventsManager;
+	}
+	
+	public PermissionsManager getPermissionsManager() {
+		return permissionManager;
+	}
+	
+	public File getPluginFolder() {
+		return pluginFolder;
+	}
+	
+	public PluginManager getPluginManager() {
+		return pluginManager;
+	}
+
 	private World loadDefaultWorld() throws IOException {
 		console.sendMessage("Loading world " + properties.getLevelName() + " with the schematic file " + properties.getSchemFileName() + " ...");
 		
@@ -260,7 +312,13 @@ public class Limbo {
 	}
 	
 	public void stopServer() {
-		Limbo.getInstance().getConsole().sendMessage("Stopping Server...");
+		console.sendMessage("Stopping Server...");
+		
+		for (LimboPlugin plugin : Limbo.getInstance().getPluginManager().getPlugins()) {
+			console.sendMessage("Disabling plugin " + plugin.getName() + " " + plugin.getInfo().getVersion());
+			plugin.onDisable();
+		}
+		
 		for (Player player : getPlayers()) {
 			player.disconnect("Server closed");
 		}
@@ -271,7 +329,34 @@ public class Limbo {
 				e.printStackTrace();
 			}
 		}
+		console.logs.close();
 		System.exit(0);
+	}
+	
+	public int getNextEntityId() {
+		if (entityIdCount.get() == Integer.MAX_VALUE) {
+			return entityIdCount.getAndSet(0);
+		} else {
+			return entityIdCount.getAndIncrement();
+		}
+	}
+	
+	public void dispatchCommand(CommandSender sender, String str) {
+		String[] command;
+		if (str.startsWith("/")) {
+			command = CustomStringUtils.splitStringToArgs(str.substring(1));
+		} else {
+			command = CustomStringUtils.splitStringToArgs(str);
+		}
+		dispatchCommand(sender, command);
+	}
+	
+	public void dispatchCommand(CommandSender sender, String... args) {
+		try {
+			Limbo.getInstance().getPluginManager().fireExecutors(sender, args);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

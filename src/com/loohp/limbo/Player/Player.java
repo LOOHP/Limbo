@@ -3,6 +3,9 @@ package com.loohp.limbo.Player;
 import java.io.IOException;
 import java.util.UUID;
 
+import com.loohp.limbo.Limbo;
+import com.loohp.limbo.Commands.CommandSender;
+import com.loohp.limbo.Events.PlayerChatEvent;
 import com.loohp.limbo.Location.Location;
 import com.loohp.limbo.Server.ClientConnection;
 import com.loohp.limbo.Server.Packets.PacketPlayOutChat;
@@ -13,7 +16,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 
-public class Player {
+public class Player implements CommandSender {
 
 	public final ClientConnection clientConnection;
 
@@ -59,6 +62,10 @@ public class Player {
 	public UUID getUUID() {
 		return uuid;
 	}
+	
+	public boolean hasPermission(String permission) {
+		return Limbo.getInstance().getPermissionsManager().hasPermission(this, permission);
+	}
 
 	public void sendMessage(String message) {
 		sendMessage(TextComponent.fromLegacyText(message));
@@ -78,6 +85,7 @@ public class Player {
 		}
 	}
 
+	@Override
 	public void sendMessage(BaseComponent[] component) {
 		try {
 			PacketPlayOutChat chat = new PacketPlayOutChat(ComponentSerializer.toString(component), 0, new UUID(0, 0));
@@ -101,6 +109,18 @@ public class Player {
 	
 	public void disconnect(BaseComponent[] reason) {
 		clientConnection.disconnect(reason);
+	}
+	
+	public void chat(String message) {
+		String prefix = "<" + username + "> ";
+		PlayerChatEvent event = (PlayerChatEvent) Limbo.getInstance().getEventsManager().callEvent(new PlayerChatEvent(this, prefix, message, false));
+		if (!event.isCancelled()) {
+			String chat = event.getPrefix() + event.getMessage();
+			Limbo.getInstance().getConsole().sendMessage(chat);
+			for (Player each : Limbo.getInstance().getPlayers()) {
+				each.sendMessage(chat);
+			}
+		}
 	}
 
 }

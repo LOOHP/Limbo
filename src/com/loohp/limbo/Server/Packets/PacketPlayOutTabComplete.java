@@ -22,6 +22,7 @@ public class PacketPlayOutTabComplete extends PacketOut {
 		this.id = id;
 		this.start = start;
 		this.length = length;
+		this.matches = matches;
 	}
 
 	public int getId() {
