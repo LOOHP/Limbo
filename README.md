@@ -11,5 +11,5 @@ Put the world schem file in the same folder as the server jar file and configura
 ***
 Demo Limbo Server
 ```
-demo.limbo.loohpjames.com
+IP: demo.limbo.loohpjames.com
 ```
