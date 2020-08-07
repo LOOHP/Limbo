@@ -8,3 +8,8 @@ java -jar Limbo.jar
 ```
 
 Put the world schem file in the same folder as the server jar file and configurate the `server.properties` file to your needs 
+***
+Demo Limbo Server
+```
+IP: demo.limbo.loohpjames.com
+```
