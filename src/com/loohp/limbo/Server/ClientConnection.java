@@ -18,6 +18,7 @@ import com.loohp.limbo.Limbo;
 import com.loohp.limbo.Events.PlayerJoinEvent;
 import com.loohp.limbo.Events.PlayerLoginEvent;
 import com.loohp.limbo.Events.PlayerQuitEvent;
+import com.loohp.limbo.Events.StatusPingEvent;
 import com.loohp.limbo.File.ServerProperties;
 import com.loohp.limbo.Location.Location;
 import com.loohp.limbo.Player.Player;
@@ -71,6 +72,7 @@ import net.querz.mca.Chunk;
 public class ClientConnection extends Thread {
 	
 	public enum ClientState {
+		LEGACY,
 		HANDSHAKE,
 		STATUS,
 		LOGIN,
@@ -164,10 +166,26 @@ public class ClientConnection extends Thread {
     		client_socket.setKeepAlive(true);
     		input = new DataInputStream(client_socket.getInputStream());
     		output = new DataOutputStream(client_socket.getOutputStream());
-		    DataTypeIO.readVarInt(input);
+		    int handShakeSize = DataTypeIO.readVarInt(input);
+
+		    //legacy ping
+		    if (handShakeSize == 0xFE) {
+		    	state = ClientState.LEGACY;			    
+		    	output.writeByte(255);
+		    	ServerProperties p = Limbo.getInstance().getServerProperties();	
+		    	StatusPingEvent event = (StatusPingEvent) Limbo.getInstance().getEventsManager().callEvent(new StatusPingEvent(this, p.getVersionString(), p.getProtocol(), ComponentSerializer.parse(p.getMotdJson()), p.getMaxPlayers(), Limbo.getInstance().getPlayers().size(), p.getFavicon().orElse(null)));
+				String response = Limbo.getInstance().buildLegacyPingResponse(event.getVersion(), event.getMotd(), event.getMaxPlayers(), event.getPlayersOnline());	
+				System.out.println(response);
+				byte[] bytes = response.getBytes(StandardCharsets.UTF_16BE);
+				output.writeShort(response.length());
+				output.write(bytes);
+				
+				client_socket.close();
+				state = ClientState.DISCONNECTED;
+		    }
 		    
-		    //int handShakeId = DataTypeIO.readVarInt(input);
-		    DataTypeIO.readVarInt(input);
+		    @SuppressWarnings("unused")
+			int handShakeId = DataTypeIO.readVarInt(input);
 		    
 		    PacketHandshakingIn handshake = new PacketHandshakingIn(input);
 		    
@@ -188,7 +206,9 @@ public class ClientConnection extends Thread {
 					} else if (packetType.equals(PacketStatusInRequest.class)) {
 						String str = client_socket.getInetAddress().getHostName() + ":" + client_socket.getPort();
 						Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Handshake Status has pinged");
-						PacketStatusOutResponse packet = new PacketStatusOutResponse(Limbo.getInstance().getServerListResponseJson());
+						ServerProperties p = Limbo.getInstance().getServerProperties();						
+						StatusPingEvent event = (StatusPingEvent) Limbo.getInstance().getEventsManager().callEvent(new StatusPingEvent(this, p.getVersionString(), p.getProtocol(), ComponentSerializer.parse(p.getMotdJson()), p.getMaxPlayers(), Limbo.getInstance().getPlayers().size(), p.getFavicon().orElse(null)));												
+						PacketStatusOutResponse packet = new PacketStatusOutResponse(Limbo.getInstance().buildServerListResponseJson(event.getVersion(), event.getProtocol(), event.getMotd(), event.getMaxPlayers(), event.getPlayersOnline(), event.getFavicon()));
 						sendPacket(packet);
 					} else if (packetType.equals(PacketStatusInPing.class)) {
 						PacketStatusInPing ping = new PacketStatusInPing(input);
