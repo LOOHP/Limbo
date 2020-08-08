@@ -1,7 +1,6 @@
 package com.loohp.limbo;
 
 import java.awt.GraphicsEnvironment;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -12,25 +11,19 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.loohp.limbo.Commands.CommandSender;
 import com.loohp.limbo.Events.EventsManager;
 import com.loohp.limbo.File.ServerProperties;
@@ -51,8 +44,6 @@ import com.loohp.limbo.World.Schematic;
 import com.loohp.limbo.World.World;
 import com.loohp.limbo.World.World.Environment;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.tag.CompoundTag;
 
@@ -349,48 +340,22 @@ public class Limbo {
 		return null;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public String buildServerListResponseJson(String version, int protocol, BaseComponent[] motd, int maxPlayers, int playersOnline, BufferedImage favicon) throws IOException {
-		JSONObject json = new JSONObject();
-
-		JSONObject versionJson = new JSONObject();
-		versionJson.put("name", version);
-		versionJson.put("protocol", protocol);
-		json.put("version", versionJson);
+	public String getServerListResponseJson() throws IOException {
+		String base = ServerProperties.JSON_BASE_RESPONSE;
+		base = base.replace("%VERSION%", properties.getVersionString());
+		base = base.replace("%PROTOCOL%", String.valueOf(properties.getProtocol()));
+		base = base.replace("%MOTD%", properties.getMotdJson());
+		base = base.replace("%MAXPLAYERS%", String.valueOf(properties.getMaxPlayers()));
+		base = base.replace("%ONLINECLIENTS%", String.valueOf(getPlayers().size()));
 		
-		JSONObject playersJson = new JSONObject();
-		playersJson.put("max", maxPlayers);
-		playersJson.put("online", playersOnline);
-		json.put("players", playersJson);
-		
-		json.put("description", "%MOTD%");
-		
-		if (favicon != null) {
-			if (favicon.getWidth() == 64 && favicon.getHeight() == 64) {
-				String base64 = "data:image/png;base64," + ImageUtils.imgToBase64String(favicon, "png");
-				json.put("favicon", base64);
-			} else {
-				console.sendMessage("Server List Favicon must be 64 x 64 in size!");
-			}
+		if (properties.getFavicon().isPresent()) {
+			String icon = "\"favicon\":\"data:image/png;base64," + ImageUtils.imgToBase64String(properties.getFavicon().get(), "png") + "\",";
+			base = base.replace("%FAVICON%", icon);
+		} else {
+			base = base.replace("%FAVICON%", "");
 		}
 		
-		JSONObject modInfoJson = new JSONObject();
-		modInfoJson.put("type", "FML");
-		modInfoJson.put("modList", new JSONArray());
-		json.put("modinfo", modInfoJson);
-		
-		
-		TreeMap<String, Object> treeMap = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
-    	treeMap.putAll(json);
-    	
-    	Gson g = new GsonBuilder().create();
-
-    	return g.toJson(treeMap).replace("\"%MOTD%\"", ComponentSerializer.toString(motd));
-	}
-	
-	public String buildLegacyPingResponse(String version, BaseComponent[] motd, int maxPlayers, int playersOnline) {
-		String begin = "§1";
-		return String.join("\00", begin, "127", version, String.join("", Arrays.asList(motd).stream().map(each -> each.toLegacyText()).collect(Collectors.toList())), String.valueOf(playersOnline), String.valueOf(maxPlayers));
+		return base;
 	}
 	
 	public void stopServer() {
