@@ -14,11 +14,5 @@ pipeline {
                 sh 'mvn clean install'
             }
         }
-
-        stage('Deliver') { 
-            steps {
-                sh './jenkins/scripts/deliver.sh' 
-            }
-        }
     }
 }
