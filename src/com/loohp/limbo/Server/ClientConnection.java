@@ -280,7 +280,7 @@ public class ClientConnection extends Thread {
 		    	TimeUnit.MILLISECONDS.sleep(500);
 		    	
 		    	ServerProperties p = Limbo.getInstance().getServerProperties();
-    			PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, p.getDefaultGamemode(), Limbo.getInstance().getWorlds().stream().map(each -> new NamespacedKey(each.getName()).toString()).collect(Collectors.toList()).toArray(new String[Limbo.getInstance().getWorlds().size()]), DimensionRegistry.getCodec(), p.getWorldSpawn().getWorld(), 0, (byte) p.getMaxPlayers(), 8, p.isReducedDebugInfo(), true, false, false);
+    			PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, p.getDefaultGamemode(), Limbo.getInstance().getWorlds().stream().map(each -> new NamespacedKey(each.getName()).toString()).collect(Collectors.toList()).toArray(new String[Limbo.getInstance().getWorlds().size()]), DimensionRegistry.getCodec(), p.getWorldSpawn().getWorld(), 0, (byte) p.getMaxPlayers(), 8, p.isReducedDebugInfo(), true, false, true);
     			sendPacket(join);
     			player.setGamemodeSilent(p.getDefaultGamemode());
 				
@@ -294,7 +294,7 @@ public class ClientConnection extends Thread {
 					for (int z = 0; z < world.getChunks()[x].length; z++) {
 						Chunk chunk = world.getChunks()[x][z];
 						if (chunk != null) {
-							PacketPlayOutMapChunk chunkdata = new PacketPlayOutMapChunk(x, z, chunk);
+							PacketPlayOutMapChunk chunkdata = new PacketPlayOutMapChunk(x, z, chunk, world.getEnvironment());
 							sendPacket(chunkdata);
 							//System.out.println(x + ", " + z);
 						}

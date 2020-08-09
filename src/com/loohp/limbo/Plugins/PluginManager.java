@@ -40,7 +40,7 @@ public class PluginManager {
 							break;
 						}
 						String name = entry.getName();
-						if (name.endsWith("plugin.yml")) {
+						if (name.endsWith("plugin.yml") || name.endsWith("limbo.yml")) {
 							found = true;
 							
 							FileConfiguration pluginYaml = new FileConfiguration(zip);

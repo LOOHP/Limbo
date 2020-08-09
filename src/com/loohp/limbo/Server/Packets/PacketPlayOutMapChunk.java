@@ -8,6 +8,7 @@ import java.util.Iterator;
 import com.loohp.limbo.Utils.ChunkDataUtils;
 import com.loohp.limbo.Utils.DataTypeIO;
 import com.loohp.limbo.Utils.GeneratedDataUtils;
+import com.loohp.limbo.World.World.Environment;
 
 import net.querz.mca.Chunk;
 import net.querz.mca.Section;
@@ -19,11 +20,18 @@ public class PacketPlayOutMapChunk extends PacketOut {
 	private int chunkX;
 	private int chunkZ;
 	private Chunk chunk;
-
-	public PacketPlayOutMapChunk(int chunkX, int chunkZ, Chunk chunk) {
+	private Environment environment;
+	
+	public PacketPlayOutMapChunk(int chunkX, int chunkZ, Chunk chunk, Environment environment) {
 		this.chunkX = chunkX;
 		this.chunkZ = chunkZ;
 		this.chunk = chunk;
+		this.environment = environment;
+	}
+	
+	@Deprecated
+	public PacketPlayOutMapChunk(int chunkX, int chunkZ, Chunk chunk) {
+		this(chunkZ, chunkZ, chunk, Environment.NORMAL);
 	}
 
 	public Chunk getChunk() {
@@ -38,6 +46,10 @@ public class PacketPlayOutMapChunk extends PacketOut {
 		return chunkZ;
 	}
 	
+	public Environment getEnvironment() {
+		return environment;
+	}
+
 	@Override
 	public byte[] serializePacket() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -61,8 +73,21 @@ public class PacketPlayOutMapChunk extends PacketOut {
 		//for (int i : chunk.getBiomes()) {
 		//	output.writeInt(i);
 		//}
+		int biome;
+		switch (environment) {
+		case END:
+			biome = 9; //the_end
+			break;
+		case NETHER:
+			biome = 8; //nether_waste
+			break;
+		case NORMAL:
+		default:
+			biome = 1; //plains
+			break;
+		}
 		for (int i = 0; i < 1024; i++) {
-			output.writeInt(127);
+			output.writeInt(biome);
 		}
 		
 		ByteArrayOutputStream dataBuffer = new ByteArrayOutputStream();
