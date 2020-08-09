@@ -78,7 +78,7 @@ public class Console implements CommandSender {
 		out.println(message);
 	}
 	
-	public void run() {
+	protected void run() {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		while (true) {
 			try {

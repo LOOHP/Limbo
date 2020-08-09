@@ -172,10 +172,11 @@ public class ClientConnection extends Thread {
 		    if (handShakeSize == 0xFE) {
 		    	state = ClientState.LEGACY;			    
 		    	output.writeByte(255);
+		    	String str = client_socket.getInetAddress().getHostName() + ":" + client_socket.getPort();
+		    	Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Legacy Status has pinged");
 		    	ServerProperties p = Limbo.getInstance().getServerProperties();	
 		    	StatusPingEvent event = (StatusPingEvent) Limbo.getInstance().getEventsManager().callEvent(new StatusPingEvent(this, p.getVersionString(), p.getProtocol(), ComponentSerializer.parse(p.getMotdJson()), p.getMaxPlayers(), Limbo.getInstance().getPlayers().size(), p.getFavicon().orElse(null)));
-				String response = Limbo.getInstance().buildLegacyPingResponse(event.getVersion(), event.getMotd(), event.getMaxPlayers(), event.getPlayersOnline());	
-				System.out.println(response);
+				String response = Limbo.getInstance().buildLegacyPingResponse(event.getVersion(), event.getMotd(), event.getMaxPlayers(), event.getPlayersOnline());
 				byte[] bytes = response.getBytes(StandardCharsets.UTF_16BE);
 				output.writeShort(response.length());
 				output.write(bytes);
