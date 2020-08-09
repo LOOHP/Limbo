@@ -2,6 +2,7 @@ package com.loohp.limbo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import com.loohp.limbo.Utils.DataTypeIO;
 
 public class DeclareCommands {
 	
-	public static PacketPlayOutDeclareCommands getDeclareCommandsPacket(CommandSender sender) throws Exception {
+	public static PacketPlayOutDeclareCommands getDeclareCommandsPacket(CommandSender sender) throws IOException {
 		List<String> commands = Limbo.getInstance().getPluginManager().getTabOptions(sender, new String[0]);
 		
 		if (commands.isEmpty()) {

@@ -94,14 +94,14 @@ public class PluginManager {
 		}
 	}
 
-	public List<String> getTabOptions(CommandSender sender, String[] args) throws Exception {
+	public List<String> getTabOptions(CommandSender sender, String[] args) {
 		List<String> options = new ArrayList<>();
 		for (Executor entry : executors) {
 			if (entry.tab.isPresent()) {
 				try {
 					options.addAll(entry.tab.get().tabComplete(sender, args));
 				} catch (Exception e) {
-					System.err.println("Error while passing tab completion \"" + args[0] + "\" to the plugin \"" + entry.plugin.getName() + "\"");
+					System.err.println("Error while passing tab completion to the plugin \"" + entry.plugin.getName() + "\"");
 					e.printStackTrace();
 				}
 			}
