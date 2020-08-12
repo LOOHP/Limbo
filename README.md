@@ -1,6 +1,6 @@
 # Limbo
 [![Build Status](http://ci.loohpjames.com/job/Limbo/badge/icon)](http://ci.loohpjames.com/job/Limbo/)
-## Standalone Limbo Minecraft Server 1.16.1
+## Standalone Limbo Minecraft Server (Currently 1.16.2)
 
 ### Starting the server
 Use the following command lines to start the limbo server just like any other minecraft server
