@@ -10,7 +10,7 @@ public class PacketPlayOutPlayerAbilities extends PacketOut {
 		INVULNERABLE(0x01),
 		FLY(0x02),
 		ALLOW_FLYING(0x04),
-		INSTANT_BREAK(0x08);
+		CREATIVE(0x08);
 		
 		int bitvalue;
 		

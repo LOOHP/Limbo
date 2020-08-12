@@ -7,8 +7,10 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -56,6 +58,7 @@ import com.loohp.limbo.Server.Packets.PacketStatusOutPong;
 import com.loohp.limbo.Server.Packets.PacketStatusOutResponse;
 import com.loohp.limbo.Utils.CustomStringUtils;
 import com.loohp.limbo.Utils.DataTypeIO;
+import com.loohp.limbo.Utils.GameMode;
 import com.loohp.limbo.Utils.MojangAPIUtils;
 import com.loohp.limbo.Utils.MojangAPIUtils.SkinResponse;
 import com.loohp.limbo.Utils.NamespacedKey;
@@ -317,12 +320,14 @@ public class ClientConnection extends Thread {
 				PacketPlayOutShowPlayerSkins show = new PacketPlayOutShowPlayerSkins(player.getEntityId());
 				sendPacket(show);
 				
-				PacketPlayOutPlayerAbilities abilities;
+				Set<PlayerAbilityFlags> flags = new HashSet<>();
 				if (p.isAllowFlight()) {
-					abilities = new PacketPlayOutPlayerAbilities(0.05F, 0.1F, PlayerAbilityFlags.ALLOW_FLYING);
-				} else {
-					abilities = new PacketPlayOutPlayerAbilities(0.05F, 0.1F);
+					flags.add(PlayerAbilityFlags.FLY);
 				}
+				if (player.getGamemode().equals(GameMode.CREATIVE)) {
+					flags.add(PlayerAbilityFlags.CREATIVE);
+				}
+				PacketPlayOutPlayerAbilities abilities = new PacketPlayOutPlayerAbilities(0.05F, 0.1F, flags.toArray(new PlayerAbilityFlags[flags.size()]));
 				sendPacket(abilities);
 				
 				String str = client_socket.getInetAddress().getHostName() + ":" + client_socket.getPort() + "|" + player.getName();
