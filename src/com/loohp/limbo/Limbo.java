@@ -277,10 +277,6 @@ public class Limbo {
 		
 		console.run();
 	}
-	
-	public static boolean isNoGui() {
-		return noGui;
-	}
 
 	public String getServerImplementationVersion() {
 		return serverImplementationVersion;
@@ -290,23 +286,7 @@ public class Limbo {
 		return serverImplmentationProtocol;
 	}
 
-	public ServerConnection getServer() {
-		return server;
-	}
-
-	public Map<String, Player> getPlayersByName() {
-		return playersByName;
-	}
-
-	public Map<UUID, Player> getPlayersByUUID() {
-		return playersByUUID;
-	}
-
-	public ServerProperties getProperties() {
-		return properties;
-	}
-
-	public PermissionsManager getPermissionManager() {
+	public PermissionsManager getPermissionsManager() {
 		return permissionManager;
 	}
 
@@ -314,16 +294,8 @@ public class Limbo {
 		return internalDataFolder;
 	}
 
-	public AtomicInteger getEntityIdCount() {
-		return entityIdCount;
-	}
-
 	public EventsManager getEventsManager() {
 		return eventsManager;
-	}
-	
-	public PermissionsManager getPermissionsManager() {
-		return permissionManager;
 	}
 	
 	public File getPluginFolder() {
