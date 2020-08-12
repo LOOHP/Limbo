@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import com.loohp.limbo.Utils.DataTypeIO;
 import com.loohp.limbo.World.BlockPosition;
 
 public class PacketPlayOutSpawnPosition extends PacketOut {
@@ -23,10 +24,7 @@ public class PacketPlayOutSpawnPosition extends PacketOut {
 		
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(Packet.getPlayOut().get(getClass()));
-		int x = position.getX();
-		int y = position.getY();
-		int z = position.getZ();
-		output.writeLong(((x & 0x3FFFFFF) << 38) | ((z & 0x3FFFFFF) << 12) | (y & 0xFFF));
+		DataTypeIO.writeBlockPosition(output, position);
 		
 		return buffer.toByteArray();
 	}

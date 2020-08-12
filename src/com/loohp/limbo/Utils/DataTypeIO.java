@@ -7,11 +7,17 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.UUID;
 
+import com.loohp.limbo.World.BlockPosition;
+
 import net.querz.nbt.io.NBTOutputStream;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.Tag;
 
 public class DataTypeIO {
+	
+	public static void writeBlockPosition(DataOutputStream out, BlockPosition position) throws IOException {
+        out.writeLong(((position.getX() & 0x3FFFFFF) << 38) | ((position.getZ() & 0x3FFFFFF) << 12) | (position.getY() & 0xFFF));
+	}
 	
 	public static void writeUUID(DataOutputStream out, UUID uuid) throws IOException {
 		out.writeLong(uuid.getMostSignificantBits());

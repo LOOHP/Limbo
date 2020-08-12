@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>Limbo</groupId>
 	<artifactId>Limbo</artifactId>
-	<version>0.2.4-ALPHA</version>
+	<version>0.3.0-ALPHA</version>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<resources>
@@ -33,6 +33,9 @@
 							<classpathPrefix>lib/</classpathPrefix>
 							<mainClass>com.loohp.limbo.Limbo</mainClass>
 						</manifest>
+						<manifestEntries>
+							<Limbo-Version>${project.version}</Limbo-Version>
+						</manifestEntries>
 					</archive>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
@@ -50,7 +53,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>${project.artifactId}-${project.version}-1.16.1</finalName>
+		<finalName>${project.artifactId}-${project.version}-1.16.2</finalName>
 	</build>
 
 	<repositories>

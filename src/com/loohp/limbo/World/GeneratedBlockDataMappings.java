@@ -1,4 +1,4 @@
-package com.loohp.limbo.Utils;
+package com.loohp.limbo.World;
 
 import java.io.File;
 import java.io.FileReader;
@@ -17,13 +17,13 @@ import com.loohp.limbo.Limbo;
 
 import net.querz.nbt.tag.CompoundTag;
 
-public class GeneratedDataUtils {
+public class GeneratedBlockDataMappings {
 	
 	private static JSONObject globalPalette = new JSONObject();
 	
 	static {
 		String block = "blocks.json";
-        File file = new File(block);
+        File file = new File(Limbo.getInstance().getInternalDataFolder(), block);
         if (!file.exists()) {
         	try (InputStream in = Limbo.class.getClassLoader().getResourceAsStream(block)) {
                 Files.copy(in, file.toPath());

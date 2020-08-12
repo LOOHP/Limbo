@@ -1,7 +1,6 @@
 package com.loohp.limbo;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -38,8 +37,12 @@ public class Console implements CommandSender {
         File logs = new File(dir, fileName);
         this.logs = new PrintStream(logs);
         
-        System.setIn(in == null ? new ByteArrayInputStream(new byte[0]) : in);
-        this.in = System.in;
+        if (in != null) {
+        	System.setIn(in);
+        	this.in = System.in;
+        } else {
+        	this.in = null;
+        }
 		System.setOut(new ConsoleOutputStream(out == null ? new PrintStream(new PrintStream(new OutputStream() {
 			@Override
             public void write(int b) {
@@ -79,6 +82,9 @@ public class Console implements CommandSender {
 	}
 	
 	protected void run() {
+		if (in == null) {
+			return;
+		}
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		while (true) {
 			try {

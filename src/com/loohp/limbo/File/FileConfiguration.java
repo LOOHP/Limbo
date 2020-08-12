@@ -4,16 +4,33 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.representer.Representer;
+
+import com.loohp.limbo.Utils.YamlOrder;
 
 public class FileConfiguration {
 	
 	Map<String, Object> mapping;
+	String header;
 	
-	public FileConfiguration(File file) throws FileNotFoundException {
-		reloadConfig(new FileInputStream(file));
+	public FileConfiguration(File file) {
+		if (file.exists()) {
+			try {
+				reloadConfig(new FileInputStream(file));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		} else {
+			mapping = new LinkedHashMap<>();
+		}
 	}
 	
 	public FileConfiguration(InputStream input){
@@ -24,6 +41,10 @@ public class FileConfiguration {
 		Yaml yml = new Yaml();
 		mapping = yml.load(input);
 		return this;
+	}
+	
+	public void setHeader(String header) {
+		this.header = header;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -41,6 +62,44 @@ public class FileConfiguration {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> void set(String key, T value) {
+		String[] tree = key.split("\\.");
+		Map<String, Object> map = mapping;
+		for (int i = 0; i < tree.length - 1; i++) {
+			Map<String, Object> map1 = (Map<String, Object>) map.get(tree[i]);
+			if (map1 == null) {
+				map1 = new LinkedHashMap<>();
+				map.put(tree[i], map1);
+			}
+			map = map1;
+		}
+		if (value == null) {
+			map.put(tree[tree.length - 1], (T) value); 
+		} else {
+			map.remove(tree[tree.length - 1]);
+		}
+	}
+	
+	public void saveConfig(File file) throws FileNotFoundException, UnsupportedEncodingException {
+		DumperOptions options = new DumperOptions();
+        options.setIndent(2);
+        options.setPrettyFlow(true);
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        Representer customRepresenter = new Representer();
+        YamlOrder customProperty = new YamlOrder();
+        customRepresenter.setPropertyUtils(customProperty);
+		Yaml yaml = new Yaml(customRepresenter, options);
+		
+		PrintWriter pw = new PrintWriter(file, StandardCharsets.UTF_8.toString());
+		if (header != null) {
+			pw.println(header);
+		}
+		yaml.dump(mapping, pw);
+		pw.flush();
+		pw.close();
 	}
 
 }

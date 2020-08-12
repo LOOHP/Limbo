@@ -14,7 +14,7 @@ public class EventsManager {
 		listeners = new ArrayList<>();
 	}
 	
-	public Event callEvent(Event event) {
+	public <T extends Event> T callEvent(T event) {
 		for (EventPriority priority : EventPriority.getPrioritiesInOrder()) {
 			for (ListenerPair entry : listeners) {
 				Listener listener = entry.listener;

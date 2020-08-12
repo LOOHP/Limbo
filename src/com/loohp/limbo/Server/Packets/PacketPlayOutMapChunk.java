@@ -7,7 +7,7 @@ import java.util.Iterator;
 
 import com.loohp.limbo.Utils.ChunkDataUtils;
 import com.loohp.limbo.Utils.DataTypeIO;
-import com.loohp.limbo.Utils.GeneratedDataUtils;
+import com.loohp.limbo.World.GeneratedBlockDataMappings;
 import com.loohp.limbo.World.World.Environment;
 
 import net.querz.mca.Chunk;
@@ -60,7 +60,6 @@ public class PacketPlayOutMapChunk extends PacketOut {
 		output.writeInt(chunkX);
 		output.writeInt(chunkZ);
 		output.writeBoolean(true);
-		output.writeBoolean(true);
 		int bitmask = 0;
 		for (int i = 0; i < 16; i++) {
 			Section section = chunk.getSection(i);
@@ -70,9 +69,8 @@ public class PacketPlayOutMapChunk extends PacketOut {
 		}
 		DataTypeIO.writeVarInt(output, bitmask);
 		DataTypeIO.writeCompoundTag(output, chunk.getHeightMaps());
-		//for (int i : chunk.getBiomes()) {
-		//	output.writeInt(i);
-		//}
+		
+		DataTypeIO.writeVarInt(output, 1024);
 		int biome;
 		switch (environment) {
 		case END:
@@ -87,7 +85,7 @@ public class PacketPlayOutMapChunk extends PacketOut {
 			break;
 		}
 		for (int i = 0; i < 1024; i++) {
-			output.writeInt(biome);
+			DataTypeIO.writeVarInt(output, biome);
 		}
 		
 		ByteArrayOutputStream dataBuffer = new ByteArrayOutputStream();
@@ -127,7 +125,7 @@ public class PacketPlayOutMapChunk extends PacketOut {
 					counter = 0;
 					while (itr1.hasNext()) {
 						CompoundTag tag = itr1.next();
-						DataTypeIO.writeVarInt(dataOut, GeneratedDataUtils.getGlobalPaletteIDFromState(tag));
+						DataTypeIO.writeVarInt(dataOut, GeneratedBlockDataMappings.getGlobalPaletteIDFromState(tag));
 						//System.out.println(tag + " -> " + GeneratedDataUtils.getGlobalPaletteIDFromState(tag));
 					}
 				} else {

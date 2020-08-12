@@ -9,8 +9,10 @@ import com.loohp.limbo.Utils.DataTypeIO;
 import com.loohp.limbo.Utils.GameMode;
 import com.loohp.limbo.Utils.NamespacedKey;
 import com.loohp.limbo.World.World;
+import com.loohp.limbo.World.World.Environment;
 
 import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.ListTag;
 
 public class PacketPlayOutLogin extends PacketOut {
 	
@@ -19,7 +21,7 @@ public class PacketPlayOutLogin extends PacketOut {
 	private GameMode gamemode;
 	private String[] worldsNames;
 	private CompoundTag dimensionCodec;
-	private String dimension;
+	private Environment dimension;
 	private String worldName;
 	private long hashedSeed;
 	private byte maxPlayers;
@@ -38,7 +40,7 @@ public class PacketPlayOutLogin extends PacketOut {
 		this.gamemode = gamemode;
 		this.worldsNames = worldsNames;
 		this.dimensionCodec = dimensionCodec;
-		this.dimension = world.getEnvironment().getNamespacedKey().toString();
+		this.dimension = world.getEnvironment();
 		this.worldName = new NamespacedKey(world.getName()).toString();
 		this.hashedSeed = hashedSeed;
 		this.maxPlayers = maxPlayers;
@@ -69,7 +71,7 @@ public class PacketPlayOutLogin extends PacketOut {
 		return dimensionCodec;
 	}
 
-	public String getDimension() {
+	public Environment getDimension() {
 		return dimension;
 	}
 
@@ -112,21 +114,26 @@ public class PacketPlayOutLogin extends PacketOut {
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(Packet.getPlayOut().get(getClass()));
 		output.writeInt(entityId);
-		int i = gamemode.getId();
-        if (isHardcore) {
-            i |= 8;
-        }
-        output.writeByte((byte) i);
+		output.writeBoolean(isHardcore);
+        output.writeByte((byte) gamemode.getId());
 		output.writeByte((byte) gamemode.getId());
 		DataTypeIO.writeVarInt(output, worldsNames.length);
 		for (int u = 0; u < worldsNames.length; u++) {
 			DataTypeIO.writeString(output, worldsNames[u], StandardCharsets.UTF_8);
 		}
 		DataTypeIO.writeCompoundTag(output, dimensionCodec);
-		DataTypeIO.writeString(output, dimension, StandardCharsets.UTF_8);
+		CompoundTag tag = null;
+		ListTag<CompoundTag> list = dimensionCodec.getCompoundTag("minecraft:dimension_type").getListTag("value").asCompoundTagList();
+		for (CompoundTag each : list) {
+			if (each.getString("name").equals(dimension.getNamespacedKey().toString())) {
+				tag = each.getCompoundTag("element");
+				break;
+			}
+		}
+		DataTypeIO.writeCompoundTag(output, tag != null ? tag : list.get(0));
 		DataTypeIO.writeString(output, worldName, StandardCharsets.UTF_8);
 		output.writeLong(hashedSeed);
-		output.writeByte((byte) maxPlayers);
+		DataTypeIO.writeVarInt(output, maxPlayers);
 		DataTypeIO.writeVarInt(output, viewDistance);
 		output.writeBoolean(reducedDebugInfo);
 		output.writeBoolean(enableRespawnScreen);

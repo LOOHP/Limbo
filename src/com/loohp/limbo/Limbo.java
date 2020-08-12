@@ -96,6 +96,9 @@ public class Limbo {
 	
 	//===========================
 	
+	public final String serverImplementationVersion = "1.16.2";
+	public final int serverImplmentationProtocol = 751;
+	
 	private ServerConnection server;
 	private Console console;
 	
@@ -110,6 +113,8 @@ public class Limbo {
 	private PermissionsManager permissionManager;
 	private File pluginFolder;
 	
+	private File internalDataFolder;
+	
 	public AtomicInteger entityIdCount = new AtomicInteger();
 	
 	@SuppressWarnings("unchecked")
@@ -120,9 +125,10 @@ public class Limbo {
 			while (!GUI.loadFinish) {
 				TimeUnit.MILLISECONDS.sleep(500);
 			}
+			console = new Console(null, System.out, System.err);
+		} else {
+			console = new Console(System.in, System.out, System.err);
 		}
-		
-		console = new Console(System.in, System.out, System.err);
 		
 		String spName = "server.properties";
         File sp = new File(spName);
@@ -140,9 +146,14 @@ public class Limbo {
         } else {
         	console.sendMessage("Starting Limbo server in bungeecord mode!");
         }
+        
+        internalDataFolder = new File("internal_data");
+        if (!internalDataFolder.exists()) {
+        	internalDataFolder.mkdirs();
+        }
 		
         String mappingName = "mapping.json";
-        File mappingFile = new File(mappingName);
+        File mappingFile = new File(internalDataFolder, mappingName);
         if (!mappingFile.exists()) {
         	try (InputStream in = getClass().getClassLoader().getResourceAsStream(mappingName)) {
                 Files.copy(in, mappingFile.toPath());
@@ -249,7 +260,7 @@ public class Limbo {
         
         File defaultCommandsJar = new File(pluginFolder, "LimboDefaultCmd.jar");
         defaultCommandsJar.delete();
-        System.out.println("Downloading limbo default commands module from github...");
+        console.sendMessage("Downloading limbo default commands module from github...");
         ReadableByteChannel rbc = Channels.newChannel(new URL("https://github.com/LOOHP/Limbo/raw/master/modules/LimboDefaultCmd.jar").openStream());
 	    FileOutputStream fos = new FileOutputStream(defaultCommandsJar);
 	    fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
@@ -267,6 +278,46 @@ public class Limbo {
 		console.run();
 	}
 	
+	public static boolean isNoGui() {
+		return noGui;
+	}
+
+	public String getServerImplementationVersion() {
+		return serverImplementationVersion;
+	}
+
+	public int getServerImplmentationProtocol() {
+		return serverImplmentationProtocol;
+	}
+
+	public ServerConnection getServer() {
+		return server;
+	}
+
+	public Map<String, Player> getPlayersByName() {
+		return playersByName;
+	}
+
+	public Map<UUID, Player> getPlayersByUUID() {
+		return playersByUUID;
+	}
+
+	public ServerProperties getProperties() {
+		return properties;
+	}
+
+	public PermissionsManager getPermissionManager() {
+		return permissionManager;
+	}
+
+	public File getInternalDataFolder() {
+		return internalDataFolder;
+	}
+
+	public AtomicInteger getEntityIdCount() {
+		return entityIdCount;
+	}
+
 	public EventsManager getEventsManager() {
 		return eventsManager;
 	}

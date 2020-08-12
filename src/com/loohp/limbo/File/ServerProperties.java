@@ -42,7 +42,7 @@ public class ServerProperties {
 		Properties prop = new Properties();
 		prop.load(new FileInputStream(file));
 
-		protocol = 736;
+		protocol = Limbo.getInstance().serverImplmentationProtocol;
 
 		maxPlayers = Integer.parseInt(prop.getProperty("max-players"));
 		serverPort = Integer.parseInt(prop.getProperty("server-port"));
@@ -84,6 +84,10 @@ public class ServerProperties {
 		}
 
 		System.out.println("Loaded server.properties");
+	}
+	
+	public String getServerImplementationVersion() {
+		return Limbo.getInstance().serverImplementationVersion;
 	}
 
 	public boolean isBungeecord() {

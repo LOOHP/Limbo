@@ -13,6 +13,7 @@ import com.loohp.limbo.Server.Packets.PacketPlayOutGameState;
 import com.loohp.limbo.Server.Packets.PacketPlayOutPositionAndLook;
 import com.loohp.limbo.Server.Packets.PacketPlayOutRespawn;
 import com.loohp.limbo.Utils.GameMode;
+import com.loohp.limbo.World.DimensionRegistry;
 import com.loohp.limbo.World.World;
 
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -104,7 +105,7 @@ public class Player implements CommandSender {
 	public void teleport(Location location) {
 		try {
 			if (!this.location.getWorld().equals(location.getWorld())) {
-				PacketPlayOutRespawn respawn = new PacketPlayOutRespawn(location.getWorld(), 0, gamemode, false, false, true);
+				PacketPlayOutRespawn respawn = new PacketPlayOutRespawn(location.getWorld(), DimensionRegistry.getCodec(), 0, gamemode, false, false, true);
 				clientConnection.sendPacket(respawn);
 			}
 			PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch(), 1);
