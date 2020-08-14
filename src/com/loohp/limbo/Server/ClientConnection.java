@@ -63,7 +63,6 @@ import com.loohp.limbo.Utils.MojangAPIUtils;
 import com.loohp.limbo.Utils.MojangAPIUtils.SkinResponse;
 import com.loohp.limbo.Utils.NamespacedKey;
 import com.loohp.limbo.World.BlockPosition;
-import com.loohp.limbo.World.DimensionRegistry;
 import com.loohp.limbo.World.World;
 
 import net.md_5.bungee.api.ChatColor;
@@ -284,9 +283,9 @@ public class ClientConnection extends Thread {
 		    	TimeUnit.MILLISECONDS.sleep(500);
 		    	
 		    	ServerProperties p = Limbo.getInstance().getServerProperties();
-    			PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, p.getDefaultGamemode(), Limbo.getInstance().getWorlds().stream().map(each -> new NamespacedKey(each.getName()).toString()).collect(Collectors.toList()).toArray(new String[Limbo.getInstance().getWorlds().size()]), DimensionRegistry.getCodec(), p.getWorldSpawn().getWorld(), 0, (byte) p.getMaxPlayers(), 8, p.isReducedDebugInfo(), true, false, true);
+    			PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, p.getDefaultGamemode(), Limbo.getInstance().getWorlds().stream().map(each -> new NamespacedKey(each.getName()).toString()).collect(Collectors.toList()).toArray(new String[Limbo.getInstance().getWorlds().size()]), Limbo.getInstance().getDimensionRegistry().getCodec(), p.getWorldSpawn().getWorld(), 0, (byte) p.getMaxPlayers(), 8, p.isReducedDebugInfo(), true, false, true);
     			sendPacket(join);
-    			player.setGamemodeSilent(p.getDefaultGamemode());
+    			Limbo.getInstance().getUnsafe().setPlayerGameModeSilently(player, p.getDefaultGamemode());
 				
 				Location s = p.getWorldSpawn();
 				

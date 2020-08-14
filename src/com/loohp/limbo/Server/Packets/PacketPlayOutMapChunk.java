@@ -7,8 +7,8 @@ import java.util.Iterator;
 
 import com.loohp.limbo.Utils.ChunkDataUtils;
 import com.loohp.limbo.Utils.DataTypeIO;
+import com.loohp.limbo.World.Environment;
 import com.loohp.limbo.World.GeneratedBlockDataMappings;
-import com.loohp.limbo.World.World.Environment;
 
 import net.querz.mca.Chunk;
 import net.querz.mca.Section;
@@ -72,17 +72,14 @@ public class PacketPlayOutMapChunk extends PacketOut {
 		
 		DataTypeIO.writeVarInt(output, 1024);
 		int biome;
-		switch (environment) {
-		case END:
+		if (environment.equals(Environment.END)) {
 			biome = 9; //the_end
-			break;
-		case NETHER:
+		} else if (environment.equals(Environment.NETHER)) {
 			biome = 8; //nether_waste
-			break;
-		case NORMAL:
-		default:
+		} else if (environment.equals(Environment.NORMAL)) {
 			biome = 1; //plains
-			break;
+		} else {
+			biome = 1; //plains
 		}
 		for (int i = 0; i < 1024; i++) {
 			DataTypeIO.writeVarInt(output, biome);

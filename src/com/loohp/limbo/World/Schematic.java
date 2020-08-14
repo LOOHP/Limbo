@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.loohp.limbo.Utils.SchematicConvertionUtils;
-import com.loohp.limbo.World.World.Environment;
 
 import net.querz.mca.Chunk;
 import net.querz.nbt.tag.CompoundTag;

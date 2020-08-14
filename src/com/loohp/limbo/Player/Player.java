@@ -13,7 +13,6 @@ import com.loohp.limbo.Server.Packets.PacketPlayOutGameState;
 import com.loohp.limbo.Server.Packets.PacketPlayOutPositionAndLook;
 import com.loohp.limbo.Server.Packets.PacketPlayOutRespawn;
 import com.loohp.limbo.Utils.GameMode;
-import com.loohp.limbo.World.DimensionRegistry;
 import com.loohp.limbo.World.World;
 
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -26,9 +25,9 @@ public class Player implements CommandSender {
 
 	private final String username;
 	private final UUID uuid;
-	private GameMode gamemode;
+	protected GameMode gamemode;
 	
-	private int entityId;
+	protected int entityId;
 
 	private Location location;
 	
@@ -55,19 +54,9 @@ public class Player implements CommandSender {
 		}
 		this.gamemode = gamemode;
 	}
-	
-	@Deprecated
-	public void setGamemodeSilent(GameMode gamemode) {
-		this.gamemode = gamemode;
-	}
 
 	public World getWorld() {
 		return location.clone().getWorld();
-	}
-
-	@Deprecated
-	public void setEntityId(int entityId) {
-		this.entityId = entityId;
 	}
 	
 	public int getEntityId() {
@@ -105,7 +94,7 @@ public class Player implements CommandSender {
 	public void teleport(Location location) {
 		try {
 			if (!this.location.getWorld().equals(location.getWorld())) {
-				PacketPlayOutRespawn respawn = new PacketPlayOutRespawn(location.getWorld(), DimensionRegistry.getCodec(), 0, gamemode, false, false, true);
+				PacketPlayOutRespawn respawn = new PacketPlayOutRespawn(location.getWorld(), Limbo.getInstance().getDimensionRegistry().getCodec(), 0, gamemode, false, false, true);
 				clientConnection.sendPacket(respawn);
 			}
 			PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch(), 1);

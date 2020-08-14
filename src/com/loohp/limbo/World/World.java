@@ -1,6 +1,7 @@
 package com.loohp.limbo.World;
 
-import com.loohp.limbo.Utils.NamespacedKey;
+import java.util.Arrays;
+
 import com.loohp.limbo.Utils.SchematicConvertionUtils;
 
 import net.querz.mca.Chunk;
@@ -42,7 +43,7 @@ public class World {
 		}
 	}
 
-	public void setBlock(int x, int y, int z, String blockdata) {
+	protected void setBlock(int x, int y, int z, String blockdata) {
 		Chunk chunk = this.chunks[(x >> 4)][(z >> 4)];
 		if (chunk == null) {
 			chunk = Chunk.newChunk();
@@ -50,6 +51,24 @@ public class World {
 		}
 		CompoundTag block = SchematicConvertionUtils.toBlockTag(blockdata);
 		chunk.setBlockStateAt(x, y, z, block, false);
+	}
+	
+	public BlockState getBlock(int x, int y, int z) {
+		Chunk chunk = this.chunks[(x >> 4)][(z >> 4)];
+		if (chunk == null) {
+			chunk = Chunk.newChunk();
+			this.chunks[(x >> 4)][(z >> 4)] = chunk;
+		}
+		return new BlockState(chunk.getBlockStateAt(x % 16, y % 16, z % 16));
+	}
+	
+	public void setBlock(int x, int y, int z, BlockState state) {
+		Chunk chunk = this.chunks[(x >> 4)][(z >> 4)];
+		if (chunk == null) {
+			chunk = Chunk.newChunk();
+			this.chunks[(x >> 4)][(z >> 4)] = chunk;
+		}
+		chunk.setBlockStateAt(x % 16, y % 16, z % 16, state.toCompoundTag(), false);
 	}
 
 	public Chunk[][] getChunks() {
@@ -67,29 +86,42 @@ public class World {
 	public Environment getEnvironment() {
 		return environment;
 	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.deepHashCode(chunks);
+		result = prime * result + ((environment == null) ? 0 : environment.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
 
-	public enum Environment {
-		NORMAL(new NamespacedKey("minecraft:overworld")),
-		NETHER(new NamespacedKey("minecraft:the_nether")),
-		END(new NamespacedKey("minecraft:the_end"));
-		
-		NamespacedKey key;
-		
-		Environment(NamespacedKey key) {
-			this.key = key;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
 		}
-		
-		public NamespacedKey getNamespacedKey() {
-			return key;
+		if (obj == null) {
+			return false;
 		}
-		
-		public static Environment fromNamespacedKey(NamespacedKey key) {
-			for (Environment each : Environment.values()) {
-				if (each.getNamespacedKey().equals(key)) {
-					return each;
-				}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		World other = (World) obj;
+		if (!Arrays.deepEquals(chunks, other.chunks)) {
+			return false;
+		}
+		if (environment != other.environment) {
+			return false;
+		}
+		if (name == null) {
+			if (other.name != null) {
+				return false;
 			}
-			return null;
+		} else if (!name.equals(other.name)) {
+			return false;
 		}
+		return true;
 	}
 }

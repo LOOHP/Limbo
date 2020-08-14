@@ -2,8 +2,8 @@ package com.loohp.limbo.Utils;
 
 public class NamespacedKey {
 
-	String namespace;
-	String key;
+	private String namespace;
+	private String key;
 
 	public NamespacedKey(String namespacedKey) {
 		int index = namespacedKey.indexOf(":");

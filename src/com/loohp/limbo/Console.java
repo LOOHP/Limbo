@@ -88,8 +88,11 @@ public class Console implements CommandSender {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		while (true) {
 			try {
-				String[] input = CustomStringUtils.splitStringToArgs(reader.readLine());				
-				Limbo.getInstance().dispatchCommand(this, input);
+				String command = reader.readLine();
+				if (command.length() > 0) {
+					String[] input = CustomStringUtils.splitStringToArgs(command);				
+					Limbo.getInstance().dispatchCommand(this, input);
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

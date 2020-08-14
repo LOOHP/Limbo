@@ -17,37 +17,45 @@ import net.querz.nbt.tag.CompoundTag;
 
 public class DimensionRegistry {
 	
-	public static CompoundTag defaultTag;
-	private static File reg;
+	private CompoundTag defaultTag;
+	private CompoundTag codec;
+	private File reg;
 	
-	static {
-		String reg = "dimension_registry.json";
-        File file = new File(Limbo.getInstance().getInternalDataFolder(), reg);
+	public DimensionRegistry() {
+		this.defaultTag = new CompoundTag();
+		
+		String name = "dimension_registry.json";
+        File file = new File(Limbo.getInstance().getInternalDataFolder(), name);
         if (!file.exists()) {
-        	try (InputStream in = Limbo.class.getClassLoader().getResourceAsStream(reg)) {
+        	try (InputStream in = Limbo.class.getClassLoader().getResourceAsStream(name)) {
                 Files.copy(in, file.toPath());
             } catch (IOException e) {
             	e.printStackTrace();
             }
         }
         
-        DimensionRegistry.reg = file;
-
-		resetTag();
-	}
-	
-	public static void resetTag() {		
-		try {
+        this.reg = file;
+        
+        try {
 			JSONObject json = (JSONObject) new JSONParser().parse(new FileReader(reg));
 			CompoundTag tag = CustomNBTUtils.getCompoundTagFromJson((JSONObject) json.get("value"));
 			defaultTag = tag;
+			codec = defaultTag.clone();
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public static CompoundTag getCodec() {		
-		return defaultTag;
+	public File getFile() {
+		return reg;
+	}
+	
+	public void resetCodec() {
+		codec = defaultTag.clone();
+	}
+	
+	public CompoundTag getCodec() {		
+		return codec;
 	}
 
 }

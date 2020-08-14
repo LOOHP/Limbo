@@ -8,8 +8,8 @@ import java.nio.charset.StandardCharsets;
 import com.loohp.limbo.Utils.DataTypeIO;
 import com.loohp.limbo.Utils.GameMode;
 import com.loohp.limbo.Utils.NamespacedKey;
+import com.loohp.limbo.World.Environment;
 import com.loohp.limbo.World.World;
-import com.loohp.limbo.World.World.Environment;
 
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;

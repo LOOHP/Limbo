@@ -47,9 +47,10 @@ import com.loohp.limbo.Server.Packets.PacketOut;
 import com.loohp.limbo.Utils.CustomStringUtils;
 import com.loohp.limbo.Utils.ImageUtils;
 import com.loohp.limbo.Utils.NetworkUtils;
+import com.loohp.limbo.World.DimensionRegistry;
+import com.loohp.limbo.World.Environment;
 import com.loohp.limbo.World.Schematic;
 import com.loohp.limbo.World.World;
-import com.loohp.limbo.World.World.Environment;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -115,7 +116,12 @@ public class Limbo {
 	
 	private File internalDataFolder;
 	
+	private DimensionRegistry dimensionRegistry;
+	
 	public AtomicInteger entityIdCount = new AtomicInteger();
+	
+	@SuppressWarnings("deprecation")
+	private Unsafe unsafe = new Unsafe();
 	
 	@SuppressWarnings("unchecked")
 	public Limbo() throws IOException, ParseException, NumberFormatException, ClassNotFoundException, InterruptedException {
@@ -227,6 +233,8 @@ public class Limbo {
 		
 		console.sendMessage("Loaded all " + mappingsCount + " packet id mappings!");
 		
+		dimensionRegistry = new DimensionRegistry();
+		
 		worlds.add(loadDefaultWorld());
 		Location spawn = properties.getWorldSpawn();
 		properties.setWorldSpawn(new Location(getWorld(properties.getLevelName().getKey()), spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch()));
@@ -276,6 +284,15 @@ public class Limbo {
 		server = new ServerConnection(properties.getServerIp(), properties.getServerPort());
 		
 		console.run();
+	}
+
+	@Deprecated
+	public Unsafe getUnsafe() {
+		return unsafe;
+	}
+
+	public DimensionRegistry getDimensionRegistry() {
+		return dimensionRegistry;
 	}
 
 	public String getServerImplementationVersion() {
@@ -434,6 +451,8 @@ public class Limbo {
 				e.printStackTrace();
 			}
 		}
+		
+		console.sendMessage("Server closed");
 		console.logs.close();
 		System.exit(0);
 	}
