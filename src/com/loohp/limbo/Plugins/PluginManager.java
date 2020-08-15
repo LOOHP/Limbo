@@ -58,7 +58,7 @@ public class PluginManager {
 							clazz.setInfo(pluginYaml);
 							plugins.put(clazz.getName(), clazz);
 							clazz.onLoad();
-							System.out.println("Loading plugin " + file.getName() + " " + clazz.getInfo().getVersion() + " by " + clazz.getInfo().getAuthor());
+							Limbo.getInstance().getConsole().sendMessage("Loading plugin " + file.getName() + " " + clazz.getInfo().getVersion() + " by " + clazz.getInfo().getAuthor());
 							url.close();
 							break;
 						}

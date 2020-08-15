@@ -116,14 +116,14 @@ public class PacketPlayOutMapChunk extends PacketOut {
 					}
 					
 					DataTypeIO.writeVarInt(dataOut, section.getPalette().size());
-					//System.out.println(section.getPalette().size());
+					//Limbo.getInstance().getConsole().sendMessage(section.getPalette().size());
 					Iterator<CompoundTag> itr1 = section.getPalette().iterator();
-					//System.out.println("Nonnull -> " + i + " " + newBits);
+					//Limbo.getInstance().getConsole().sendMessage("Nonnull -> " + i + " " + newBits);
 					counter = 0;
 					while (itr1.hasNext()) {
 						CompoundTag tag = itr1.next();
 						DataTypeIO.writeVarInt(dataOut, GeneratedBlockDataMappings.getGlobalPaletteIDFromState(tag));
-						//System.out.println(tag + " -> " + GeneratedDataUtils.getGlobalPaletteIDFromState(tag));
+						//Limbo.getInstance().getConsole().sendMessage(tag + " -> " + GeneratedDataUtils.getGlobalPaletteIDFromState(tag));
 					}
 				} else {
 					dataOut.writeByte(14);
@@ -132,7 +132,7 @@ public class PacketPlayOutMapChunk extends PacketOut {
 				DataTypeIO.writeVarInt(dataOut, section.getBlockStates().length);
 				for (int u = 0; u < section.getBlockStates().length; u++) {
 					dataOut.writeLong(section.getBlockStates()[u]);
-					//System.out.println(Arrays.toString(section.getBlockStates()));
+					//Limbo.getInstance().getConsole().sendMessage(Arrays.toString(section.getBlockStates()));
 				}
 			}
 		}

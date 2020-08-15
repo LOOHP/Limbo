@@ -7,6 +7,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.loohp.limbo.Limbo;
+
 public class ServerConnection extends Thread {
 	
 	private ServerSocket serverSocket;
@@ -27,11 +29,11 @@ public class ServerConnection extends Thread {
 	public void run() {
 		try {
 			serverSocket = new ServerSocket(port, 50, InetAddress.getByName(ip));
-			System.out.println("Limbo server listening on /" + serverSocket.getInetAddress().getHostName() + ":" + serverSocket.getLocalPort());
+			Limbo.getInstance().getConsole().sendMessage("Limbo server listening on /" + serverSocket.getInetAddress().getHostName() + ":" + serverSocket.getLocalPort());
 	        while (true) {
 	            Socket connection = serverSocket.accept();
 	            //String str = connection.getInetAddress().getHostName() + ":" + connection.getPort();
-				//System.out.println("[/127.0.0.1:57310] <-> InitialHandler has pinged);
+				//Limbo.getInstance().getConsole().sendMessage("[/127.0.0.1:57310] <-> InitialHandler has pinged);
 	            ClientConnection sc = new ClientConnection(connection);
 	            clients.add(sc);
 	            sc.start();

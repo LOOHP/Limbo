@@ -73,17 +73,17 @@ public class ServerProperties {
 				if (image.getHeight() == 64 && image.getWidth() == 64) {
 					favicon = Optional.of(image);
 				} else {
-					System.out.println("Unable to load server-icon.png! The image is not 64 x 64 in size!");
+					Limbo.getInstance().getConsole().sendMessage("Unable to load server-icon.png! The image is not 64 x 64 in size!");
 				}
 			} catch (Exception e) {
-				System.out.println("Unable to load server-icon.png! Is it a png image?");
+				Limbo.getInstance().getConsole().sendMessage("Unable to load server-icon.png! Is it a png image?");
 			}
 		} else {
-			System.out.println("No server-icon.png found");
+			Limbo.getInstance().getConsole().sendMessage("No server-icon.png found");
 			favicon = Optional.empty();
 		}
 
-		System.out.println("Loaded server.properties");
+		Limbo.getInstance().getConsole().sendMessage("Loaded server.properties");
 	}
 	
 	public String getServerImplementationVersion() {

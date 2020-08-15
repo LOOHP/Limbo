@@ -49,7 +49,7 @@ public class MojangAPIUtils {
 	            	return null;
 	            }
 	        } else {
-	            System.out.println("Connection could not be opened (Response code " + connection.getResponseCode() + ", " + connection.getResponseMessage() + ")");
+	            System.err.println("Connection could not be opened (Response code " + connection.getResponseCode() + ", " + connection.getResponseMessage() + ")");
 	            return null;
 	        }
 	    } catch (IOException e) {
@@ -81,7 +81,7 @@ public class MojangAPIUtils {
 	            String signature = reply.split("\"signature\":\"")[1].split("\"")[0];
 	            return new SkinResponse(skin, signature);
 	        } else {
-	            System.out.println("Connection could not be opened (Response code " + connection.getResponseCode() + ", " + connection.getResponseMessage() + ")");
+	        	System.err.println("Connection could not be opened (Response code " + connection.getResponseCode() + ", " + connection.getResponseMessage() + ")");
 	            return null;
 	        }
 	    } catch (IOException e) {

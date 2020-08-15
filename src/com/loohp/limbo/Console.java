@@ -1,36 +1,59 @@
 package com.loohp.limbo;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
+
+import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.Ansi.Attribute;
+import org.jline.reader.Candidate;
+import org.jline.reader.Completer;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReader.SuggestionType;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.ParsedLine;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 
 import com.loohp.limbo.Commands.CommandSender;
 import com.loohp.limbo.GUI.ConsoleTextOutput;
 import com.loohp.limbo.Utils.CustomStringUtils;
 
+import jline.console.ConsoleReader;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 public class Console implements CommandSender {
 	
+	protected static final Map<ChatColor, String> replacements = new HashMap<>();
+	private final static String CONSOLE = "CONSOLE";
+	private final static String PROMPT = "> ";
+	protected final static String ERROR_RED = "\u001B[31;1m";
+	protected final static String RESET_COLOR = "\u001B[0m";
+	
+	private Terminal terminal;
+	private LineReader tabReader;
+	private ConsoleReader reader;
+	
 	private InputStream in;
+	@SuppressWarnings("unused")
 	private PrintStream out;
 	@SuppressWarnings("unused")
 	private PrintStream err;
 	protected PrintStream logs;
 	
-	private final String CONSOLE = "CONSOLE";
-	
-	public Console(InputStream in, PrintStream out, PrintStream err) throws FileNotFoundException {
+	public Console(InputStream in, PrintStream out, PrintStream err) throws IOException {
 		String fileName = new SimpleDateFormat("yyyy'-'MM'-'dd'_'HH'-'mm'-'ss'_'zzz'.log'").format(new Date());
         File dir = new File("logs");
         dir.mkdirs();
@@ -43,20 +66,38 @@ public class Console implements CommandSender {
         } else {
         	this.in = null;
         }
-		System.setOut(new ConsoleOutputStream(out == null ? new PrintStream(new PrintStream(new OutputStream() {
+		System.setOut(new ConsoleOutputStream(this, out == null ? new PrintStream(new OutputStream() {
 			@Override
             public void write(int b) {
                 //DO NOTHING
             }
-        })) : out, this.logs));
+        }) : out, this.logs));
 		this.out = System.out;
-		System.setErr(new ConsoleErrorStream(err == null ? new PrintStream(new PrintStream(new OutputStream() {
+		
+		System.setErr(new ConsoleErrorStream(this, err == null ? new PrintStream(new OutputStream() {
 			@Override
             public void write(int b) {
                 //DO NOTHING
             }
-        })) : err, this.logs));
+        }) : err, this.logs));
 		this.err = System.err;
+		
+		reader = new ConsoleReader(in, out);
+		reader.setExpandEvents(false);
+		
+		
+		terminal = TerminalBuilder.builder().streams(in, out).system(true).jansi(true).build();
+		tabReader = LineReaderBuilder.builder().terminal(terminal).completer(new Completer() {
+			@Override
+			public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
+				String[] args = CustomStringUtils.splitStringToArgs(line.line());
+				List<String> tab = Limbo.getInstance().getPluginManager().getTabOptions(Limbo.getInstance().getConsole(), args);
+				for (String each : tab) {
+					candidates.add(new Candidate(each));
+				}
+			}
+		}).build();
+		tabReader.setAutosuggestion(SuggestionType.NONE);
 	}
 	
 	public String getName() {
@@ -78,236 +119,348 @@ public class Console implements CommandSender {
 	}
 	
 	public void sendMessage(String message) {
-		out.println(message);
+		stashLine();
+		String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
+		ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Info] " + message), true);
+    	logs.println(ChatColor.stripColor("[" + date + " Info] " + message));
+		try {
+			reader.getOutput().append("[" + date + " Info] " + translateToConsole(message) + "\n");
+			reader.getOutput().flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		unstashLine();
 	}
 	
 	protected void run() {
 		if (in == null) {
 			return;
 		}
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		while (true) {
-			try {
-				String command = reader.readLine();
-				if (command.length() > 0) {
-					String[] input = CustomStringUtils.splitStringToArgs(command);				
-					Limbo.getInstance().dispatchCommand(this, input);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
+			String command = tabReader.readLine(PROMPT);
+			if (command.length() > 0) {
+				String[] input = CustomStringUtils.splitStringToArgs(command);
+				new Thread(() -> Limbo.getInstance().dispatchCommand(this, input)).start();
 			}
 		}
+	}
+	
+	protected void stashLine() {
+		try {
+			tabReader.callWidget(LineReader.CLEAR);
+		} catch (Exception ignore) {}
+	}
+
+	protected void unstashLine() {
+		try {
+			tabReader.callWidget(LineReader.REDRAW_LINE);
+			tabReader.callWidget(LineReader.REDISPLAY);
+			tabReader.getTerminal().writer().flush();
+		} catch (Exception ignore) {}
+	}
+	
+	static {
+		replacements.put(ChatColor.BLACK, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLACK).boldOff().toString());
+        replacements.put(ChatColor.DARK_BLUE, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLUE).boldOff().toString());
+        replacements.put(ChatColor.DARK_GREEN, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.GREEN).boldOff().toString());
+        replacements.put(ChatColor.DARK_AQUA, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.CYAN).boldOff().toString());
+        replacements.put(ChatColor.DARK_RED, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.RED).boldOff().toString());
+        replacements.put(ChatColor.DARK_PURPLE, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.MAGENTA).boldOff().toString());
+        replacements.put(ChatColor.GOLD, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.YELLOW).boldOff().toString());
+        replacements.put(ChatColor.GRAY, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.WHITE).boldOff().toString());
+        replacements.put(ChatColor.DARK_GRAY, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLACK).bold().toString());
+        replacements.put(ChatColor.BLUE, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLUE).bold().toString());
+        replacements.put(ChatColor.GREEN, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.GREEN).bold().toString());
+        replacements.put(ChatColor.AQUA, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.CYAN).bold().toString());
+        replacements.put(ChatColor.RED, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.RED).bold().toString());
+        replacements.put(ChatColor.LIGHT_PURPLE, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.MAGENTA).bold().toString());
+        replacements.put(ChatColor.YELLOW, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.YELLOW).bold().toString());
+        replacements.put(ChatColor.WHITE, Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.WHITE).bold().toString());
+        replacements.put(ChatColor.MAGIC, Ansi.ansi().a(Attribute.BLINK_SLOW).toString());
+        replacements.put(ChatColor.BOLD, Ansi.ansi().a(Attribute.UNDERLINE_DOUBLE).toString());
+        replacements.put(ChatColor.STRIKETHROUGH, Ansi.ansi().a(Attribute.STRIKETHROUGH_ON).toString());
+        replacements.put(ChatColor.UNDERLINE, Ansi.ansi().a(Attribute.UNDERLINE).toString());
+        replacements.put(ChatColor.ITALIC, Ansi.ansi().a(Attribute.ITALIC).toString());
+        replacements.put(ChatColor.RESET, Ansi.ansi().a(Attribute.RESET).toString());
+	}
+	
+	protected static String translateToConsole(String str) {
+		for (Entry<ChatColor, String> entry : replacements.entrySet()) {
+			str = str.replace(entry.getKey().toString(), entry.getValue());
+		}
+		str = str.replaceAll("(?i)" + ChatColor.COLOR_CHAR + "x(" + ChatColor.COLOR_CHAR + "[0-9a-f]){6}", "");
+		return str + RESET_COLOR;
 	}
 	
 	public static class ConsoleOutputStream extends PrintStream {
 		
 		private PrintStream logs;
+		private Console console;
 		
-		public ConsoleOutputStream(OutputStream out, PrintStream logs) {
+		public ConsoleOutputStream(Console console, OutputStream out, PrintStream logs) {
 	        super(out);
 	        this.logs = logs;
+	        this.console = console;
 	    }
 
+		@SuppressWarnings("resource")
 		@Override
 		public PrintStream printf(Locale l, String format, Object... args) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText(String.format(l, "[" + date + " Info]" + format, args));
-			logs.printf(l, "[" + date + " Info]" + format, args);
-			return super.printf(l, "[" + date + " Info]" + format, args);
+			ConsoleTextOutput.appendText(ChatColor.stripColor(String.format(l, "[" + date + " Info]" + format, args)));
+			logs.printf(l, ChatColor.stripColor("[" + date + " Info]" + format), args);
+			PrintStream stream = super.printf(l, Console.translateToConsole("[" + date + " Info]" + format), args);
+			console.unstashLine();
+			return stream;
 		}
 
+		@SuppressWarnings("resource")
 		@Override
 		public PrintStream printf(String format, Object... args) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText(String.format("[" + date + " Info]" + format, args));
-			logs.printf("[" + date + " Info]" + format, args);
-			return super.printf("[" + date + " Info]" + format, args);
+			ConsoleTextOutput.appendText(ChatColor.stripColor(String.format("[" + date + " Info]" + format, args)));
+			logs.printf(ChatColor.stripColor("[" + date + " Info]" + format), args);
+			PrintStream stream = super.printf(ChatColor.stripColor("[" + date + " Info]" + format), args);
+			console.unstashLine();
+			return stream;
 		}
 
 		@Override
 		public void println() {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Info]", true);
-			logs.println("[" + date + " Info]");
-	        super.println("[" + date + " Info]");
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Info]"), true);
+			logs.println(ChatColor.stripColor("[" + date + " Info]"));
+	        super.println(ChatColor.stripColor("[" + date + " Info]"));
+	        console.unstashLine();
 		}
 
 		@Override
 		public void println(boolean x) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Info] " + x, true);
-			logs.println("[" + date + " Info]" + x);
-	        super.println("[" + date + " Info]" + x);
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Info] " + x), true);
+			logs.println(ChatColor.stripColor("[" + date + " Info]" + x));
+	        super.println(ChatColor.stripColor("[" + date + " Info]" + x));
+	        console.unstashLine();
 		}
 
 		@Override
 		public void println(char x) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Info] " + x, true);
-			logs.println("[" + date + " Info]" + x);
-	        super.println("[" + date + " Info]" + x);
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Info] " + x), true);
+			logs.println(ChatColor.stripColor("[" + date + " Info]" + x));
+	        super.println(ChatColor.stripColor("[" + date + " Info]" + x));
+	        console.unstashLine();
 		}
 
 		@Override
 		public void println(char[] x) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Info] " + String.valueOf(x), true);
-			logs.println("[" + date + " Info]" + String.valueOf(x));
-	        super.println("[" + date + " Info]" + String.valueOf(x));
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Info] " + String.valueOf(x)), true);
+			logs.println(ChatColor.stripColor("[" + date + " Info]" + String.valueOf(x)));
+	        super.println(ChatColor.stripColor("[" + date + " Info]" + String.valueOf(x)));
+	        console.unstashLine();
 		}
 
 		@Override
 		public void println(double x) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Info] " + x, true);
-			logs.println("[" + date + " Info]" + x);
-	        super.println("[" + date + " Info]" + x);
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Info] " + x), true);
+			logs.println(ChatColor.stripColor("[" + date + " Info]" + x));
+	        super.println(ChatColor.stripColor("[" + date + " Info]" + x));
+	        console.unstashLine();
 		}
 
 		@Override
 		public void println(float x) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Info] " + x, true);
-			logs.println("[" + date + " Info]" + x);
-	        super.println("[" + date + " Info]" + x);
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Info] " + x), true);
+			logs.println(ChatColor.stripColor("[" + date + " Info]" + x));
+	        super.println(ChatColor.stripColor("[" + date + " Info]" + x));
+	        console.unstashLine();
 		}
 
 		@Override
 		public void println(int x) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Info] " + x, true);
-			logs.println("[" + date + " Info]" + x);
-	        super.println("[" + date + " Info]" + x);
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Info] " + x), true);
+			logs.println(ChatColor.stripColor("[" + date + " Info]" + x));
+	        super.println(ChatColor.stripColor("[" + date + " Info]" + x));
+	        console.unstashLine();
 		}
 
 		@Override
 		public void println(long x) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Info] " + x, true);
-			logs.println("[" + date + " Info]" + x);
-	        super.println("[" + date + " Info]" + x);
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Info] " + x), true);
+			logs.println(ChatColor.stripColor("[" + date + " Info]" + x));
+	        super.println(ChatColor.stripColor("[" + date + " Info]" + x));
+	        console.unstashLine();
 		}
 
 		@Override
 		public void println(Object x) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Info] " + x, true);
-			logs.println("[" + date + " Info]" + x);
-	        super.println("[" + date + " Info]" + x);
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Info] " + x), true);
+			logs.println(ChatColor.stripColor("[" + date + " Info]" + x));
+	        super.println(ChatColor.stripColor("[" + date + " Info]" + x));
+	        console.unstashLine();
 		}
 
 	    @Override
 	    public void println(String string) {
+	    	console.stashLine();
 	    	String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-	    	ConsoleTextOutput.appendText("[" + date + " Info] " + string, true);
-	    	logs.println("[" + date + " Info] " + string);
-	        super.println("[" + date + " Info] " + string);
+	    	ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Info] " + string), true);
+	    	logs.println(ChatColor.stripColor("[" + date + " Info] " + string));
+	        super.println(ChatColor.stripColor("[" + date + " Info] " + string));
+	        console.unstashLine();
 	    }
 	}
 	
 	public static class ConsoleErrorStream extends PrintStream {
 		
 		private PrintStream logs;
+		private Console console;
 		
-		public ConsoleErrorStream(OutputStream out, PrintStream logs) {
+		public ConsoleErrorStream(Console console, OutputStream out, PrintStream logs) {
 	        super(out);
 	        this.logs = logs;
+	        this.console = console;
 	    }
 
+		@SuppressWarnings("resource")
 		@Override
 		public PrintStream printf(Locale l, String format, Object... args) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText(String.format(l, "[" + date + " Error]" + format, args));
-			logs.printf(l, "[" + date + " Error]" + format, args);
-			return super.printf(l, "[" + date + " Error]" + format, args);
+			ConsoleTextOutput.appendText(ChatColor.stripColor(String.format(l, "[" + date + " Error]" + format, args)));
+			logs.printf(l, ChatColor.stripColor("[" + date + " Error]" + format), args);
+			PrintStream stream = super.printf(l, ERROR_RED + ChatColor.stripColor("[" + date + " Error]" + format + RESET_COLOR), args);
+			console.unstashLine();
+			return stream;
 		}
 
+		@SuppressWarnings("resource")
 		@Override
 		public PrintStream printf(String format, Object... args) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText(String.format("[" + date + " Error]" + format, args));
-			logs.printf("[" + date + " Error]" + format, args);
-			return super.printf("[" + date + " Error]" + format, args);
+			ConsoleTextOutput.appendText(ChatColor.stripColor(String.format("[" + date + " Error]" + format, args)));
+			logs.printf(ChatColor.stripColor("[" + date + " Error]" + format), args);
+			PrintStream stream = super.printf(ERROR_RED + ChatColor.stripColor("[" + date + " Error]" + format + RESET_COLOR), args);
+			console.unstashLine();
+			return stream;
 		}
 
 		@Override
 		public void println() {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Error]", true);
-			logs.println("[" + date + " Error]");
-	        super.println("[" + date + " Error]");
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Error]"), true);
+			logs.println(ChatColor.stripColor("[" + date + " Error]"));
+	        super.println(ERROR_RED + ChatColor.stripColor("[" + date + " Error]") + RESET_COLOR);
+	        console.unstashLine();
 		}
 
 		@Override
 		public void println(boolean x) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Error] " + x, true);
-			logs.println("[" + date + " Error]" + x);
-	        super.println("[" + date + " Error]" + x);
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Error] " + x), true);
+			logs.println(ChatColor.stripColor("[" + date + " Error]" + x));
+	        super.println(ERROR_RED + ChatColor.stripColor("[" + date + " Error]" + x) + RESET_COLOR);
+	        console.unstashLine();
 		}
 
 		@Override
 		public void println(char x) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Error] " + x, true);
-			logs.println("[" + date + " Error]" + x);
-	        super.println("[" + date + " Error]" + x);
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Error] " + x), true);
+			logs.println(ChatColor.stripColor("[" + date + " Error]" + x));
+	        super.println(ERROR_RED + ChatColor.stripColor("[" + date + " Error]" + x) + RESET_COLOR);
+	        console.unstashLine();
 		}
 
 		@Override
 		public void println(char[] x) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Error] " + String.valueOf(x), true);
-			logs.println("[" + date + " Error]" + String.valueOf(x));
-	        super.println("[" + date + " Error]" + String.valueOf(x));
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Error] " + String.valueOf(x)), true);
+			logs.println(ChatColor.stripColor("[" + date + " Error]" + String.valueOf(x)));
+	        super.println(ERROR_RED + ChatColor.stripColor("[" + date + " Error]" + String.valueOf(x)) + RESET_COLOR);
+	        console.unstashLine();
 		}
 
 		@Override
 		public void println(double x) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Error] " + x, true);
-			logs.println("[" + date + " Error]" + x);
-	        super.println("[" + date + " Error]" + x);
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Error] " + x), true);
+			logs.println(ChatColor.stripColor("[" + date + " Error]" + x));
+	        super.println(ERROR_RED + ChatColor.stripColor("[" + date + " Error]" + x) + RESET_COLOR);
+	        console.unstashLine();
 		}
 
 		@Override
 		public void println(float x) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Error] " + x, true);
-			logs.println("[" + date + " Error]" + x);
-	        super.println("[" + date + " Error]" + x);
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Error] " + x), true);
+			logs.println(ChatColor.stripColor("[" + date + " Error]" + x));
+	        super.println(ERROR_RED + ChatColor.stripColor("[" + date + " Error]" + x) + RESET_COLOR);
+	        console.unstashLine();
 		}
 
 		@Override
 		public void println(int x) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Error] " + x, true);
-			logs.println("[" + date + " Error]" + x);
-	        super.println("[" + date + " Error]" + x);
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Error] " + x), true);
+			logs.println(ChatColor.stripColor("[" + date + " Error]" + x));
+	        super.println(ERROR_RED + ChatColor.stripColor("[" + date + " Error]" + x) + RESET_COLOR);
+	        console.unstashLine();
 		}
 
 		@Override
 		public void println(long x) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Error] " + x, true);
-			logs.println("[" + date + " Error]" + x);
-	        super.println("[" + date + " Error]" + x);
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Error] " + x), true);
+			logs.println(ChatColor.stripColor("[" + date + " Error]" + x));
+	        super.println(ERROR_RED + ChatColor.stripColor("[" + date + " Error]" + x) + RESET_COLOR);
+	        console.unstashLine();
 		}
 
 		@Override
 		public void println(Object x) {
+			console.stashLine();
 			String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-			ConsoleTextOutput.appendText("[" + date + " Error] " + x, true);
-			logs.println("[" + date + " Error]" + x);
-	        super.println("[" + date + " Error]" + x);
+			ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Error] " + x), true);
+			logs.println(ChatColor.stripColor("[" + date + " Error]" + x));
+	        super.println(ERROR_RED + ChatColor.stripColor("[" + date + " Error]" + x) + RESET_COLOR);
+	        console.unstashLine();
 		}
 
 	    @Override
 	    public void println(String string) {
+	    	console.stashLine();
 	    	String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
-	    	ConsoleTextOutput.appendText("[" + date + " Error] " + string, true);
-	    	logs.println("[" + date + " Error] " + string);
-	        super.println("[" + date + " Error] " + string);
+	    	ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Error] " + string), true);
+	    	logs.println(ChatColor.stripColor("[" + date + " Error] " + string));
+	        super.println(ERROR_RED + ChatColor.stripColor("[" + date + " Error] " + string) + RESET_COLOR);
+	        console.unstashLine();
 	    }
 	}
 

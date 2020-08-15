@@ -27,7 +27,6 @@ public class PacketHandshakingIn extends PacketIn {
 					return type;
 				}
 			}
-			System.out.println("Invalid HandshakeType networkId, expected 0 or 1, but got " + networkId);
 			return null;
 		}
 	}

@@ -299,7 +299,7 @@ public class ClientConnection extends Thread {
 						if (chunk != null) {
 							PacketPlayOutMapChunk chunkdata = new PacketPlayOutMapChunk(x, z, chunk, world.getEnvironment());
 							sendPacket(chunkdata);
-							//System.out.println(x + ", " + z);
+							//Limbo.getInstance().getConsole().sendMessage(x + ", " + z);
 						}
 					}
 				}
@@ -351,7 +351,7 @@ public class ClientConnection extends Thread {
 						int size = DataTypeIO.readVarInt(input);
 						int packetId = DataTypeIO.readVarInt(input);
 						Class<? extends Packet> packetType = Packet.getPlayIn().get(packetId);
-						//System.out.println(packetId + " -> " + packetType);
+						//Limbo.getInstance().getConsole().sendMessage(packetId + " -> " + packetType);
 						if (packetType == null) {
 							input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
 						} else if (packetType.equals(PacketPlayInPositionAndLook.class)) {					
