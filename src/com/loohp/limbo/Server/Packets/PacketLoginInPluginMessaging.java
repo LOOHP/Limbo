@@ -21,7 +21,7 @@ public class PacketLoginInPluginMessaging extends PacketIn {
 	
 	public PacketLoginInPluginMessaging(DataInputStream in, int packetLength, int packetId) throws IOException {
 		messageId = DataTypeIO.readVarInt(in);
-		String rawChannel = DataTypeIO.readString(in);
+		String rawChannel = DataTypeIO.readString(in, StandardCharsets.UTF_8);
 		channel = new NamespacedKey(rawChannel);
 		int dataLength = packetLength - DataTypeIO.getVarIntLength(packetId) - DataTypeIO.getVarIntLength(messageId) - DataTypeIO.getStringLength(rawChannel, StandardCharsets.UTF_8);
 		data = new byte[dataLength];

@@ -34,7 +34,7 @@ public class DataTypeIO {
 	    out.write(b);
 	}
 	
-	public static String readString(DataInputStream in) throws IOException {
+	public static String readString(DataInputStream in, Charset charset) throws IOException {
 		int length = readVarInt(in);
 
 	    if (length == -1) {
@@ -43,7 +43,7 @@ public class DataTypeIO {
 
 	    byte[] b = new byte[length];
 	    in.readFully(b);
-	    return new String(b);
+	    return new String(b, charset);
 	}
 	
 	public static int getStringLength(String string, Charset charset) throws IOException {

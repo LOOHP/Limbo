@@ -2,6 +2,7 @@ package com.loohp.limbo.Server.Packets;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import com.loohp.limbo.Utils.DataTypeIO;
 
@@ -46,7 +47,7 @@ public class PacketHandshakingIn extends PacketIn {
 	}
 	
 	public PacketHandshakingIn(DataInputStream in) throws IOException {
-		this(DataTypeIO.readVarInt(in), DataTypeIO.readString(in), in.readShort() & 0xFFFF, HandshakeType.fromNetworkId(DataTypeIO.readVarInt(in)));
+		this(DataTypeIO.readVarInt(in), DataTypeIO.readString(in, StandardCharsets.UTF_8), in.readShort() & 0xFFFF, HandshakeType.fromNetworkId(DataTypeIO.readVarInt(in)));
 	}
 
 	public int getProtocolVersion() {
