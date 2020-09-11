@@ -117,6 +117,13 @@ public class Metrics {
 	            return limboVersion;
 	        }
 	    }));
+
+		addCustomChart(new Metrics.SimplePie("minecraftVersion", new Callable<String>() {
+	        @Override
+	        public String call() throws Exception {
+	            return Limbo.getInstance().serverImplementationVersion;
+	        }
+	    }));
     }
 
     /**

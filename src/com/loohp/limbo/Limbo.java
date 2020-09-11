@@ -304,14 +304,6 @@ public class Limbo {
 		return dimensionRegistry;
 	}
 
-	public String getServerImplementationVersion() {
-		return serverImplementationVersion;
-	}
-
-	public int getServerImplmentationProtocol() {
-		return serverImplmentationProtocol;
-	}
-
 	public PermissionsManager getPermissionsManager() {
 		return permissionManager;
 	}
