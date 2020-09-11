@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>Limbo</groupId>
 	<artifactId>Limbo</artifactId>
-	<version>0.3.2-ALPHA</version>
+	<version>0.3.3-ALPHA</version>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<resources>
@@ -53,7 +53,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>${project.artifactId}-${project.version}-1.16.2</finalName>
+		<finalName>${project.artifactId}-${project.version}-1.16.3</finalName>
 	</build>
 
 	<repositories>

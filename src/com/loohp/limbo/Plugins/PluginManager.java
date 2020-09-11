@@ -43,6 +43,7 @@ public class PluginManager {
 						if (name.endsWith("plugin.yml") || name.endsWith("limbo.yml")) {
 							found = true;
 							
+							@SuppressWarnings("deprecation")
 							FileConfiguration pluginYaml = new FileConfiguration(zip);
 							String main = pluginYaml.get("main", String.class);
 							String pluginName = pluginYaml.get("name", String.class);

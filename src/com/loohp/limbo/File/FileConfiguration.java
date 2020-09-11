@@ -18,26 +18,30 @@ import com.loohp.limbo.Utils.YamlOrder;
 
 public class FileConfiguration {
 	
+	File file;
+	
 	Map<String, Object> mapping;
 	String header;
 	
-	public FileConfiguration(File file) {
+	public FileConfiguration(File file) throws FileNotFoundException {
+		this.file = file;
 		if (file.exists()) {
-			try {
-				reloadConfig(new FileInputStream(file));
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
+			reloadConfig();
 		} else {
 			mapping = new LinkedHashMap<>();
 		}
 	}
 	
+	@Deprecated
 	public FileConfiguration(InputStream input){
 		reloadConfig(input);
 	}
 	
-	public FileConfiguration reloadConfig(InputStream input) {
+	public FileConfiguration reloadConfig() throws FileNotFoundException {
+		return reloadConfig(new FileInputStream(file));
+	}
+	
+	private FileConfiguration reloadConfig(InputStream input) {
 		Yaml yml = new Yaml();
 		mapping = yml.load(input);
 		return this;
@@ -76,7 +80,7 @@ public class FileConfiguration {
 			}
 			map = map1;
 		}
-		if (value == null) {
+		if (value != null) {
 			map.put(tree[tree.length - 1], (T) value); 
 		} else {
 			map.remove(tree[tree.length - 1]);
@@ -93,9 +97,13 @@ public class FileConfiguration {
         customRepresenter.setPropertyUtils(customProperty);
 		Yaml yaml = new Yaml(customRepresenter, options);
 		
+		if (file.getParentFile() != null) {
+			file.getParentFile().mkdirs();
+		}
+		
 		PrintWriter pw = new PrintWriter(file, StandardCharsets.UTF_8.toString());
 		if (header != null) {
-			pw.println(header);
+			pw.println("#" + header.replace("\n", "\n#"));
 		}
 		yaml.dump(mapping, pw);
 		pw.flush();

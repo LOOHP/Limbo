@@ -17,8 +17,6 @@ import com.loohp.limbo.World.World;
 
 public class ServerProperties {
 
-	public static final String JSON_BASE_RESPONSE = "{\"version\":{\"name\":\"%VERSION%\",\"protocol\":%PROTOCOL%},\"players\":{\"max\":%MAXPLAYERS%,\"online\":%ONLINECLIENTS%},\"description\":%MOTD%,%FAVICON%\"modinfo\":{\"type\":\"FML\",\"modList\":[]}}";
-
 	File file;
 	int maxPlayers;
 	int serverPort;
@@ -144,10 +142,6 @@ public class ServerProperties {
 
 	public boolean isAllowFlight() {
 		return allowFlight;
-	}
-
-	public static String getJsonBaseResponse() {
-		return JSON_BASE_RESPONSE;
 	}
 
 	public String getMotdJson() {

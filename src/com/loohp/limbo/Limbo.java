@@ -2,11 +2,13 @@ package com.loohp.limbo;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -36,6 +38,7 @@ import com.loohp.limbo.Events.EventsManager;
 import com.loohp.limbo.File.ServerProperties;
 import com.loohp.limbo.GUI.GUI;
 import com.loohp.limbo.Location.Location;
+import com.loohp.limbo.Metrics.Metrics;
 import com.loohp.limbo.Permissions.PermissionsManager;
 import com.loohp.limbo.Player.Player;
 import com.loohp.limbo.Plugins.LimboPlugin;
@@ -97,8 +100,8 @@ public class Limbo {
 	
 	//===========================
 	
-	public final String serverImplementationVersion = "1.16.2";
-	public final int serverImplmentationProtocol = 751;
+	public final String serverImplementationVersion = "1.16.3";
+	public final int serverImplmentationProtocol = 753;
 	
 	private ServerConnection server;
 	private Console console;
@@ -118,6 +121,8 @@ public class Limbo {
 	
 	private DimensionRegistry dimensionRegistry;
 	
+	private Metrics metrics;
+	
 	public AtomicInteger entityIdCount = new AtomicInteger();
 	
 	@SuppressWarnings("deprecation")
@@ -135,6 +140,8 @@ public class Limbo {
 		} else {
 			console = new Console(System.in, System.out, System.err);
 		}
+		
+		console.sendMessage("Loading Limbo Version " + new BufferedReader(new InputStreamReader(Limbo.class.getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF"))).lines().filter(each -> each.startsWith("Limbo-Version:")).findFirst().orElse("Limbo-Version: unknown").substring(14).trim());
 		
 		String spName = "server.properties";
         File sp = new File(spName);
@@ -283,6 +290,8 @@ public class Limbo {
 		
 		server = new ServerConnection(properties.getServerIp(), properties.getServerPort());
 		
+		metrics = new Metrics();
+		
 		console.run();
 	}
 
@@ -354,6 +363,10 @@ public class Limbo {
 		return console;
 	}
 	
+	public Metrics getMetrics() {
+		return metrics;
+	}
+
 	public Set<Player> getPlayers() {
 		return new HashSet<>(playersByUUID.values());
 	}
