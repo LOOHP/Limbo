@@ -15,10 +15,12 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -102,6 +104,7 @@ public class Limbo {
 	
 	public final String serverImplementationVersion = "1.16.3";
 	public final int serverImplmentationProtocol = 753;
+	public final String limboImplementationVersion;
 	
 	private ServerConnection server;
 	private Console console;
@@ -140,8 +143,9 @@ public class Limbo {
 		} else {
 			console = new Console(System.in, System.out, System.err);
 		}
-		
-		console.sendMessage("Loading Limbo Version " + new BufferedReader(new InputStreamReader(Limbo.class.getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF"))).lines().filter(each -> each.startsWith("Limbo-Version:")).findFirst().orElse("Limbo-Version: unknown").substring(14).trim());
+				
+		limboImplementationVersion = getLimboVersion();
+		console.sendMessage("Loading Limbo Version " + limboImplementationVersion);
 		
 		String spName = "server.properties";
         File sp = new File(spName);
@@ -486,6 +490,20 @@ public class Limbo {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private String getLimboVersion() throws IOException {
+		Enumeration<URL> manifests = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
+		while (manifests.hasMoreElements()) {
+			URL url = manifests.nextElement();
+			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+			Optional<String> line = br.lines().filter(each -> each.startsWith("Limbo-Version:")).findFirst();
+			br.close();
+			if (line.isPresent()) {
+				return line.get().substring(14).trim();
+			}
+		}
+		return "Unknown";
 	}
 
 }

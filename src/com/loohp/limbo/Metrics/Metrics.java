@@ -1,12 +1,10 @@
 package com.loohp.limbo.Metrics;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,7 +93,7 @@ public class Metrics {
             }
         }
         
-        limboVersion = new BufferedReader(new InputStreamReader(Limbo.class.getClassLoader().getResourceAsStream("META-INF/MANIFEST.MF"))).lines().filter(each -> each.startsWith("Limbo-Version:")).findFirst().orElse("Limbo-Version: unknown").substring(14).trim();
+        limboVersion = Limbo.getInstance().limboImplementationVersion;
 
         // Load the data
         serverUUID = config.get("serverUuid", String.class);
