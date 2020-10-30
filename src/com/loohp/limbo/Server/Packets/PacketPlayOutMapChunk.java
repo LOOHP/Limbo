@@ -3,9 +3,13 @@ package com.loohp.limbo.Server.Packets;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
-import com.loohp.limbo.Utils.ChunkDataUtils;
+import com.loohp.limbo.Utils.BitsUtils;
 import com.loohp.limbo.Utils.DataTypeIO;
 import com.loohp.limbo.World.Environment;
 import com.loohp.limbo.World.GeneratedBlockDataMappings;
@@ -105,8 +109,9 @@ public class PacketPlayOutMapChunk extends PacketOut {
 
 				int newBits = 32 - Integer.numberOfLeadingZeros(section.getPalette().size() - 1);
 				newBits = Math.max(newBits, 4);
-				
+				//Limbo.getInstance().getConsole().sendMessage(i + " " + newBits);
 				if (newBits <= 8) {
+					/*
 					if (newBits == 4) {
 						dataOut.writeByte(4);
 					} else {
@@ -114,25 +119,79 @@ public class PacketPlayOutMapChunk extends PacketOut {
 						ChunkDataUtils.adjustBlockStateBits(newBits, section, chunk.getDataVersion());
 						dataOut.writeByte(8);
 					}
+					*/
+					dataOut.writeByte(newBits);
 					
 					DataTypeIO.writeVarInt(dataOut, section.getPalette().size());
 					//Limbo.getInstance().getConsole().sendMessage(section.getPalette().size());
 					Iterator<CompoundTag> itr1 = section.getPalette().iterator();
 					//Limbo.getInstance().getConsole().sendMessage("Nonnull -> " + i + " " + newBits);
-					counter = 0;
 					while (itr1.hasNext()) {
 						CompoundTag tag = itr1.next();
 						DataTypeIO.writeVarInt(dataOut, GeneratedBlockDataMappings.getGlobalPaletteIDFromState(tag));
 						//Limbo.getInstance().getConsole().sendMessage(tag + " -> " + GeneratedDataUtils.getGlobalPaletteIDFromState(tag));
 					}
+					
+					BitSet bits = BitSet.valueOf(section.getBlockStates());
+					int shift = 64 % newBits;
+					int longsNeeded = (int) Math.ceil(4096 / (double) (64 / newBits));
+					for (int u = 64; u <= bits.length(); u += 64) {
+						bits = BitsUtils.shiftAfter(bits, u - shift, shift);
+					}
+					
+					long[] formattedLongs = bits.toLongArray(); 
+					//Limbo.getInstance().getConsole().sendMessage(longsNeeded + "");
+					
+					DataTypeIO.writeVarInt(dataOut, longsNeeded);
+					for (int u = 0; u < longsNeeded; u++) {
+						if (u < formattedLongs.length) {
+							dataOut.writeLong(formattedLongs[u]);
+						} else {
+							dataOut.writeLong(0);
+						}
+						//Limbo.getInstance().getConsole().sendMessage(Arrays.toString(section.getBlockStates()));
+					}
 				} else {
-					dataOut.writeByte(14);
-				}
-				
-				DataTypeIO.writeVarInt(dataOut, section.getBlockStates().length);
-				for (int u = 0; u < section.getBlockStates().length; u++) {
-					dataOut.writeLong(section.getBlockStates()[u]);
-					//Limbo.getInstance().getConsole().sendMessage(Arrays.toString(section.getBlockStates()));
+					try {
+					dataOut.writeByte(15);
+					section.getBlockStates();
+					int longsNeeded = 1024;
+					List<Integer> list = new LinkedList<>();
+					for (int y = 0; y < 16; y++) {
+						for (int z = 0; z < 16; z++) {
+							for (int x = 0; x < 16; x++) {
+								list.add(GeneratedBlockDataMappings.getGlobalPaletteIDFromState(section.getBlockStateAt(x, y, z)));
+							}
+						}
+					}
+					List<Long> globalLongs = new ArrayList<>();
+					long currentLong = 0;
+					int pos = 0;
+					int u = 0;
+					while (pos < longsNeeded) {
+						if (u == 3) {
+							globalLongs.add(currentLong);
+							currentLong = 0;
+							u = 0;
+							pos++;
+						} else {
+							u++;
+						}
+						int id = list.isEmpty() ? 0 : list.remove(0);
+						currentLong = currentLong << 15;
+						currentLong |= (long) id;
+					}
+					DataTypeIO.writeVarInt(dataOut, longsNeeded);
+					for (int j = 0; j < longsNeeded; j++) {
+						if (j < globalLongs.size()) {
+							dataOut.writeLong(globalLongs.get(j));
+						} else {
+							dataOut.writeLong(0);
+						}
+					}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}

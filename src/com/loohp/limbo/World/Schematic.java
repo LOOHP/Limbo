@@ -16,8 +16,8 @@ public class Schematic {
 	public static World toWorld(String name, Environment environment, CompoundTag nbt) {
 		short width = nbt.getShort("Width");
 		short length = nbt.getShort("Length");
-		short height = nbt.getShort("Height");
-		byte[] blocks = nbt.getByteArray("BlockData");
+		//short height = nbt.getShort("Height");
+		byte[] blockdata = nbt.getByteArray("BlockData");
 		CompoundTag palette = nbt.getCompoundTag("Palette");
 		ListTag<CompoundTag> blockEntities = nbt.getListTag("BlockEntities").asTypedList(CompoundTag.class);
 		Map<Integer, String> mapping = new HashMap<>();
@@ -26,29 +26,50 @@ public class Schematic {
 		}
 		
 		World world = new World(name, width, length, environment);
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				for (int z = 0; z < length; z++) {
-					int blockIndex = x + z * width + y * width * length;
-					world.setBlock(x, y, z, mapping.get(blocks[blockIndex] < 0 ? blocks[blockIndex] + 256 : blocks[blockIndex]));
-					Chunk chunk = world.getChunkAtWorldPos(x, z);
-					
-					Iterator<CompoundTag> itr = blockEntities.iterator();
-					while (itr.hasNext()) {
-						CompoundTag tag = itr.next();
-						int[] pos = tag.getIntArray("Pos");
-						
-						if (pos[0] == x && pos[1] == y && pos[2] == z) {
-							ListTag<CompoundTag> newTag = chunk.getTileEntities();
-							newTag.add(SchematicConvertionUtils.toTileEntityTag(tag));
-							chunk.setTileEntities(newTag);
-							itr.remove();
-							break;
-						}
-					}
+		
+		int index = 0;
+        int i = 0;
+        int value = 0;
+        int varint_length = 0;
+        while (i < blockdata.length) {
+            value = 0;
+            varint_length = 0;
+
+            while (true) {
+                value |= (blockdata[i] & 127) << (varint_length++ * 7);
+                if (varint_length > 5) {
+                    throw new RuntimeException("VarInt too big (probably corrupted data)");
+                }
+                if ((blockdata[i] & 128) != 128) {
+                    i++;
+                    break;
+                }
+                i++;
+            }
+            // index = (y * length + z) * width + x
+            int y = index / (width * length);
+            int z = (index % (width * length)) / width;
+            int x = (index % (width * length)) % width;
+            world.setBlock(x, y, z, mapping.get(value));
+
+            Chunk chunk = world.getChunkAtWorldPos(x, z);
+			
+			Iterator<CompoundTag> itr = blockEntities.iterator();
+			while (itr.hasNext()) {
+				CompoundTag tag = itr.next();
+				int[] pos = tag.getIntArray("Pos");
+				
+				if (pos[0] == x && pos[1] == y && pos[2] == z) {
+					ListTag<CompoundTag> newTag = chunk.getTileEntities();
+					newTag.add(SchematicConvertionUtils.toTileEntityTag(tag));
+					chunk.setTileEntities(newTag);
+					itr.remove();
+					break;
 				}
 			}
-		}
+            
+            index++;
+        }
 		
 		for (Chunk[] chunkarray : world.getChunks()) {
 			for (Chunk chunk : chunkarray) {
