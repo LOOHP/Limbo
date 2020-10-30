@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.Commands.CommandSender;
 import com.loohp.limbo.Events.PlayerChatEvent;
+import com.loohp.limbo.Events.PlayerTeleportEvent;
 import com.loohp.limbo.Location.Location;
 import com.loohp.limbo.Server.ClientConnection;
 import com.loohp.limbo.Server.Packets.PacketPlayOutChat;
@@ -92,15 +93,19 @@ public class Player implements CommandSender {
 	}
 
 	public void teleport(Location location) {
-		try {
-			if (!this.location.getWorld().equals(location.getWorld())) {
-				PacketPlayOutRespawn respawn = new PacketPlayOutRespawn(location.getWorld(), Limbo.getInstance().getDimensionRegistry().getCodec(), 0, gamemode, false, false, true);
-				clientConnection.sendPacket(respawn);
+		PlayerTeleportEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerTeleportEvent(this, getLocation(), location));
+		if (!event.isCancelled()) {
+			location = event.getTo();
+			try {
+				if (!this.location.getWorld().equals(location.getWorld())) {
+					PacketPlayOutRespawn respawn = new PacketPlayOutRespawn(location.getWorld(), Limbo.getInstance().getDimensionRegistry().getCodec(), 0, gamemode, false, false, true);
+					clientConnection.sendPacket(respawn);
+				}
+				PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch(), 1);
+				clientConnection.sendPacket(positionLook);
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch(), 1);
-			clientConnection.sendPacket(positionLook);
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 

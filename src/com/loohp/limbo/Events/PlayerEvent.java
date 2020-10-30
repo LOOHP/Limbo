@@ -2,10 +2,16 @@ package com.loohp.limbo.Events;
 
 import com.loohp.limbo.Player.Player;
 
-public abstract class PlayerEvent extends Event {
+public class PlayerEvent extends Event {
 	
-	protected Player player;
+	private Player player;
 	
-	public abstract Player getPlayer();
+	public PlayerEvent(Player player) {
+		this.player = player;
+	}
+	
+	public Player getPlayer() {
+		return player;
+	}
 
 }

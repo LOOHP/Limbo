@@ -9,15 +9,10 @@ public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 	private boolean cancelled;
 
 	public PlayerChatEvent(Player player, String prefix, String message, boolean cancelled) {
-		this.player = player;
+		super(player);
 		this.prefix = prefix;
 		this.message = message;
 		this.cancelled = cancelled;
-	}
-
-	@Override
-	public Player getPlayer() {
-		return player;
 	}
 
 	public String getPrefix() {

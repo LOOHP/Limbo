@@ -19,6 +19,7 @@ import com.loohp.limbo.DeclareCommands;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.Events.PlayerJoinEvent;
 import com.loohp.limbo.Events.PlayerLoginEvent;
+import com.loohp.limbo.Events.PlayerMoveEvent;
 import com.loohp.limbo.Events.PlayerQuitEvent;
 import com.loohp.limbo.Events.StatusPingEvent;
 import com.loohp.limbo.File.ServerProperties;
@@ -356,22 +357,49 @@ public class ClientConnection extends Thread {
 							input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
 						} else if (packetType.equals(PacketPlayInPositionAndLook.class)) {					
 							PacketPlayInPositionAndLook pos = new PacketPlayInPositionAndLook(input);
-							player.setLocation(new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ(), pos.getYaw(), pos.getPitch()));
+							Location from = player.getLocation();
+							Location to = new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ(), pos.getYaw(), pos.getPitch());
 							
-							PacketPlayOutUpdateViewPosition response = new PacketPlayOutUpdateViewPosition((int) player.getLocation().getX() >> 4, (int) player.getLocation().getZ() >> 4);
-							sendPacket(response);
+							PlayerMoveEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerMoveEvent(player, from, to));
+							if (event.isCancelled()) {
+								Location returnTo = event.getFrom();
+								PacketPlayOutPositionAndLook cancel = new PacketPlayOutPositionAndLook(returnTo.getX(), returnTo.getY(), returnTo.getZ(), returnTo.getYaw(), returnTo.getPitch(), 1);
+								sendPacket(cancel);
+							} else {
+								player.setLocation(event.getTo());							
+								PacketPlayOutUpdateViewPosition response = new PacketPlayOutUpdateViewPosition((int) player.getLocation().getX() >> 4, (int) player.getLocation().getZ() >> 4);
+								sendPacket(response);
+							}
 						} else if (packetType.equals(PacketPlayInPosition.class)) {
 							PacketPlayInPosition pos = new PacketPlayInPosition(input);
-							player.setLocation(new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ(), player.getLocation().getYaw(), player.getLocation().getPitch()));
+							Location from = player.getLocation();
+							Location to = new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ(), player.getLocation().getYaw(), player.getLocation().getPitch());
 							
-							PacketPlayOutUpdateViewPosition response = new PacketPlayOutUpdateViewPosition((int) player.getLocation().getX() >> 4, (int) player.getLocation().getZ() >> 4);
-							sendPacket(response);
+							PlayerMoveEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerMoveEvent(player, from, to));
+							if (event.isCancelled()) {
+								Location returnTo = event.getFrom();
+								PacketPlayOutPositionAndLook cancel = new PacketPlayOutPositionAndLook(returnTo.getX(), returnTo.getY(), returnTo.getZ(), returnTo.getYaw(), returnTo.getPitch(), 1);
+								sendPacket(cancel);
+							} else {
+								player.setLocation(event.getTo());							
+								PacketPlayOutUpdateViewPosition response = new PacketPlayOutUpdateViewPosition((int) player.getLocation().getX() >> 4, (int) player.getLocation().getZ() >> 4);
+								sendPacket(response);
+							}
 						} else if (packetType.equals(PacketPlayInRotation.class)) {
 							PacketPlayInRotation pos = new PacketPlayInRotation(input);
-							player.setLocation(new Location(player.getWorld(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), pos.getYaw(), pos.getPitch()));
+							Location from = player.getLocation();
+							Location to = new Location(player.getWorld(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), pos.getYaw(), pos.getPitch());
 							
-							PacketPlayOutUpdateViewPosition response = new PacketPlayOutUpdateViewPosition((int) player.getLocation().getX() >> 4, (int) player.getLocation().getZ() >> 4);
-							sendPacket(response);
+							PlayerMoveEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerMoveEvent(player, from, to));
+							if (event.isCancelled()) {
+								Location returnTo = event.getFrom();
+								PacketPlayOutPositionAndLook cancel = new PacketPlayOutPositionAndLook(returnTo.getX(), returnTo.getY(), returnTo.getZ(), returnTo.getYaw(), returnTo.getPitch(), 1);
+								sendPacket(cancel);
+							} else {
+								player.setLocation(event.getTo());
+								PacketPlayOutUpdateViewPosition response = new PacketPlayOutUpdateViewPosition((int) player.getLocation().getX() >> 4, (int) player.getLocation().getZ() >> 4);
+								sendPacket(response);
+							}
 						} else if (packetType.equals(PacketPlayInKeepAlive.class)) {
 							PacketPlayInKeepAlive alive = new PacketPlayInKeepAlive(input);
 							if (alive.getPayload() != lastKeepAlivePayLoad) {
