@@ -11,7 +11,7 @@ public class LimboPlugin {
 	private File dataFolder;
 	private PluginInfo info;
 	
-	public final void setInfo(FileConfiguration file) {
+	protected final void setInfo(FileConfiguration file) {
 		info = new PluginInfo(file);
 		name = info.getName();
 		dataFolder = new File(Limbo.getInstance().getPluginFolder(), name);
@@ -29,19 +29,19 @@ public class LimboPlugin {
 
 	}
 
-	public String getName() {
+	public final String getName() {
 		return name;
 	}
 
-	public File getDataFolder() {
+	public final File getDataFolder() {
 		return new File(dataFolder.getAbsolutePath());
 	}
 	
-	public PluginInfo getInfo() {
+	public final PluginInfo getInfo() {
 		return info;
 	}
 	
-	public Limbo getServer() {
+	public final Limbo getServer() {
 		return Limbo.getInstance();
 	}
 

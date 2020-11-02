@@ -9,6 +9,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -285,7 +287,15 @@ public class Limbo {
 	    fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 	    fos.close();
 		
-		pluginManager = new PluginManager(pluginFolder);
+	    pluginManager = new PluginManager(pluginFolder);
+	    try {
+			Method loadPluginsMethod = PluginManager.class.getDeclaredMethod("loadPlugins");
+			loadPluginsMethod.setAccessible(true);
+			loadPluginsMethod.invoke(pluginManager);
+			loadPluginsMethod.setAccessible(false);
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			e.printStackTrace();
+		}
 		
 		for (LimboPlugin plugin : Limbo.getInstance().getPluginManager().getPlugins()) {
 			console.sendMessage("Enabling plugin " + plugin.getName() + " " + plugin.getInfo().getVersion());

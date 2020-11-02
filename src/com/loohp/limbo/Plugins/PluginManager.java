@@ -27,9 +27,10 @@ public class PluginManager {
 	public PluginManager(File pluginFolder) {
 		this.pluginFolder = pluginFolder;
 		this.executors = new ArrayList<>();
-
 		this.plugins = new LinkedHashMap<>();
-
+	}
+	
+	protected void loadPlugins() {
 		for (File file : pluginFolder.listFiles()) {
 			if (file.isFile() && file.getName().endsWith(".jar")) {
 				boolean found = false;
@@ -54,12 +55,12 @@ public class PluginManager {
 							}
 							
 							URLClassLoader url = new URLClassLoader(new URL[] {file.toURI().toURL()});
-							Class<?> plugin = url.loadClass(main);
-							LimboPlugin clazz = (LimboPlugin) plugin.getDeclaredConstructor().newInstance();
-							clazz.setInfo(pluginYaml);
-							plugins.put(clazz.getName(), clazz);
-							clazz.onLoad();
-							Limbo.getInstance().getConsole().sendMessage("Loading plugin " + file.getName() + " " + clazz.getInfo().getVersion() + " by " + clazz.getInfo().getAuthor());
+							Class<?> clazz = url.loadClass(main);
+							LimboPlugin plugin = (LimboPlugin) clazz.getDeclaredConstructor().newInstance();
+							plugin.setInfo(pluginYaml);
+							plugins.put(plugin.getName(), plugin);
+							plugin.onLoad();
+							Limbo.getInstance().getConsole().sendMessage("Loading plugin " + file.getName() + " " + plugin.getInfo().getVersion() + " by " + plugin.getInfo().getAuthor());
 							url.close();
 							break;
 						}
