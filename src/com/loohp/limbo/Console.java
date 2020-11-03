@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.fusesource.jansi.Ansi;
@@ -103,6 +104,24 @@ public class Console implements CommandSender {
 	public String getName() {
 		return CONSOLE;
 	}
+	
+	public boolean hasPermission(String permission) {
+		return Limbo.getInstance().getPermissionsManager().hasPermission(this, permission);
+	}
+	
+	@Override
+	public void sendMessage(BaseComponent component, UUID uuid) {
+		sendMessage(component);
+	}
+	
+	@Override
+	public void sendMessage(BaseComponent[] component, UUID uuid) {
+		sendMessage(component);
+	}
+	
+	public void sendMessage(String message, UUID uuid) {
+		sendMessage(message);
+	}
 
 	@Override
 	public void sendMessage(BaseComponent component) {
@@ -112,10 +131,6 @@ public class Console implements CommandSender {
 	@Override
 	public void sendMessage(BaseComponent[] component) {
 		sendMessage(String.join("", Arrays.asList(component).stream().map(each -> each.toLegacyText()).collect(Collectors.toList())));
-	}
-	
-	public boolean hasPermission(String permission) {
-		return Limbo.getInstance().getPermissionsManager().hasPermission(this, permission);
 	}
 	
 	public void sendMessage(String message) {

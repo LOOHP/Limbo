@@ -84,14 +84,6 @@ public class Player implements CommandSender {
 		return Limbo.getInstance().getPermissionsManager().hasPermission(this, permission);
 	}
 
-	public void sendMessage(String message) {
-		sendMessage(TextComponent.fromLegacyText(message));
-	}
-
-	public void sendMessage(BaseComponent component) {
-		sendMessage(new BaseComponent[] { component });
-	}
-
 	public void teleport(Location location) {
 		PlayerTeleportEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerTeleportEvent(this, getLocation(), location));
 		if (!event.isCancelled()) {
@@ -107,6 +99,32 @@ public class Player implements CommandSender {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public void sendMessage(String message, UUID uuid) {
+		sendMessage(TextComponent.fromLegacyText(message), uuid);
+	}
+
+	public void sendMessage(BaseComponent component, UUID uuid) {
+		sendMessage(new BaseComponent[] { component }, uuid);
+	}
+
+	@Override
+	public void sendMessage(BaseComponent[] component, UUID uuid) {
+		try {
+			PacketPlayOutChat chat = new PacketPlayOutChat(ComponentSerializer.toString(component), 0, uuid);
+			clientConnection.sendPacket(chat);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void sendMessage(String message) {
+		sendMessage(TextComponent.fromLegacyText(message));
+	}
+
+	public void sendMessage(BaseComponent component) {
+		sendMessage(new BaseComponent[] { component });
 	}
 
 	@Override
@@ -142,7 +160,7 @@ public class Player implements CommandSender {
 			String chat = event.getPrefix() + event.getMessage();
 			Limbo.getInstance().getConsole().sendMessage(chat);
 			for (Player each : Limbo.getInstance().getPlayers()) {
-				each.sendMessage(chat);
+				each.sendMessage(chat, uuid);
 			}
 		}
 	}

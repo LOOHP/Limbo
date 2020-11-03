@@ -104,8 +104,8 @@ public class Limbo {
 	
 	//===========================
 	
-	public final String serverImplementationVersion = "1.16.3";
-	public final int serverImplmentationProtocol = 753;
+	public final String serverImplementationVersion = "1.16.4";
+	public final int serverImplmentationProtocol = 754;
 	public final String limboImplementationVersion;
 	
 	private ServerConnection server;
@@ -147,7 +147,7 @@ public class Limbo {
 		}
 				
 		limboImplementationVersion = getLimboVersion();
-		console.sendMessage("Loading Limbo Version " + limboImplementationVersion);
+		console.sendMessage("Loading Limbo Version " + limboImplementationVersion + " on Minecraft " + serverImplementationVersion);
 		
 		String spName = "server.properties";
         File sp = new File(spName);
