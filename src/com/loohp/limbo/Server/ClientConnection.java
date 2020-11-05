@@ -39,6 +39,7 @@ import com.loohp.limbo.Server.Packets.PacketPlayInRotation;
 import com.loohp.limbo.Server.Packets.PacketPlayInTabComplete;
 import com.loohp.limbo.Server.Packets.PacketPlayOutDeclareCommands;
 import com.loohp.limbo.Server.Packets.PacketPlayOutDisconnect;
+import com.loohp.limbo.Server.Packets.PacketPlayOutLightUpdate;
 import com.loohp.limbo.Server.Packets.PacketPlayOutLogin;
 import com.loohp.limbo.Server.Packets.PacketPlayOutMapChunk;
 import com.loohp.limbo.Server.Packets.PacketPlayOutPlayerAbilities;
@@ -300,8 +301,25 @@ public class ClientConnection extends Thread {
 						if (chunk != null) {
 							PacketPlayOutMapChunk chunkdata = new PacketPlayOutMapChunk(x, z, chunk, world.getEnvironment());
 							sendPacket(chunkdata);
-							//Limbo.getInstance().getConsole().sendMessage(x + ", " + z);
 						}
+					}
+				}
+
+				for (int x = 0; x < world.getChunks().length; x++) {
+					for (int z = 0; z < world.getChunks()[x].length; z++) {
+						List<Byte[]> blockChunk = world.getLightEngineBlock().getBlockLightBitMask(x, z);
+						if (blockChunk == null) {
+							blockChunk = new ArrayList<>();
+						}
+						List<Byte[]> skyChunk = null;
+						if (world.hasSkyLight()) {
+							skyChunk = world.getLightEngineSky().getSkyLightBitMask(x, z);
+						}
+						if (skyChunk == null) {
+							skyChunk = new ArrayList<>();
+						}
+						PacketPlayOutLightUpdate chunkdata = new PacketPlayOutLightUpdate(x, z, true, skyChunk, blockChunk);
+						sendPacket(chunkdata);
 					}
 				}
 				

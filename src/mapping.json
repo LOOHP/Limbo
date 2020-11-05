@@ -27,6 +27,7 @@
     "PacketPlayOutChat": "0x0E",
     "PacketPlayOutPlayerAbilities": "0x30",
     "PacketPlayOutMapChunk": "0x20",
+    "PacketPlayOutLightUpdate": "0x23",
     "PacketPlayOutKeepAlive": "0x1F",
     "PacketPlayOutPlayerInfo": "0x32",
     "PacketPlayOutUpdateViewPosition": "0x40",

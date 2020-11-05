@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.loohp</groupId>
 	<artifactId>Limbo</artifactId>
-	<version>0.3.6-ALPHA</version>
+	<version>0.3.7-ALPHA</version>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<resources>
@@ -64,6 +64,11 @@
 	</repositories>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.11</version>
+		</dependency>
 		<dependency>
 			<groupId>com.github.Querz</groupId>
 			<artifactId>NBT</artifactId>
