@@ -73,9 +73,12 @@ public class Limbo {
 		for (String flag : args) {
 			if (flag.equals("--nogui")) {
 				noGui = true;
+			} else if (flag.equals("nogui")) {
+				noGui = true;
 			} else {
 				System.out.println("Accepted flags:");
 				System.out.println(" --nogui ");
+				System.out.println(" nogui ");
 				System.out.println();
 				System.out.println("Press [enter] to quit");
 				System.exit(0);
@@ -448,7 +451,7 @@ public class Limbo {
 	}
 	
 	public String buildLegacyPingResponse(String version, BaseComponent[] motd, int maxPlayers, int playersOnline) {
-		String begin = "ง1";
+		String begin = "ยง1";
 		return String.join("\00", begin, "127", version, String.join("", Arrays.asList(motd).stream().map(each -> each.toLegacyText()).collect(Collectors.toList())), String.valueOf(playersOnline), String.valueOf(maxPlayers));
 	}
 	
