@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.loohp</groupId>
 	<artifactId>Limbo</artifactId>
-	<version>0.3.7-ALPHA</version>
+	<version>0.3.8-ALPHA</version>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<resources>

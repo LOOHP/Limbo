@@ -71,14 +71,14 @@ public class Limbo {
 	
 	public static void main(String args[]) throws IOException, ParseException, NumberFormatException, ClassNotFoundException, InterruptedException {
 		for (String flag : args) {
-			if (flag.equals("--nogui")) {
+			if (flag.equals("--nogui") || flag.equals("nogui")) {
 				noGui = true;
-			} else {
+			} else if (flag.equals("--help")) {
 				System.out.println("Accepted flags:");
-				System.out.println(" --nogui ");
-				System.out.println();
-				System.out.println("Press [enter] to quit");
+				System.out.println(" --nogui <- Disable the GUI");
 				System.exit(0);
+			} else {
+				System.out.println("Unknown flag: \"" + flag + "\". Ignoring...");
 			}
 		}
 		if (GraphicsEnvironment.isHeadless()) {
