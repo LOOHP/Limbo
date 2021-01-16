@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import com.loohp.limbo.DeclareCommands;
@@ -89,16 +90,17 @@ public class ClientConnection extends Thread {
     private ClientState state;
     
     private Player player;	
-	private long lastKeepAlivePayLoad;
+	private AtomicLong lastKeepAlivePayLoad;
 	
-	protected DataOutputStream output;
-	protected DataInputStream input;
+	private DataOutputStream output;
+	private DataInputStream input;
 	
 	private InetAddress inetAddress;
 	
     public ClientConnection(Socket client_socket) {
         this.client_socket = client_socket;
         this.inetAddress = client_socket.getInetAddress();
+        this.lastKeepAlivePayLoad = new AtomicLong();
     }
 	
 	public InetAddress getInetAddress() {
@@ -106,11 +108,11 @@ public class ClientConnection extends Thread {
 	}
 
 	public long getLastKeepAlivePayLoad() {
-		return lastKeepAlivePayLoad;
+		return lastKeepAlivePayLoad.get();
 	}
 	
 	public void setLastKeepAlivePayLoad(long payLoad) {
-		this.lastKeepAlivePayLoad = payLoad;
+		this.lastKeepAlivePayLoad.set(payLoad);
 	}
 
 	public Player getPlayer() {
@@ -129,19 +131,17 @@ public class ClientConnection extends Thread {
 		return running;
 	}
 	
-	public void sendPacket(PacketOut packet) throws IOException {
+	public synchronized void sendPacket(PacketOut packet) throws IOException {
 		byte[] packetByte = packet.serializePacket();
 		DataTypeIO.writeVarInt(output, packetByte.length);
 		output.write(packetByte);
+		output.flush();
 	}
 	
 	public void disconnect(BaseComponent[] reason) {
 		try {
 			PacketPlayOutDisconnect packet = new PacketPlayOutDisconnect(ComponentSerializer.toString(reason));
-			byte[] packetByte = packet.serializePacket();
-			DataTypeIO.writeVarInt(output, packetByte.length);
-			output.write(packetByte);
-			output.flush();
+			sendPacket(packet);
 		} catch (IOException e) {}
 		try {
 			client_socket.close();
@@ -151,10 +151,7 @@ public class ClientConnection extends Thread {
 	public void disconnectDuringLogin(BaseComponent[] reason) {
 		try {
 			PacketLoginOutDisconnect packet = new PacketLoginOutDisconnect(ComponentSerializer.toString(reason));
-			byte[] packetByte = packet.serializePacket();
-			DataTypeIO.writeVarInt(output, packetByte.length);
-			output.write(packetByte);
-			output.flush();
+			sendPacket(packet);
 		} catch (IOException e) {}
 		try {
 			client_socket.close();
@@ -420,7 +417,7 @@ public class ClientConnection extends Thread {
 							}
 						} else if (packetType.equals(PacketPlayInKeepAlive.class)) {
 							PacketPlayInKeepAlive alive = new PacketPlayInKeepAlive(input);
-							if (alive.getPayload() != lastKeepAlivePayLoad) {
+							if (alive.getPayload() != getLastKeepAlivePayLoad()) {
 								Limbo.getInstance().getConsole().sendMessage("Incorrect Payload recieved in KeepAlive packet for player " + player.getName());
 								break;
 							}

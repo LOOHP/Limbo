@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.Server.ClientConnection.ClientState;
 import com.loohp.limbo.Server.Packets.PacketPlayOutKeepAlive;
-import com.loohp.limbo.Utils.DataTypeIO;
 
 public class KeepAliveSender extends Thread {
 	
@@ -26,10 +25,8 @@ public class KeepAliveSender extends Thread {
 					if (client.getClientState().equals(ClientState.PLAY)) {
 						try {
 							PacketPlayOutKeepAlive packet = new PacketPlayOutKeepAlive(random.nextLong());
-							byte[] packetByte = packet.serializePacket();
-							DataTypeIO.writeVarInt(client.output, packetByte.length);
-							client.output.write(packetByte);
 							client.setLastKeepAlivePayLoad(packet.getPayload());
+							client.sendPacket(packet);
 						} catch (IOException ignore) {}
 					}
 				}

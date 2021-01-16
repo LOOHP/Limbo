@@ -51,7 +51,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>${project.artifactId}-${project.version}-1.16.4</finalName>
+		<finalName>${project.artifactId}-${project.version}-1.16.5</finalName>
 	</build>
 
 	<repositories>
