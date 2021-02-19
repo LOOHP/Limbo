@@ -26,6 +26,7 @@ import com.loohp.limbo.Events.StatusPingEvent;
 import com.loohp.limbo.File.ServerProperties;
 import com.loohp.limbo.Location.Location;
 import com.loohp.limbo.Player.Player;
+import com.loohp.limbo.Player.PlayerInteractManager;
 import com.loohp.limbo.Server.Packets.Packet;
 import com.loohp.limbo.Server.Packets.PacketHandshakingIn;
 import com.loohp.limbo.Server.Packets.PacketLoginInLoginStart;
@@ -40,9 +41,8 @@ import com.loohp.limbo.Server.Packets.PacketPlayInRotation;
 import com.loohp.limbo.Server.Packets.PacketPlayInTabComplete;
 import com.loohp.limbo.Server.Packets.PacketPlayOutDeclareCommands;
 import com.loohp.limbo.Server.Packets.PacketPlayOutDisconnect;
-import com.loohp.limbo.Server.Packets.PacketPlayOutLightUpdate;
+import com.loohp.limbo.Server.Packets.PacketPlayOutEntityMetadata;
 import com.loohp.limbo.Server.Packets.PacketPlayOutLogin;
-import com.loohp.limbo.Server.Packets.PacketPlayOutMapChunk;
 import com.loohp.limbo.Server.Packets.PacketPlayOutPlayerAbilities;
 import com.loohp.limbo.Server.Packets.PacketPlayOutPlayerAbilities.PlayerAbilityFlags;
 import com.loohp.limbo.Server.Packets.PacketPlayOutPlayerInfo;
@@ -50,7 +50,6 @@ import com.loohp.limbo.Server.Packets.PacketPlayOutPlayerInfo.PlayerInfoAction;
 import com.loohp.limbo.Server.Packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import com.loohp.limbo.Server.Packets.PacketPlayOutPlayerInfo.PlayerInfoData.PlayerInfoDataAddPlayer.PlayerSkinProperty;
 import com.loohp.limbo.Server.Packets.PacketPlayOutPositionAndLook;
-import com.loohp.limbo.Server.Packets.PacketPlayOutShowPlayerSkins;
 import com.loohp.limbo.Server.Packets.PacketPlayOutSpawnPosition;
 import com.loohp.limbo.Server.Packets.PacketPlayOutTabComplete;
 import com.loohp.limbo.Server.Packets.PacketPlayOutTabComplete.TabCompleteMatches;
@@ -72,11 +71,10 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
-import net.querz.mca.Chunk;
 
 public class ClientConnection extends Thread {
 	
-	public enum ClientState {
+	public static enum ClientState {
 		LEGACY,
 		HANDSHAKE,
 		STATUS,
@@ -97,10 +95,14 @@ public class ClientConnection extends Thread {
 	
 	private InetAddress inetAddress;
 	
+	private boolean ready;
+	
     public ClientConnection(Socket client_socket) {
         this.client_socket = client_socket;
         this.inetAddress = client_socket.getInetAddress();
         this.lastKeepAlivePayLoad = new AtomicLong();
+        this.running = false;
+        this.ready = false;
     }
 	
 	public InetAddress getInetAddress() {
@@ -129,6 +131,10 @@ public class ClientConnection extends Thread {
     
 	public boolean isRunning() {
 		return running;
+	}
+	
+	public boolean isReady() {
+		return ready;
 	}
 	
 	public synchronized void sendPacket(PacketOut packet) throws IOException {
@@ -232,11 +238,13 @@ public class ClientConnection extends Thread {
 				    	bungeeUUID = UUID.fromString(data[2].replaceFirst("([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)", "$1-$2-$3-$4-$5"));
 				    	inetAddress = InetAddress.getByName(ip);
 				    	
-				    	String skinJson = data[3];
-				    	
-				    	String skin = skinJson.split("\"value\":\"")[1].split("\"")[0];
-			            String signature = skinJson.split("\"signature\":\"")[1].split("\"")[0];
-				    	bungeeSkin = new SkinResponse(skin, signature);
+				    	if (data.length > 3) {
+					    	String skinJson = data[3];
+					    	
+					    	String skin = skinJson.split("\"value\":\"")[1].split("\"")[0];
+				            String signature = skinJson.split("\"signature\":\"")[1].split("\"")[0];
+					    	bungeeSkin = new SkinResponse(skin, signature);
+				    	}
 					} catch (Exception e) {
 						Limbo.getInstance().getConsole().sendMessage("If you wish to use bungeecord's IP forwarding, please enable that in your bungeecord config.yml as well!");
 						disconnectDuringLogin(new BaseComponent[] {new TextComponent(ChatColor.RED + "Please connect from the proxy!")});
@@ -260,7 +268,8 @@ public class ClientConnection extends Thread {
 						
 						state = ClientState.PLAY;
 
-						player = new Player(this, username, uuid, Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn());
+						player = new Player(this, username, uuid, Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
+						player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
 						Limbo.getInstance().addPlayer(player);
 						
 						break;
@@ -292,37 +301,11 @@ public class ClientConnection extends Thread {
 				
 				World world = s.getWorld();
 				
-				for (int x = 0; x < world.getChunks().length; x++) {
-					for (int z = 0; z < world.getChunks()[x].length; z++) {
-						Chunk chunk = world.getChunks()[x][z];
-						if (chunk != null) {
-							PacketPlayOutMapChunk chunkdata = new PacketPlayOutMapChunk(x, z, chunk, world.getEnvironment());
-							sendPacket(chunkdata);
-						}
-					}
-				}
-
-				for (int x = 0; x < world.getChunks().length; x++) {
-					for (int z = 0; z < world.getChunks()[x].length; z++) {
-						List<Byte[]> blockChunk = world.getLightEngineBlock().getBlockLightBitMask(x, z);
-						if (blockChunk == null) {
-							blockChunk = new ArrayList<>();
-						}
-						List<Byte[]> skyChunk = null;
-						if (world.hasSkyLight()) {
-							skyChunk = world.getLightEngineSky().getSkyLightBitMask(x, z);
-						}
-						if (skyChunk == null) {
-							skyChunk = new ArrayList<>();
-						}
-						PacketPlayOutLightUpdate chunkdata = new PacketPlayOutLightUpdate(x, z, true, skyChunk, blockChunk);
-						sendPacket(chunkdata);
-					}
-				}
+				player.playerInteractManager.update();
 				
-				SkinResponse skinresponce = isBungeecord ? bungeeSkin : MojangAPIUtils.getSkinFromMojangServer(player.getName());
+				SkinResponse skinresponce = isBungeecord && bungeeSkin != null ? bungeeSkin : MojangAPIUtils.getSkinFromMojangServer(player.getName());
 				PlayerSkinProperty skin = skinresponce != null ? new PlayerSkinProperty(skinresponce.getSkin(), skinresponce.getSignature()) : null;
-				PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(PlayerInfoAction.ADD_PLAYER, player.getUUID(), new PlayerInfoData.PlayerInfoDataAddPlayer(player.getName(), Optional.ofNullable(skin), p.getDefaultGamemode(), 0, false, Optional.empty()));
+				PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(PlayerInfoAction.ADD_PLAYER, player.getUniqueId(), new PlayerInfoData.PlayerInfoDataAddPlayer(player.getName(), Optional.ofNullable(skin), p.getDefaultGamemode(), 0, false, Optional.empty()));
 				sendPacket(info);
 				/*
 				for (ClientConnection client : Limbo.getInstance().getServerConnection().getClients()) {
@@ -331,9 +314,6 @@ public class ClientConnection extends Thread {
 					other.write(packetByte);
 				}
 				*/
-				
-				PacketPlayOutShowPlayerSkins show = new PacketPlayOutShowPlayerSkins(player.getEntityId());
-				sendPacket(show);
 				
 				Set<PlayerAbilityFlags> flags = new HashSet<>();
 				if (p.isAllowFlight()) {
@@ -359,8 +339,14 @@ public class ClientConnection extends Thread {
 				sendPacket(spawnPos);
 				
 				PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(s.getX(), s.getY(), s.getZ(), s.getYaw(), s.getPitch(), 1);
-				player.setLocation(new Location(world, s.getX(), s.getY(), s.getZ(), s.getYaw(), s.getPitch()));
+				Limbo.getInstance().getUnsafe().setPlayerLocationSilently(player, new Location(world, s.getX(), s.getY(), s.getZ(), s.getYaw(), s.getPitch()));
 				sendPacket(positionLook);
+				
+				player.getDataWatcher().update();
+				PacketPlayOutEntityMetadata show = new PacketPlayOutEntityMetadata(player, false, Player.class.getDeclaredField("skinLayers"));
+				sendPacket(show);
+				
+				ready = true;
 				
 				while (client_socket.isConnected()) {
 					try {					
@@ -381,7 +367,7 @@ public class ClientConnection extends Thread {
 								PacketPlayOutPositionAndLook cancel = new PacketPlayOutPositionAndLook(returnTo.getX(), returnTo.getY(), returnTo.getZ(), returnTo.getYaw(), returnTo.getPitch(), 1);
 								sendPacket(cancel);
 							} else {
-								player.setLocation(event.getTo());							
+								Limbo.getInstance().getUnsafe().setPlayerLocationSilently(player, event.getTo());							
 								PacketPlayOutUpdateViewPosition response = new PacketPlayOutUpdateViewPosition((int) player.getLocation().getX() >> 4, (int) player.getLocation().getZ() >> 4);
 								sendPacket(response);
 							}
@@ -396,7 +382,7 @@ public class ClientConnection extends Thread {
 								PacketPlayOutPositionAndLook cancel = new PacketPlayOutPositionAndLook(returnTo.getX(), returnTo.getY(), returnTo.getZ(), returnTo.getYaw(), returnTo.getPitch(), 1);
 								sendPacket(cancel);
 							} else {
-								player.setLocation(event.getTo());							
+								Limbo.getInstance().getUnsafe().setPlayerLocationSilently(player, event.getTo());							
 								PacketPlayOutUpdateViewPosition response = new PacketPlayOutUpdateViewPosition((int) player.getLocation().getX() >> 4, (int) player.getLocation().getZ() >> 4);
 								sendPacket(response);
 							}
@@ -411,7 +397,7 @@ public class ClientConnection extends Thread {
 								PacketPlayOutPositionAndLook cancel = new PacketPlayOutPositionAndLook(returnTo.getX(), returnTo.getY(), returnTo.getZ(), returnTo.getYaw(), returnTo.getPitch(), 1);
 								sendPacket(cancel);
 							} else {
-								player.setLocation(event.getTo());
+								Limbo.getInstance().getUnsafe().setPlayerLocationSilently(player, event.getTo());
 								PacketPlayOutUpdateViewPosition response = new PacketPlayOutUpdateViewPosition((int) player.getLocation().getX() >> 4, (int) player.getLocation().getZ() >> 4);
 								sendPacket(response);
 							}
@@ -457,7 +443,7 @@ public class ClientConnection extends Thread {
 				
 	    	}
 		    
-    	} catch (Exception e) {}
+    	} catch (Exception e) {e.printStackTrace();}
     	
     	try {
 			client_socket.close();

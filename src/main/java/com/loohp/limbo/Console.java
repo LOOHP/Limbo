@@ -152,7 +152,7 @@ public class Console implements CommandSender {
 			return;
 		}
 		while (true) {
-			String command = tabReader.readLine(PROMPT);
+			String command = tabReader.readLine(PROMPT).trim();
 			if (command.length() > 0) {
 				String[] input = CustomStringUtils.splitStringToArgs(command);
 				new Thread(() -> Limbo.getInstance().dispatchCommand(this, input)).start();

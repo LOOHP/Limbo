@@ -1,6 +1,8 @@
 package com.loohp.limbo.Utils;
 
 public class NamespacedKey {
+	
+	public static final String MINECRAFT_KEY = "minecraft";
 
 	private String namespace;
 	private String key;
@@ -19,6 +21,10 @@ public class NamespacedKey {
 	public NamespacedKey(String namespace, String key) {
 		this.namespace = namespace;
 		this.key = key;
+	}
+	
+	public static NamespacedKey minecraft(String key) {
+		return new NamespacedKey(MINECRAFT_KEY, key);
 	}
 
 	public String getNamespace() {

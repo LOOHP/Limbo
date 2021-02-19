@@ -25,8 +25,7 @@ public class PacketPlayOutRespawn extends PacketOut {
 	private boolean isFlat;
 	private boolean copyMetaData;
 
-	public PacketPlayOutRespawn(World world, CompoundTag dimensionCodec, long hashedSeed, GameMode gamemode, boolean isDebug,
-			boolean isFlat, boolean copyMetaData) {
+	public PacketPlayOutRespawn(World world, CompoundTag dimensionCodec, long hashedSeed, GameMode gamemode, boolean isDebug, boolean isFlat, boolean copyMetaData) {
 		this.dimension = world.getEnvironment();
 		this.dimensionCodec = dimensionCodec;
 		this.worldName = new NamespacedKey(world.getName()).toString();

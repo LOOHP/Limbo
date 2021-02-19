@@ -1,7 +1,25 @@
 package com.loohp.limbo.World;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.loohp.limbo.Limbo;
+import com.loohp.limbo.Entity.ArmorStand;
+import com.loohp.limbo.Entity.DataWatcher;
+import com.loohp.limbo.Entity.DataWatcher.WatchableObject;
+import com.loohp.limbo.Entity.Entity;
+import com.loohp.limbo.Entity.EntityType;
+import com.loohp.limbo.Location.Location;
+import com.loohp.limbo.Player.Player;
+import com.loohp.limbo.Server.Packets.PacketPlayOutEntityDestroy;
+import com.loohp.limbo.Server.Packets.PacketPlayOutEntityMetadata;
 import com.loohp.limbo.Utils.SchematicConvertionUtils;
 
 import net.querz.mca.Chunk;
@@ -17,6 +35,7 @@ public class World {
 	private int length;
 	private LightEngineBlock lightEngineBlock;
 	private LightEngineSky lightEngineSky;
+	private Map<Entity, DataWatcher> entities;
 
 	public World(String name, int width, int length, Environment environment) {
 		this.name = name;
@@ -52,6 +71,8 @@ public class World {
 		if (environment.hasSkyLight()) {
 			this.lightEngineSky = new LightEngineSky(this);
 		}
+		
+		this.entities = new LinkedHashMap<>();
 	}
 
 	public LightEngineBlock getLightEngineBlock() {
@@ -107,6 +128,49 @@ public class World {
 	public Chunk getChunkAtWorldPos(int x, int z) {
 		return this.chunks[(x >> 4)][(z >> 4)];
 	}
+	
+	public Chunk getChunkAt(int x, int z) {
+		if (x < 0 || z < 0 || x >= chunks.length || z >= chunks[x].length) {
+			return null;
+		}
+		return this.chunks[x][z];
+	}
+	
+	public int getChunkX(Chunk chunk) {
+		for (int x = 0; x < chunks.length; x++) {
+			for (int z = 0; z < chunks[x].length; z++) {
+				Chunk c = getChunkAt(x, z);
+				if (c.equals(chunk)) {
+					return x;
+				}
+			}
+		}
+		return Integer.MIN_VALUE;
+	}
+	
+	public int getChunkZ(Chunk chunk) {
+		for (int x = 0; x < chunks.length; x++) {
+			for (int z = 0; z < chunks[x].length; z++) {
+				Chunk c = getChunkAt(x, z);
+				if (c.equals(chunk)) {
+					return z;
+				}
+			}
+		}
+		return Integer.MIN_VALUE;
+	}
+	
+	public int[] getChunkXZ(Chunk chunk) {
+		for (int x = 0; x < chunks.length; x++) {
+			for (int z = 0; z < chunks[x].length; z++) {
+				Chunk c = getChunkAt(x, z);
+				if (c.equals(chunk)) {
+					return new int[] {x, z};
+				}
+			}
+		}
+		return null;
+	}
 
 	public String getName() {
 		return name;
@@ -130,6 +194,81 @@ public class World {
 
 	public int getChunkLength() {
 		return (length >> 4) + 1;
+	}
+	
+	public Set<Entity> getEntities() {
+		return Collections.unmodifiableSet(entities.keySet());
+	}
+	
+	public Entity spawnEntity(EntityType type, Location location) {
+		if (!location.getWorld().equals(this)) {
+			throw new IllegalArgumentException("Location not in world.");
+		}
+		Entity entity;
+		switch (type) {
+		case ARMOR_STAND:
+			entity = new ArmorStand(location);
+			break;
+		default:
+			throw new UnsupportedOperationException("This EntityType cannot be summoned.");
+		}
+		entities.put(entity, new DataWatcher(entity));
+		return entity;
+	}
+	
+	public Entity addEntity(Entity entity) {
+		if (entity.getWorld().equals(this)) {
+			entities.put(entity, new DataWatcher(entity));
+		} else {
+			throw new IllegalArgumentException("Location not in world.");
+		}
+		return entity;
+	}
+	
+	public List<Player> getPlayers() {
+		return Limbo.getInstance().getPlayers().stream().filter(each -> each.getWorld().equals(this)).collect(Collectors.toList());
+	}
+	
+	protected void removeEntity(Entity entity) {
+		entities.remove(entity);
+		PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(entity.getEntityId());
+		for (Player player : getPlayers()) {
+			try {
+				player.clientConnection.sendPacket(packet);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	protected DataWatcher getDataWatcher(Entity entity) {
+		return entities.get(entity);
+	}
+	
+	public void update() throws IllegalArgumentException, IllegalAccessException {
+		for (DataWatcher watcher : entities.values()) {
+			if (watcher.getEntity().getWorld().equals(this)) {
+				Map<Field, WatchableObject> updated = watcher.update();
+				PacketPlayOutEntityMetadata packet = new PacketPlayOutEntityMetadata(watcher.getEntity(), false, updated.keySet().toArray(new Field[0]));
+				for (Player player : getPlayers()) {
+					try {
+						player.clientConnection.sendPacket(packet);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			} else {
+				PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(watcher.getEntity().getEntityId());
+				for (Player player : getPlayers()) {
+					try {
+						player.clientConnection.sendPacket(packet);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				entities.remove(watcher.getEntity());
+			}
+		}
 	}
 
 	@Override

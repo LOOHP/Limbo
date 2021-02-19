@@ -1,5 +1,6 @@
 package com.loohp.limbo.Player;
 
+import com.loohp.limbo.Location.Location;
 import com.loohp.limbo.Utils.GameMode;
 
 @Deprecated
@@ -14,7 +15,12 @@ public class Unsafe {
 	
 	@Deprecated
 	public void a(Player a, int b) {
-		a.entityId = b;
+		a.setEntityId(b);
+	}
+	
+	@Deprecated
+	public void a(Player a, Location b) {
+		a.setLocation(b);
 	}
 	
 }

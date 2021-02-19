@@ -4,6 +4,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -16,29 +20,44 @@ import com.loohp.limbo.Utils.NamespacedKey;
 import com.loohp.limbo.World.World;
 
 public class ServerProperties {
+	
+	public static final String COMMENT = "For explaination of what each of the options does, please visit:\nhttps://github.com/LOOHP/Limbo/blob/master/src/main/resources/server.properties";
 
-	File file;
-	int maxPlayers;
-	int serverPort;
-	String serverIp;
-	NamespacedKey levelName;
-	String schemFileName;
-	NamespacedKey levelDimension;
-	GameMode defaultGamemode;
-	Location worldSpawn;
-	boolean reducedDebugInfo;
-	boolean allowFlight;
-	String motdJson;
-	String versionString;
-	int protocol;
-	boolean bungeecord;
+	private File file;
+	private int maxPlayers;
+	private int serverPort;
+	private String serverIp;
+	private NamespacedKey levelName;
+	private String schemFileName;
+	private NamespacedKey levelDimension;
+	private GameMode defaultGamemode;
+	private Location worldSpawn;
+	private boolean reducedDebugInfo;
+	private boolean allowFlight;
+	private String motdJson;
+	private String versionString;
+	private int protocol;
+	private boolean bungeecord;
+	private int viewDistance;
+	private double ticksPerSecond;
 	
 	Optional<BufferedImage> favicon;
 
 	public ServerProperties(File file) throws IOException {
 		this.file = file;
+		
+		Properties def = new Properties();
+		def.load(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("server.properties"), StandardCharsets.UTF_8));
+		
 		Properties prop = new Properties();
-		prop.load(new FileInputStream(file));
+		prop.load(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+		
+		for (Entry<Object, Object> entry : def.entrySet()) {
+			String key = entry.getKey().toString();
+			String value = entry.getValue().toString();
+			prop.putIfAbsent(key, value);
+		}
+		prop.store(new PrintWriter(file, StandardCharsets.UTF_8), COMMENT);
 
 		protocol = Limbo.getInstance().serverImplmentationProtocol;
 
@@ -63,6 +82,8 @@ public class ServerProperties {
 		motdJson = prop.getProperty("motd");
 		versionString = prop.getProperty("version");
 		bungeecord = Boolean.parseBoolean(prop.getProperty("bungeecord"));
+		viewDistance = Integer.parseInt(prop.getProperty("view-distance"));
+		ticksPerSecond = Double.parseDouble(prop.getProperty("ticks-per-second"));
 		
 		File png = new File("server-icon.png");
 		if (png.exists()) {
@@ -154,6 +175,14 @@ public class ServerProperties {
 
 	public int getProtocol() {
 		return protocol;
+	}
+	
+	public int getViewDistance() {
+		return viewDistance;
+	}
+	
+	public double getDefinedTicksPerSecond() {
+		return ticksPerSecond;
 	}
 
 }

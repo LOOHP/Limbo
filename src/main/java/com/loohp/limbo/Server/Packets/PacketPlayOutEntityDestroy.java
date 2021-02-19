@@ -6,16 +6,16 @@ import java.io.IOException;
 
 import com.loohp.limbo.Utils.DataTypeIO;
 
-public class PacketPlayOutShowPlayerSkins extends PacketOut {
-
-	private int entityId;
-
-	public PacketPlayOutShowPlayerSkins(int entityId) {
-		this.entityId = entityId;
-	}
+public class PacketPlayOutEntityDestroy extends PacketOut {
 	
-	public int getEntityId() {
-		return entityId;
+	private int[] entityIds;
+	
+	public PacketPlayOutEntityDestroy(int... entityIds) {
+		this.entityIds = entityIds;
+	}
+
+	public int[] getEntityIds() {
+		return entityIds;
 	}
 	
 	@Override
@@ -24,13 +24,10 @@ public class PacketPlayOutShowPlayerSkins extends PacketOut {
 		
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(Packet.getPlayOut().get(getClass()));
-		
-		DataTypeIO.writeVarInt(output, entityId);
-		output.writeByte(16);
-		DataTypeIO.writeVarInt(output, 0);
-		int bitmask = 0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40;
-		output.writeByte(bitmask);
-		output.writeByte(0xff);
+		DataTypeIO.writeVarInt(output, entityIds.length);
+		for (int id : entityIds) {
+			DataTypeIO.writeVarInt(output, id);
+		}
 		
 		return buffer.toByteArray();
 	}

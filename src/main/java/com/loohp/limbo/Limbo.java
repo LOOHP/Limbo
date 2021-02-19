@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -108,6 +109,8 @@ public class Limbo {
 	public final int serverImplmentationProtocol = 754;
 	public final String limboImplementationVersion;
 	
+	private AtomicBoolean isRunning;
+	
 	private ServerConnection server;
 	private Console console;
 	
@@ -126,6 +129,9 @@ public class Limbo {
 	
 	private DimensionRegistry dimensionRegistry;
 	
+	@SuppressWarnings("unused")
+	private Tick tick;
+	
 	private Metrics metrics;
 	
 	public AtomicInteger entityIdCount = new AtomicInteger();
@@ -136,6 +142,7 @@ public class Limbo {
 	@SuppressWarnings("unchecked")
 	public Limbo() throws IOException, ParseException, NumberFormatException, ClassNotFoundException, InterruptedException {
 		instance = this;
+		isRunning = new AtomicBoolean(true);
 		
 		if (!noGui) {
 			while (!GUI.loadFinish) {
@@ -304,6 +311,8 @@ public class Limbo {
 		
 		server = new ServerConnection(properties.getServerIp(), properties.getServerPort());
 		
+		tick = new Tick(this);
+		
 		metrics = new Metrics();
 		
 		console.run();
@@ -357,6 +366,27 @@ public class Limbo {
 		return world;		
 	}
 	
+	public void registerWorld(World world) {
+		if (!worlds.contains(world)) {
+			worlds.add(world);
+		} else {
+			throw new RuntimeException("World already registered");
+		}
+	}
+	
+	public void unregisterWorld(World world) {
+		if (worlds.indexOf(world) == 0) {
+			throw new RuntimeException("World already registered");
+		} else if (!worlds.contains(world)) {
+			throw new RuntimeException("World not registered");
+		} else {
+			for (Player player : world.getPlayers()) {
+				player.teleport(properties.getWorldSpawn());
+			}
+			worlds.remove(world);
+		}
+	}
+	
 	public ServerProperties getServerProperties() {
 		return properties;
 	}
@@ -387,12 +417,12 @@ public class Limbo {
 	
 	public void addPlayer(Player player) {
 		playersByName.put(player.getName(), player);
-		playersByUUID.put(player.getUUID(), player);
+		playersByUUID.put(player.getUniqueId(), player);
 	}
 	
 	public void removePlayer(Player player) {
 		playersByName.remove(player.getName());
-		playersByUUID.remove(player.getUUID());
+		playersByUUID.remove(player.getUniqueId());
 	}
 	
 	public List<World> getWorlds() {
@@ -453,6 +483,7 @@ public class Limbo {
 	}
 	
 	public void stopServer() {
+		isRunning.set(false);
 		console.sendMessage("Stopping Server...");
 		
 		for (LimboPlugin plugin : Limbo.getInstance().getPluginManager().getPlugins()) {
@@ -474,6 +505,10 @@ public class Limbo {
 		console.sendMessage("Server closed");
 		console.logs.close();
 		System.exit(0);
+	}
+	
+	public boolean isRunning() {
+		return isRunning.get();
 	}
 	
 	public int getNextEntityId() {

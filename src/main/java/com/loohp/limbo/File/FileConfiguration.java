@@ -3,9 +3,12 @@ package com.loohp.limbo.File;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -18,32 +21,36 @@ import com.loohp.limbo.Utils.YamlOrder;
 
 public class FileConfiguration {
 	
-	File file;
-	
-	Map<String, Object> mapping;
-	String header;
+	private Map<String, Object> mapping;
+	private String header;
 	
 	public FileConfiguration(File file) throws FileNotFoundException {
-		this.file = file;
 		if (file.exists()) {
-			reloadConfig();
+			reloadConfig(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
 		} else {
 			mapping = new LinkedHashMap<>();
 		}
 	}
 	
-	@Deprecated
 	public FileConfiguration(InputStream input){
-		reloadConfig(input);
+		reloadConfig(new InputStreamReader(input, StandardCharsets.UTF_8));
 	}
 	
-	public FileConfiguration reloadConfig() throws FileNotFoundException {
-		return reloadConfig(new FileInputStream(file));
+	public FileConfiguration(Reader reader){
+		reloadConfig(reader);
 	}
 	
-	private FileConfiguration reloadConfig(InputStream input) {
+	public FileConfiguration reloadConfig(File file) throws FileNotFoundException {
+		return reloadConfig(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+	}
+	
+	public FileConfiguration reloadConfig(InputStream input) {
+		return reloadConfig(new InputStreamReader(input, StandardCharsets.UTF_8));
+	}
+	
+	public FileConfiguration reloadConfig(Reader reader) {
 		Yaml yml = new Yaml();
-		mapping = yml.load(input);
+		mapping = yml.load(reader);
 		return this;
 	}
 	
@@ -87,7 +94,29 @@ public class FileConfiguration {
 		}
 	}
 	
-	public void saveConfig(File file) throws FileNotFoundException, UnsupportedEncodingException {
+	public String saveToString() throws IOException {
+		DumperOptions options = new DumperOptions();
+        options.setIndent(2);
+        options.setPrettyFlow(true);
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        Representer customRepresenter = new Representer();
+        YamlOrder customProperty = new YamlOrder();
+        customRepresenter.setPropertyUtils(customProperty);
+		Yaml yaml = new Yaml(customRepresenter, options);
+		
+		StringWriter writer = new StringWriter();
+		PrintWriter pw = new PrintWriter(writer);
+		if (header != null) {
+			pw.println("#" + header.replace("\n", "\n#"));
+		}
+		yaml.dump(mapping, pw);
+		pw.flush();
+		pw.close();
+		
+		return writer.toString();
+	}
+	
+	public void saveConfig(File file) throws IOException {
 		DumperOptions options = new DumperOptions();
         options.setIndent(2);
         options.setPrettyFlow(true);

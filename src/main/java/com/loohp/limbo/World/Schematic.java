@@ -19,7 +19,7 @@ public class Schematic {
 		//short height = nbt.getShort("Height");
 		byte[] blockdata = nbt.getByteArray("BlockData");
 		CompoundTag palette = nbt.getCompoundTag("Palette");
-		ListTag<CompoundTag> blockEntities = nbt.getListTag("BlockEntities").asTypedList(CompoundTag.class);
+		ListTag<CompoundTag> blockEntities = nbt.containsKey("BlockEntities") ? nbt.getListTag("BlockEntities").asTypedList(CompoundTag.class) : null;
 		Map<Integer, String> mapping = new HashMap<>();
 		for (String key : palette.keySet()) {
 			mapping.put(palette.getInt(key), key);
@@ -54,19 +54,21 @@ public class Schematic {
 
             Chunk chunk = world.getChunkAtWorldPos(x, z);
 			
-			Iterator<CompoundTag> itr = blockEntities.iterator();
-			while (itr.hasNext()) {
-				CompoundTag tag = itr.next();
-				int[] pos = tag.getIntArray("Pos");
-				
-				if (pos[0] == x && pos[1] == y && pos[2] == z) {
-					ListTag<CompoundTag> newTag = chunk.getTileEntities();
-					newTag.add(SchematicConvertionUtils.toTileEntityTag(tag));
-					chunk.setTileEntities(newTag);
-					itr.remove();
-					break;
+            if (blockEntities != null) {
+				Iterator<CompoundTag> itr = blockEntities.iterator();
+				while (itr.hasNext()) {
+					CompoundTag tag = itr.next();
+					int[] pos = tag.getIntArray("Pos");
+					
+					if (pos[0] == x && pos[1] == y && pos[2] == z) {
+						ListTag<CompoundTag> newTag = chunk.getTileEntities();
+						newTag.add(SchematicConvertionUtils.toTileEntityTag(tag));
+						chunk.setTileEntities(newTag);
+						itr.remove();
+						break;
+					}
 				}
-			}
+            }
             
             index++;
         }

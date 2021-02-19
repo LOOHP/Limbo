@@ -5,6 +5,11 @@ import java.util.UUID;
 
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.Commands.CommandSender;
+import com.loohp.limbo.Entity.DataWatcher;
+import com.loohp.limbo.Entity.DataWatcher.WatchableField;
+import com.loohp.limbo.Entity.DataWatcher.WatchableObjectType;
+import com.loohp.limbo.Entity.EntityType;
+import com.loohp.limbo.Entity.LivingEntity;
 import com.loohp.limbo.Events.PlayerChatEvent;
 import com.loohp.limbo.Events.PlayerTeleportEvent;
 import com.loohp.limbo.Location.Location;
@@ -14,30 +19,42 @@ import com.loohp.limbo.Server.Packets.PacketPlayOutGameState;
 import com.loohp.limbo.Server.Packets.PacketPlayOutPositionAndLook;
 import com.loohp.limbo.Server.Packets.PacketPlayOutRespawn;
 import com.loohp.limbo.Utils.GameMode;
-import com.loohp.limbo.World.World;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 
-public class Player implements CommandSender {
+public class Player extends LivingEntity implements CommandSender {
 
 	public final ClientConnection clientConnection;
+	public final PlayerInteractManager playerInteractManager;
 
-	private final String username;
-	private final UUID uuid;
+	protected final String username;
 	protected GameMode gamemode;
+	protected DataWatcher watcher;
 	
-	protected int entityId;
-
-	private Location location;
+	@WatchableField(MetadataIndex = 14, WatchableObjectType = WatchableObjectType.FLOAT) 
+	protected float additionalHearts = 0.0F;
+	@WatchableField(MetadataIndex = 15, WatchableObjectType = WatchableObjectType.VARINT) 
+	protected int score = 0;
+	@WatchableField(MetadataIndex = 16, WatchableObjectType = WatchableObjectType.BYTE) 
+	protected byte skinLayers = 0;
+	@WatchableField(MetadataIndex = 17, WatchableObjectType = WatchableObjectType.BYTE) 
+	protected byte mainHand = 1;
+	//@WatchableField(MetadataIndex = 18, WatchableObjectType = WatchableObjectType.NBT) 
+	//protected Entity leftShoulder = null;
+	//@WatchableField(MetadataIndex = 19, WatchableObjectType = WatchableObjectType.NBT) 
+	//protected Entity rightShoulder = null;
 	
-	public Player(ClientConnection clientConnection, String username, UUID uuid, int entityId, Location location) {
+	public Player(ClientConnection clientConnection, String username, UUID uuid, int entityId, Location location, PlayerInteractManager playerInteractManager) throws IllegalArgumentException, IllegalAccessException {
+		super(EntityType.PLAYER, entityId, uuid, location.getWorld(), location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
 		this.clientConnection = clientConnection;
 		this.username = username;
-		this.uuid = uuid;
 		this.entityId = entityId;
-		this.location = location.clone();
+		this.playerInteractManager = playerInteractManager;
+		this.playerInteractManager.setPlayer(this);
+		this.watcher = new DataWatcher(this);
+		this.watcher.update();
 	}
 	
 	public GameMode getGamemode() {
@@ -55,41 +72,95 @@ public class Player implements CommandSender {
 		}
 		this.gamemode = gamemode;
 	}
+	
+	@Deprecated
+	protected void setEntityId(int entityId) {
+		this.entityId = entityId;
+	}
 
-	public World getWorld() {
-		return location.clone().getWorld();
+	public float getAdditionalHearts() {
+		return additionalHearts;
+	}
+
+	public void setAdditionalHearts(float additionalHearts) {
+		this.additionalHearts = additionalHearts;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
+	}
+
+	public byte getSkinLayers() {
+		return skinLayers;
+	}
+
+	public void setSkinLayers(byte skinLayers) {
+		this.skinLayers = skinLayers;
+	}
+
+	public byte getMainHand() {
+		return mainHand;
+	}
+
+	public void setMainHand(byte mainHand) {
+		this.mainHand = mainHand;
 	}
 	
-	public int getEntityId() {
-		return entityId;
+	@Override
+	public DataWatcher getDataWatcher() {
+		return watcher;
+	}
+	
+	@Override
+	public boolean isValid() {
+		return Limbo.getInstance().getPlayers().contains(this);
+	}
+	
+	@Override
+	public void remove() {
+		
+	}
+	
+	/*
+	public Entity getLeftShoulder() {
+		return leftShoulder;
 	}
 
-	public Location getLocation() {
-		return location.clone();
+	public void setLeftShoulder(Entity leftShoulder) {
+		this.leftShoulder = leftShoulder;
 	}
 
-	public void setLocation(Location location) {
-		this.location = location;
+	public Entity getRightShoulder() {
+		return rightShoulder;
 	}
 
+	public void setRightShoulder(Entity rightShoulder) {
+		this.rightShoulder = rightShoulder;
+	}
+	*/
+
+	@Override
 	public String getName() {
 		return username;
 	}
-
-	public UUID getUUID() {
-		return uuid;
-	}
 	
+	@Override
 	public boolean hasPermission(String permission) {
 		return Limbo.getInstance().getPermissionsManager().hasPermission(this, permission);
 	}
 
+	@Override
 	public void teleport(Location location) {
 		PlayerTeleportEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerTeleportEvent(this, getLocation(), location));
 		if (!event.isCancelled()) {
 			location = event.getTo();
+			super.teleport(location);
 			try {
-				if (!this.location.getWorld().equals(location.getWorld())) {
+				if (!world.equals(location.getWorld())) {
 					PacketPlayOutRespawn respawn = new PacketPlayOutRespawn(location.getWorld(), Limbo.getInstance().getDimensionRegistry().getCodec(), 0, gamemode, false, false, true);
 					clientConnection.sendPacket(respawn);
 				}
@@ -99,6 +170,10 @@ public class Player implements CommandSender {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	protected void setLocation(Location location) {
+		super.teleport(location);
 	}
 	
 	public void sendMessage(String message, UUID uuid) {

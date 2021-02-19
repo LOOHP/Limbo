@@ -27,17 +27,21 @@
     "PacketPlayOutChat": "0x0E",
     "PacketPlayOutPlayerAbilities": "0x30",
     "PacketPlayOutMapChunk": "0x20",
+    "PacketPlayOutUnloadChunk": "0x1C",
     "PacketPlayOutLightUpdate": "0x23",
     "PacketPlayOutKeepAlive": "0x1F",
     "PacketPlayOutPlayerInfo": "0x32",
     "PacketPlayOutUpdateViewPosition": "0x40",
-    "PacketPlayOutShowPlayerSkins": "0x44",
     "PacketPlayOutDisconnect": "0x19",
     "PacketPlayOutPluginMessaging": "0x17",
     "PacketPlayOutTabComplete": "0x0F",
     "PacketPlayOutDeclareCommands": "0x10",
     "PacketPlayOutRespawn": "0x39",
-    "PacketPlayOutGameState": "0x1D"
+    "PacketPlayOutGameState": "0x1D",
+    "PacketPlayOutEntityDestroy": "0x36",
+    "PacketPlayOutEntityMetadata": "0x44",
+    "PacketPlayOutSpawnEntity": "0x00",
+    "PacketPlayOutSpawnEntityLiving": "0x02"
   },
   "StatusIn": {
     "0x01": "PacketStatusInPing",
