@@ -1,7 +1,7 @@
 package com.loohp.limbo.Permissions;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +23,7 @@ public class PermissionsManager {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void loadDefaultPermissionFile(File file) throws FileNotFoundException {
+	public void loadDefaultPermissionFile(File file) throws IOException {
 		FileConfiguration config = new FileConfiguration(file);
 		permissions.put("default", new ArrayList<>());
 		try {

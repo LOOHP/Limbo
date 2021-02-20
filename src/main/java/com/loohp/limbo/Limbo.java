@@ -4,8 +4,8 @@ import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -190,7 +191,9 @@ public class Limbo {
         
         console.sendMessage("Loading packet id mappings from mapping.json ...");
         
-        JSONObject json = (JSONObject) new JSONParser().parse(new FileReader(mappingFile));
+        InputStreamReader reader = new InputStreamReader(new FileInputStream(mappingFile), StandardCharsets.UTF_8);
+        JSONObject json = (JSONObject) new JSONParser().parse(reader);
+        reader.close();
         
         String classPrefix = Packet.class.getName().substring(0, Packet.class.getName().lastIndexOf(".") + 1);
         int mappingsCount = 0;

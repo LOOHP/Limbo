@@ -1,9 +1,11 @@
 package com.loohp.limbo.World;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 import org.json.simple.JSONObject;
@@ -36,8 +38,8 @@ public class DimensionRegistry {
         
         this.reg = file;
         
-        try {
-			JSONObject json = (JSONObject) new JSONParser().parse(new FileReader(reg));
+        try (InputStreamReader reader = new InputStreamReader(new FileInputStream(reg), StandardCharsets.UTF_8)) {
+			JSONObject json = (JSONObject) new JSONParser().parse(reader);
 			CompoundTag tag = CustomNBTUtils.getCompoundTagFromJson((JSONObject) json.get("value"));
 			defaultTag = tag;
 			codec = defaultTag.clone();

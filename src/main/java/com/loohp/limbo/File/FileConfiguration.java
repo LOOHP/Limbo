@@ -24,9 +24,11 @@ public class FileConfiguration {
 	private Map<String, Object> mapping;
 	private String header;
 	
-	public FileConfiguration(File file) throws FileNotFoundException {
+	public FileConfiguration(File file) throws IOException {
 		if (file.exists()) {
-			reloadConfig(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+			InputStreamReader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+			reloadConfig(reader);
+			reader.close();
 		} else {
 			mapping = new LinkedHashMap<>();
 		}
@@ -113,7 +115,10 @@ public class FileConfiguration {
 		pw.flush();
 		pw.close();
 		
-		return writer.toString();
+		String str = writer.toString();
+		writer.close();
+		
+		return str;
 	}
 	
 	public void saveConfig(File file) throws IOException {

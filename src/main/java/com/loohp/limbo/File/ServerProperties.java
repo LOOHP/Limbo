@@ -47,17 +47,23 @@ public class ServerProperties {
 		this.file = file;
 		
 		Properties def = new Properties();
-		def.load(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("server.properties"), StandardCharsets.UTF_8));
+		InputStreamReader defStream = new InputStreamReader(getClass().getClassLoader().getResourceAsStream("server.properties"), StandardCharsets.UTF_8);
+		def.load(defStream);
+		defStream.close();
 		
 		Properties prop = new Properties();
-		prop.load(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+		InputStreamReader stream = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+		prop.load(stream);
+		stream.close();
 		
 		for (Entry<Object, Object> entry : def.entrySet()) {
 			String key = entry.getKey().toString();
 			String value = entry.getValue().toString();
 			prop.putIfAbsent(key, value);
 		}
-		prop.store(new PrintWriter(file, StandardCharsets.UTF_8), COMMENT);
+		PrintWriter pw = new PrintWriter(file, StandardCharsets.UTF_8);
+		prop.store(pw, COMMENT);
+		pw.close();
 
 		protocol = Limbo.getInstance().serverImplmentationProtocol;
 

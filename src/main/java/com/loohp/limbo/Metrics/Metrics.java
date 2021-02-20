@@ -3,7 +3,6 @@ package com.loohp.limbo.Metrics;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -60,9 +59,9 @@ public class Metrics {
      * @param serverUUID The uuid of the server.
      * @param logFailedRequests Whether failed requests should be logged or not.
      * @param logger The logger for the failed requests.
-     * @throws FileNotFoundException 
+     * @throws IOException 
      */
-    public Metrics() throws FileNotFoundException {
+    public Metrics() throws IOException {
     	name = "Limbo";
     	
     	// Get the config file
