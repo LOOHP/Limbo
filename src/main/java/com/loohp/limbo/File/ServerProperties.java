@@ -3,8 +3,10 @@ package com.loohp.limbo.File;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Map.Entry;
@@ -61,7 +63,7 @@ public class ServerProperties {
 			String value = entry.getValue().toString();
 			prop.putIfAbsent(key, value);
 		}
-		PrintWriter pw = new PrintWriter(file, StandardCharsets.UTF_8);
+		PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
 		prop.store(pw, COMMENT);
 		pw.close();
 
