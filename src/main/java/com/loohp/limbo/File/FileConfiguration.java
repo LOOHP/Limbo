@@ -1,11 +1,14 @@
 package com.loohp.limbo.File;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
@@ -106,8 +109,8 @@ public class FileConfiguration {
         customRepresenter.setPropertyUtils(customProperty);
 		Yaml yaml = new Yaml(customRepresenter, options);
 		
-		StringWriter writer = new StringWriter();
-		PrintWriter pw = new PrintWriter(writer);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		PrintWriter pw = new PrintWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
 		if (header != null) {
 			pw.println("#" + header.replace("\n", "\n#"));
 		}
@@ -115,8 +118,7 @@ public class FileConfiguration {
 		pw.flush();
 		pw.close();
 		
-		String str = writer.toString();
-		writer.close();
+		String str = new String(out.toByteArray(), StandardCharsets.UTF_8);
 		
 		return str;
 	}
@@ -135,7 +137,7 @@ public class FileConfiguration {
 			file.getParentFile().mkdirs();
 		}
 		
-		PrintWriter pw = new PrintWriter(file, StandardCharsets.UTF_8.toString());
+		PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
 		if (header != null) {
 			pw.println("#" + header.replace("\n", "\n#"));
 		}
