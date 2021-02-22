@@ -18,6 +18,7 @@ import com.loohp.limbo.Server.Packets.PacketPlayOutChat;
 import com.loohp.limbo.Server.Packets.PacketPlayOutGameState;
 import com.loohp.limbo.Server.Packets.PacketPlayOutPositionAndLook;
 import com.loohp.limbo.Server.Packets.PacketPlayOutRespawn;
+import com.loohp.limbo.Server.Packets.PacketPlayOutHeldItemChange;
 import com.loohp.limbo.Utils.GameMode;
 
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -32,6 +33,7 @@ public class Player extends LivingEntity implements CommandSender {
 	protected final String username;
 	protected GameMode gamemode;
 	protected DataWatcher watcher;
+	protected byte selectedSlot;
 	
 	@WatchableField(MetadataIndex = 14, WatchableObjectType = WatchableObjectType.FLOAT) 
 	protected float additionalHearts = 0.0F;
@@ -56,7 +58,23 @@ public class Player extends LivingEntity implements CommandSender {
 		this.watcher = new DataWatcher(this);
 		this.watcher.update();
 	}
-	
+
+	public byte getSelectedSlot() {
+		return selectedSlot;
+	}
+
+	public void setSelectedSlot(byte slot) {
+		if(slot == selectedSlot)
+			return;
+		try {
+			PacketPlayOutHeldItemChange state = new PacketPlayOutHeldItemChange(slot);
+			clientConnection.sendPacket(state);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		this.selectedSlot = slot;
+	}
+
 	public GameMode getGamemode() {
 		return gamemode;
 	}

@@ -28,12 +28,17 @@ public class Unsafe {
 			worldConstructor.setAccessible(false);
 		} catch (Exception e) {e.printStackTrace();}
 	}
-	
+
 	@Deprecated
 	public void setPlayerGameModeSilently(Player player, GameMode mode) {
 		playerUnsafe.a(player, mode);
 	}
-	
+
+	@Deprecated
+	public void setSelectedSlotSilently(Player player, byte slot) {
+		playerUnsafe.a(player, slot);
+	}
+
 	@Deprecated
 	public void setPlayerEntityId(Player player, int entityId) {
 		playerUnsafe.a(player, entityId);

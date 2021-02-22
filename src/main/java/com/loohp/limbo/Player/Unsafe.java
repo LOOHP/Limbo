@@ -22,5 +22,10 @@ public class Unsafe {
 	public void a(Player a, Location b) {
 		a.setLocation(b);
 	}
-	
+
+	@Deprecated
+	public void a(Player a, byte b) {
+		a.selectedSlot = b;
+	}
+
 }

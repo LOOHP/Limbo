@@ -23,6 +23,7 @@ import com.loohp.limbo.Events.PlayerLoginEvent;
 import com.loohp.limbo.Events.PlayerMoveEvent;
 import com.loohp.limbo.Events.PlayerQuitEvent;
 import com.loohp.limbo.Events.StatusPingEvent;
+import com.loohp.limbo.Events.PlayerSelectedSlotChangeEvent;
 import com.loohp.limbo.File.ServerProperties;
 import com.loohp.limbo.Location.Location;
 import com.loohp.limbo.Player.Player;
@@ -58,6 +59,8 @@ import com.loohp.limbo.Server.Packets.PacketStatusInPing;
 import com.loohp.limbo.Server.Packets.PacketStatusInRequest;
 import com.loohp.limbo.Server.Packets.PacketStatusOutPong;
 import com.loohp.limbo.Server.Packets.PacketStatusOutResponse;
+import com.loohp.limbo.Server.Packets.PacketPlayInHeldItemChange;
+import com.loohp.limbo.Server.Packets.PacketPlayOutHeldItemChange;
 import com.loohp.limbo.Utils.CustomStringUtils;
 import com.loohp.limbo.Utils.DataTypeIO;
 import com.loohp.limbo.Utils.GameMode;
@@ -426,6 +429,19 @@ public class ClientConnection extends Thread {
 								Limbo.getInstance().dispatchCommand(player, chat.getMessage());
 							} else {
 								player.chat(chat.getMessage());
+							}
+						} else if(packetType.equals(PacketPlayInHeldItemChange.class)) {
+							PacketPlayInHeldItemChange change = new PacketPlayInHeldItemChange(input);
+							PlayerSelectedSlotChangeEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerSelectedSlotChangeEvent(player, (byte)change.getSlot()));
+							if(event.isCancelled()) {
+								PacketPlayOutHeldItemChange cancelPacket = new PacketPlayOutHeldItemChange(player.getSelectedSlot());
+								sendPacket(cancelPacket);
+							} else if(change.getSlot() != event.getSlot()) {
+								PacketPlayOutHeldItemChange changePacket = new PacketPlayOutHeldItemChange(event.getSlot());
+								sendPacket(changePacket);
+								Limbo.getInstance().getUnsafe().setSelectedSlotSilently(player, event.getSlot());
+							} else {
+								Limbo.getInstance().getUnsafe().setSelectedSlotSilently(player, event.getSlot());
 							}
 						} else {
 							input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
