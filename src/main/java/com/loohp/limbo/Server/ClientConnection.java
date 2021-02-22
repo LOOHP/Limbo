@@ -324,83 +324,79 @@ public class ClientConnection extends Thread {
 				}
 				PacketPlayOutPlayerAbilities abilities = new PacketPlayOutPlayerAbilities(0.05F, 0.1F, flags.toArray(new PlayerAbilityFlags[flags.size()]));
 				sendPacket(abilities);
-				
+
 				String str = client_socket.getInetAddress().getHostName() + ":" + client_socket.getPort() + "|" + player.getName();
 				Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had connected to the Limbo server!");
-				
+
 				PacketPlayOutDeclareCommands declare = DeclareCommands.getDeclareCommandsPacket(player);
 				if (declare != null) {
 					sendPacket(declare);
 				}
-				
+
 				Limbo.getInstance().getEventsManager().callEvent(new PlayerJoinEvent(player));
-				
+
 				PacketPlayOutSpawnPosition spawnPos = new PacketPlayOutSpawnPosition(BlockPosition.from(s));
 				sendPacket(spawnPos);
-				
+
 				PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(s.getX(), s.getY(), s.getZ(), s.getYaw(), s.getPitch(), 1);
 				Limbo.getInstance().getUnsafe().setPlayerLocationSilently(player, new Location(world, s.getX(), s.getY(), s.getZ(), s.getYaw(), s.getPitch()));
 				sendPacket(positionLook);
-				
+
 				player.getDataWatcher().update();
 				PacketPlayOutEntityMetadata show = new PacketPlayOutEntityMetadata(player, false, Player.class.getDeclaredField("skinLayers"));
 				sendPacket(show);
-				
+
 				ready = true;
-				
+
 				while (client_socket.isConnected()) {
-					try {					
+					try {
 						int size = DataTypeIO.readVarInt(input);
 						int packetId = DataTypeIO.readVarInt(input);
 						Class<? extends Packet> packetType = Packet.getPlayIn().get(packetId);
 						//Limbo.getInstance().getConsole().sendMessage(packetId + " -> " + packetType);
-						if (packetType == null) {
-							input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
-						} else if (packetType.equals(PacketPlayInPositionAndLook.class)) {					
-							PacketPlayInPositionAndLook pos = new PacketPlayInPositionAndLook(input);
-							Location from = player.getLocation();
-							Location to = new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ(), pos.getYaw(), pos.getPitch());
-							
-							PlayerMoveEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerMoveEvent(player, from, to));
+						CheckedConsumer<PlayerMoveEvent, IOException> processMoveEvent = event ->
+						{
+							Location originalTo = event.getTo().clone();
 							if (event.isCancelled()) {
 								Location returnTo = event.getFrom();
 								PacketPlayOutPositionAndLook cancel = new PacketPlayOutPositionAndLook(returnTo.getX(), returnTo.getY(), returnTo.getZ(), returnTo.getYaw(), returnTo.getPitch(), 1);
 								sendPacket(cancel);
 							} else {
-								Limbo.getInstance().getUnsafe().setPlayerLocationSilently(player, event.getTo());							
+								Location to = event.getTo();
+								Limbo.getInstance().getUnsafe().setPlayerLocationSilently(player, to);
+								// If an event handler used setTo, let's make sure we tell the player about it.
+								if(!originalTo.equals(to))
+								{
+									PacketPlayOutPositionAndLook pos = new PacketPlayOutPositionAndLook(to.getX(), to.getY(), to.getZ(), to.getYaw(), to.getPitch(), 1);
+									sendPacket(pos);
+								}
 								PacketPlayOutUpdateViewPosition response = new PacketPlayOutUpdateViewPosition((int) player.getLocation().getX() >> 4, (int) player.getLocation().getZ() >> 4);
 								sendPacket(response);
 							}
+						};
+						if (packetType == null) {
+							input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
+						} else if (packetType.equals(PacketPlayInPositionAndLook.class)) {
+							PacketPlayInPositionAndLook pos = new PacketPlayInPositionAndLook(input);
+							Location from = player.getLocation();
+							Location to = new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ(), pos.getYaw(), pos.getPitch());
+
+							PlayerMoveEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerMoveEvent(player, from, to));
+							processMoveEvent.consume(event);
 						} else if (packetType.equals(PacketPlayInPosition.class)) {
 							PacketPlayInPosition pos = new PacketPlayInPosition(input);
 							Location from = player.getLocation();
 							Location to = new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ(), player.getLocation().getYaw(), player.getLocation().getPitch());
-							
+
 							PlayerMoveEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerMoveEvent(player, from, to));
-							if (event.isCancelled()) {
-								Location returnTo = event.getFrom();
-								PacketPlayOutPositionAndLook cancel = new PacketPlayOutPositionAndLook(returnTo.getX(), returnTo.getY(), returnTo.getZ(), returnTo.getYaw(), returnTo.getPitch(), 1);
-								sendPacket(cancel);
-							} else {
-								Limbo.getInstance().getUnsafe().setPlayerLocationSilently(player, event.getTo());							
-								PacketPlayOutUpdateViewPosition response = new PacketPlayOutUpdateViewPosition((int) player.getLocation().getX() >> 4, (int) player.getLocation().getZ() >> 4);
-								sendPacket(response);
-							}
+							processMoveEvent.consume(event);
 						} else if (packetType.equals(PacketPlayInRotation.class)) {
 							PacketPlayInRotation pos = new PacketPlayInRotation(input);
 							Location from = player.getLocation();
 							Location to = new Location(player.getWorld(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), pos.getYaw(), pos.getPitch());
-							
+
 							PlayerMoveEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerMoveEvent(player, from, to));
-							if (event.isCancelled()) {
-								Location returnTo = event.getFrom();
-								PacketPlayOutPositionAndLook cancel = new PacketPlayOutPositionAndLook(returnTo.getX(), returnTo.getY(), returnTo.getZ(), returnTo.getYaw(), returnTo.getPitch(), 1);
-								sendPacket(cancel);
-							} else {
-								Limbo.getInstance().getUnsafe().setPlayerLocationSilently(player, event.getTo());
-								PacketPlayOutUpdateViewPosition response = new PacketPlayOutUpdateViewPosition((int) player.getLocation().getX() >> 4, (int) player.getLocation().getZ() >> 4);
-								sendPacket(response);
-							}
+							processMoveEvent.consume(event);
 						} else if (packetType.equals(PacketPlayInKeepAlive.class)) {
 							PacketPlayInKeepAlive alive = new PacketPlayInKeepAlive(input);
 							if (alive.getPayload() != getLastKeepAlivePayLoad()) {
@@ -430,30 +426,35 @@ public class ClientConnection extends Thread {
 						} else {
 							input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
 						}
-						
+
 					} catch (Exception e) {
 						break;
 					}
 	    		}
-				
+
 				Limbo.getInstance().getEventsManager().callEvent(new PlayerQuitEvent(player));
-		    	
+
 		    	str = client_socket.getInetAddress().getHostName() + ":" + client_socket.getPort() + "|" + player.getName();
-		    	Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had disconnected!");				
-				
+		    	Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had disconnected!");
+
 	    	}
-		    
+
     	} catch (Exception e) {e.printStackTrace();}
-    	
+
     	try {
 			client_socket.close();
 		} catch (IOException e) {}
     	state = ClientState.DISCONNECTED;
-    	
+
     	if (player != null) {
     		Limbo.getInstance().removePlayer(player);
     	}
     	Limbo.getInstance().getServerConnection().getClients().remove(this);
 		running = false;
+	}
+
+	@FunctionalInterface
+	public interface CheckedConsumer<T, TException extends Throwable> {
+		void consume(T t) throws TException;
 	}
 }
