@@ -52,15 +52,13 @@ public class PluginManager {
 								System.err.println("Ambiguous plugin name in " + file.getName() + " with the plugin \"" + plugins.get(pluginName).getClass().getName() + "\"");
 								break;
 							}
-							
-							URLClassLoader url = new URLClassLoader(new URL[] {file.toURI().toURL()});
-							Class<?> clazz = url.loadClass(main);
+							URLClassLoader child = new URLClassLoader(new URL[] {file.toURI().toURL()}, Limbo.getInstance().getClass().getClassLoader());
+							Class<?> clazz = Class.forName(main, true, child);
 							LimboPlugin plugin = (LimboPlugin) clazz.getDeclaredConstructor().newInstance();
-							plugin.setInfo(pluginYaml);
+							plugin.setInfo(pluginYaml, file);
 							plugins.put(plugin.getName(), plugin);
 							plugin.onLoad();
 							Limbo.getInstance().getConsole().sendMessage("Loading plugin " + file.getName() + " " + plugin.getInfo().getVersion() + " by " + plugin.getInfo().getAuthor());
-							url.close();
 							break;
 						}
 					}

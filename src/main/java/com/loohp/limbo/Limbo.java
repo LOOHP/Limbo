@@ -49,6 +49,8 @@ import com.loohp.limbo.Permissions.PermissionsManager;
 import com.loohp.limbo.Player.Player;
 import com.loohp.limbo.Plugins.LimboPlugin;
 import com.loohp.limbo.Plugins.PluginManager;
+import com.loohp.limbo.Scheduler.LimboScheduler;
+import com.loohp.limbo.Scheduler.Tick;
 import com.loohp.limbo.Server.ServerConnection;
 import com.loohp.limbo.Server.Packets.Packet;
 import com.loohp.limbo.Server.Packets.PacketIn;
@@ -130,8 +132,8 @@ public class Limbo {
 	
 	private DimensionRegistry dimensionRegistry;
 	
-	@SuppressWarnings("unused")
 	private Tick tick;
+	private LimboScheduler scheduler;
 	
 	private Metrics metrics;
 	
@@ -281,6 +283,9 @@ public class Limbo {
             }
         }
         
+        scheduler = new LimboScheduler();
+		tick = new Tick(this);
+        
         permissionManager = new PermissionsManager();
         permissionManager.loadDefaultPermissionFile(permissionFile);     
         
@@ -314,8 +319,6 @@ public class Limbo {
 		
 		server = new ServerConnection(properties.getServerIp(), properties.getServerPort());
 		
-		tick = new Tick(this);
-		
 		metrics = new Metrics();
 		
 		console.run();
@@ -324,6 +327,14 @@ public class Limbo {
 	@Deprecated
 	public Unsafe getUnsafe() {
 		return unsafe;
+	}
+	
+	public Tick getHeartBeat() {
+		return tick;
+	}
+	
+	public LimboScheduler getScheduler() {
+		return scheduler;
 	}
 
 	public DimensionRegistry getDimensionRegistry() {
@@ -493,6 +504,8 @@ public class Limbo {
 			console.sendMessage("Disabling plugin " + plugin.getName() + " " + plugin.getInfo().getVersion());
 			plugin.onDisable();
 		}
+		
+		tick.waitAndKillThreads(5000);
 		
 		for (Player player : getPlayers()) {
 			player.disconnect("Server closed");

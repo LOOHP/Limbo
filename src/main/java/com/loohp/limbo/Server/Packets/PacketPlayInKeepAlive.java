@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public class PacketPlayInKeepAlive extends PacketIn {
 	
-	long payload;
+	private long payload;
 	
 	public PacketPlayInKeepAlive(long payload) {
 		this.payload = payload;

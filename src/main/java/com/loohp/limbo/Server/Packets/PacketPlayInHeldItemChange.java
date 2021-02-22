@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public class PacketPlayInHeldItemChange extends PacketIn {
 
-    private final short slot;
+    private short slot;
 
     public PacketPlayInHeldItemChange(short slot) {
         this.slot = slot;

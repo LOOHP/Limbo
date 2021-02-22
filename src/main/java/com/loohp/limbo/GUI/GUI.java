@@ -71,7 +71,9 @@ public class GUI extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				Limbo.getInstance().stopServer();
+				if (Limbo.getInstance().isRunning()) {
+					Limbo.getInstance().stopServer();
+				} 
 			}
 		});	
 		setBounds(100, 100, 1198, 686);

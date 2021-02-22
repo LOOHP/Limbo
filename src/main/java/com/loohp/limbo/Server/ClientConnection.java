@@ -357,8 +357,7 @@ public class ClientConnection extends Thread {
 						int packetId = DataTypeIO.readVarInt(input);
 						Class<? extends Packet> packetType = Packet.getPlayIn().get(packetId);
 						//Limbo.getInstance().getConsole().sendMessage(packetId + " -> " + packetType);
-						CheckedConsumer<PlayerMoveEvent, IOException> processMoveEvent = event ->
-						{
+						CheckedConsumer<PlayerMoveEvent, IOException> processMoveEvent = event -> {
 							Location originalTo = event.getTo().clone();
 							if (event.isCancelled()) {
 								Location returnTo = event.getFrom();
@@ -368,8 +367,7 @@ public class ClientConnection extends Thread {
 								Location to = event.getTo();
 								Limbo.getInstance().getUnsafe().setPlayerLocationSilently(player, to);
 								// If an event handler used setTo, let's make sure we tell the player about it.
-								if(!originalTo.equals(to))
-								{
+								if (!originalTo.equals(to)) {
 									PacketPlayOutPositionAndLook pos = new PacketPlayOutPositionAndLook(to.getX(), to.getY(), to.getZ(), to.getYaw(), to.getPitch(), 1);
 									sendPacket(pos);
 								}
@@ -426,13 +424,13 @@ public class ClientConnection extends Thread {
 							} else {
 								player.chat(chat.getMessage());
 							}
-						} else if(packetType.equals(PacketPlayInHeldItemChange.class)) {
+						} else if (packetType.equals(PacketPlayInHeldItemChange.class)) {
 							PacketPlayInHeldItemChange change = new PacketPlayInHeldItemChange(input);
-							PlayerSelectedSlotChangeEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerSelectedSlotChangeEvent(player, (byte)change.getSlot()));
-							if(event.isCancelled()) {
+							PlayerSelectedSlotChangeEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerSelectedSlotChangeEvent(player, (byte) change.getSlot()));
+							if (event.isCancelled()) {
 								PacketPlayOutHeldItemChange cancelPacket = new PacketPlayOutHeldItemChange(player.getSelectedSlot());
 								sendPacket(cancelPacket);
-							} else if(change.getSlot() != event.getSlot()) {
+							} else if (change.getSlot() != event.getSlot()) {
 								PacketPlayOutHeldItemChange changePacket = new PacketPlayOutHeldItemChange(event.getSlot());
 								sendPacket(changePacket);
 								Limbo.getInstance().getUnsafe().setSelectedSlotSilently(player, event.getSlot());
