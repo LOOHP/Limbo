@@ -293,37 +293,26 @@ public class ClientConnection extends Thread {
 		    	
 		    	TimeUnit.MILLISECONDS.sleep(500);
 
-				ServerProperties p = Limbo.getInstance().getServerProperties();
-				Location s = p.getWorldSpawn();
-
-				PlayerJoinEvent evt = new PlayerJoinEvent(player, s);
-				Limbo.getInstance().getEventsManager().callEvent(evt);
-				s = evt.getSpawnLocation();
-
-    			PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, p.getDefaultGamemode(), Limbo.getInstance().getWorlds().stream().map(each -> new NamespacedKey(each.getName()).toString()).collect(Collectors.toList()).toArray(new String[Limbo.getInstance().getWorlds().size()]), Limbo.getInstance().getDimensionRegistry().getCodec(), p.getWorldSpawn().getWorld(), 0, (byte) p.getMaxPlayers(), 8, p.isReducedDebugInfo(), true, false, true);
-    			sendPacket(join);
-    			Limbo.getInstance().getUnsafe().setPlayerGameModeSilently(player, p.getDefaultGamemode());
-
-				//PacketPlayOutKeepAlive alive = new PacketPlayOutKeepAlive((long) (Math.random() * Long.MAX_VALUE));
+				ServerProperties properties = Limbo.getInstance().getServerProperties();
+				Location worldSpawn = properties.getWorldSpawn();
 				
-				World world = s.getWorld();
+				PlayerJoinEvent joinEvent = Limbo.getInstance().getEventsManager().callEvent(new PlayerJoinEvent(player, worldSpawn));
+				worldSpawn = joinEvent.getSpawnLocation();
+				World world = worldSpawn.getWorld();
+
+    			PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, properties.getDefaultGamemode(), Limbo.getInstance().getWorlds().stream().map(each -> new NamespacedKey(each.getName()).toString()).collect(Collectors.toList()).toArray(new String[Limbo.getInstance().getWorlds().size()]), Limbo.getInstance().getDimensionRegistry().getCodec(), world, 0, (byte) properties.getMaxPlayers(), 8, properties.isReducedDebugInfo(), true, false, true);
+    			sendPacket(join);
+    			Limbo.getInstance().getUnsafe().setPlayerGameModeSilently(player, properties.getDefaultGamemode());
 				
 				player.playerInteractManager.update();
 				
 				SkinResponse skinresponce = isBungeecord && bungeeSkin != null ? bungeeSkin : MojangAPIUtils.getSkinFromMojangServer(player.getName());
 				PlayerSkinProperty skin = skinresponce != null ? new PlayerSkinProperty(skinresponce.getSkin(), skinresponce.getSignature()) : null;
-				PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(PlayerInfoAction.ADD_PLAYER, player.getUniqueId(), new PlayerInfoData.PlayerInfoDataAddPlayer(player.getName(), Optional.ofNullable(skin), p.getDefaultGamemode(), 0, false, Optional.empty()));
+				PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(PlayerInfoAction.ADD_PLAYER, player.getUniqueId(), new PlayerInfoData.PlayerInfoDataAddPlayer(player.getName(), Optional.ofNullable(skin), properties.getDefaultGamemode(), 0, false, Optional.empty()));
 				sendPacket(info);
-				/*
-				for (ClientConnection client : Limbo.getInstance().getServerConnection().getClients()) {
-					DataOutputStream other = new DataOutputStream(client.getSocket().getOutputStream());
-					DataTypeIO.writeVarInt(other, packetByte.length);
-					other.write(packetByte);
-				}
-				*/
 				
 				Set<PlayerAbilityFlags> flags = new HashSet<>();
-				if (p.isAllowFlight()) {
+				if (properties.isAllowFlight()) {
 					flags.add(PlayerAbilityFlags.FLY);
 				}
 				if (player.getGamemode().equals(GameMode.CREATIVE)) {
@@ -340,11 +329,11 @@ public class ClientConnection extends Thread {
 					sendPacket(declare);
 				}
 
-				PacketPlayOutSpawnPosition spawnPos = new PacketPlayOutSpawnPosition(BlockPosition.from(s));
+				PacketPlayOutSpawnPosition spawnPos = new PacketPlayOutSpawnPosition(BlockPosition.from(worldSpawn));
 				sendPacket(spawnPos);
 
-				PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(s.getX(), s.getY(), s.getZ(), s.getYaw(), s.getPitch(), 1);
-				Limbo.getInstance().getUnsafe().setPlayerLocationSilently(player, new Location(world, s.getX(), s.getY(), s.getZ(), s.getYaw(), s.getPitch()));
+				PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(worldSpawn.getX(), worldSpawn.getY(), worldSpawn.getZ(), worldSpawn.getYaw(), worldSpawn.getPitch(), 1);
+				Limbo.getInstance().getUnsafe().setPlayerLocationSilently(player, new Location(world, worldSpawn.getX(), worldSpawn.getY(), worldSpawn.getZ(), worldSpawn.getYaw(), worldSpawn.getPitch()));
 				sendPacket(positionLook);
 
 				player.getDataWatcher().update();

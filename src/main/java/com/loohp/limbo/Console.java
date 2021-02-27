@@ -20,10 +20,12 @@ import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Attribute;
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
+import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReader.SuggestionType;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.ParsedLine;
+import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
@@ -85,7 +87,7 @@ public class Console implements CommandSender {
 		
 		reader = new ConsoleReader(in, out);
 		reader.setExpandEvents(false);
-		
+		reader.setHandleUserInterrupt(false);
 		
 		terminal = TerminalBuilder.builder().streams(in, out).system(true).jansi(true).build();
 		tabReader = LineReaderBuilder.builder().terminal(terminal).completer(new Completer() {
@@ -152,10 +154,16 @@ public class Console implements CommandSender {
 			return;
 		}
 		while (true) {
-			String command = tabReader.readLine(PROMPT).trim();
-			if (command.length() > 0) {
-				String[] input = CustomStringUtils.splitStringToArgs(command);
-				new Thread(() -> Limbo.getInstance().dispatchCommand(this, input)).start();
+			try {
+				String command = tabReader.readLine(PROMPT).trim();
+				if (command.length() > 0) {
+					String[] input = CustomStringUtils.splitStringToArgs(command);
+					new Thread(() -> Limbo.getInstance().dispatchCommand(this, input)).start();
+				}
+			} catch (UserInterruptException e) {
+				System.exit(0);
+			} catch (EndOfFileException e) {
+				break;
 			}
 		}
 	}

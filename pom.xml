@@ -2,9 +2,23 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.loohp</groupId>
+	<groupId>com.loohp.limbo</groupId>
 	<artifactId>Limbo</artifactId>
-	<version>0.4.0-ALPHA</version>
+	<name>Limbo</name>
+	<version>0.4.1-ALPHA</version>
+	
+	<description>Standalone Limbo Minecraft Server.</description>
+	<url>https://github.com/LOOHP/Limbo</url>
+	<packaging>jar</packaging>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.build.number></project.build.number>
+		<project.fullVersion>${project.version}</project.fullVersion>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
+	
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<resources>
@@ -50,9 +64,97 @@
 					<encoding>ISO-8859-1</encoding>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+					<failOnError>false</failOnError>
+					<encoding>ISO-8859-1</encoding>
+					<doctitle>Limbo JavaDocs</doctitle>
+					<windowtitle>Limbo JavaDocs</windowtitle>
+					<additionalOptions>
+						<additionalOption>-Xdoclint:none</additionalOption>
+					</additionalOptions>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>aggregate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<finalName>${project.artifactId}-${project.version}-1.16.5</finalName>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>jenkins</id>
+			<activation>
+				<property>
+					<name>env.BUILD_NUMBER</name>
+				</property>
+			</activation>
+			<properties>
+				<project.build.number>-b${env.BUILD_NUMBER}</project.build.number>
+				<!--<project.fullVersion>${project.version}${project.build.number}</project.fullVersion> -->
+				<project.fullVersion>${project.version}</project.fullVersion>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>release-sign-artifacts</id>
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<properties>
+				<project.fullVersion>${project.version}</project.fullVersion>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>3.2.1</version>
+						<configuration>
+							<encoding>${project.build.sourceEncoding}</encoding>
+						</configuration>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>3.2.0</version>
+						<configuration>
+							<encoding>${project.build.sourceEncoding}</encoding>
+						</configuration>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<repositories>
 		<repository>
@@ -116,10 +218,5 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
-
-	<properties>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-	</properties>
 
 </project>

@@ -321,6 +321,10 @@ public class Limbo {
 		
 		metrics = new Metrics();
 		
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			Limbo.getInstance().terminate();
+		}));
+		
 		console.run();
 	}
 
@@ -496,7 +500,7 @@ public class Limbo {
 		return String.join("\00", begin, "127", version, String.join("", Arrays.asList(motd).stream().map(each -> each.toLegacyText()).collect(Collectors.toList())), String.valueOf(playersOnline), String.valueOf(maxPlayers));
 	}
 	
-	public void stopServer() {
+	protected void terminate() {
 		isRunning.set(false);
 		console.sendMessage("Stopping Server...");
 		
@@ -520,6 +524,9 @@ public class Limbo {
 		
 		console.sendMessage("Server closed");
 		console.logs.close();
+	}
+	
+	public void stopServer() {
 		System.exit(0);
 	}
 	
