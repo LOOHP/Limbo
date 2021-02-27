@@ -292,14 +292,18 @@ public class ClientConnection extends Thread {
 		    if (state == ClientState.PLAY) {
 		    	
 		    	TimeUnit.MILLISECONDS.sleep(500);
-		    	
-		    	ServerProperties p = Limbo.getInstance().getServerProperties();
+
+				ServerProperties p = Limbo.getInstance().getServerProperties();
+				Location s = p.getWorldSpawn();
+
+				PlayerJoinEvent evt = new PlayerJoinEvent(player, s);
+				Limbo.getInstance().getEventsManager().callEvent(evt);
+				s = evt.getSpawnLocation();
+
     			PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, p.getDefaultGamemode(), Limbo.getInstance().getWorlds().stream().map(each -> new NamespacedKey(each.getName()).toString()).collect(Collectors.toList()).toArray(new String[Limbo.getInstance().getWorlds().size()]), Limbo.getInstance().getDimensionRegistry().getCodec(), p.getWorldSpawn().getWorld(), 0, (byte) p.getMaxPlayers(), 8, p.isReducedDebugInfo(), true, false, true);
     			sendPacket(join);
     			Limbo.getInstance().getUnsafe().setPlayerGameModeSilently(player, p.getDefaultGamemode());
-				
-				Location s = p.getWorldSpawn();
-				
+
 				//PacketPlayOutKeepAlive alive = new PacketPlayOutKeepAlive((long) (Math.random() * Long.MAX_VALUE));
 				
 				World world = s.getWorld();
@@ -335,8 +339,6 @@ public class ClientConnection extends Thread {
 				if (declare != null) {
 					sendPacket(declare);
 				}
-
-				Limbo.getInstance().getEventsManager().callEvent(new PlayerJoinEvent(player));
 
 				PacketPlayOutSpawnPosition spawnPos = new PacketPlayOutSpawnPosition(BlockPosition.from(s));
 				sendPacket(spawnPos);
