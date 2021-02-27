@@ -23,6 +23,7 @@ import com.loohp.limbo.Events.PlayerLoginEvent;
 import com.loohp.limbo.Events.PlayerMoveEvent;
 import com.loohp.limbo.Events.PlayerQuitEvent;
 import com.loohp.limbo.Events.StatusPingEvent;
+import com.loohp.limbo.Events.PlayerSpawnLocationEvent;
 import com.loohp.limbo.Events.PlayerSelectedSlotChangeEvent;
 import com.loohp.limbo.File.ServerProperties;
 import com.loohp.limbo.Location.Location;
@@ -253,64 +254,69 @@ public class ClientConnection extends Thread {
 						disconnectDuringLogin(new BaseComponent[] {new TextComponent(ChatColor.RED + "Please connect from the proxy!")});
 					}
 			    }
-				
+
 				while (client_socket.isConnected()) {
 					int size = DataTypeIO.readVarInt(input);
 					int packetId = DataTypeIO.readVarInt(input);
 					Class<? extends Packet> packetType = Packet.getLoginIn().get(packetId);
-					
+
 					if (packetType == null) {
 						input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
 					} else if (packetType.equals(PacketLoginInLoginStart.class)) {
 						PacketLoginInLoginStart start = new PacketLoginInLoginStart(input);
 						String username = start.getUsername();
 						UUID uuid = isBungeecord ? bungeeUUID : UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
-						
+
 						PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(uuid, username);
 						sendPacket(success);
-						
+
 						state = ClientState.PLAY;
 
 						player = new Player(this, username, uuid, Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
 						player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
+						Location spawnLocation = Limbo.getInstance().getEventsManager().callEvent(new PlayerSpawnLocationEvent(player, Limbo.getInstance().getServerProperties().getWorldSpawn())).getLocation();
+						player.setX(spawnLocation.getX());
+						player.setY(spawnLocation.getY());
+						player.setZ(spawnLocation.getZ());
+						player.setPitch(spawnLocation.getPitch());
+						player.setYaw(spawnLocation.getYaw());
+						player.setWorld(spawnLocation.getWorld());
 						Limbo.getInstance().addPlayer(player);
-						
+
 						break;
 					} else {
 						input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
 					}
 	    		}
-				
+
 				PlayerLoginEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerLoginEvent(this, false));
 				if (event.isCancelled()) {
 					disconnectDuringLogin(event.getCancelReason());
 				}
-				
+
 				break;
 		    }
-		    
+
 		    if (state == ClientState.PLAY) {
-		    	
+
 		    	TimeUnit.MILLISECONDS.sleep(500);
 
 				ServerProperties properties = Limbo.getInstance().getServerProperties();
-				Location worldSpawn = properties.getWorldSpawn();
-				
-				PlayerJoinEvent joinEvent = Limbo.getInstance().getEventsManager().callEvent(new PlayerJoinEvent(player, worldSpawn));
-				worldSpawn = joinEvent.getSpawnLocation();
-				World world = worldSpawn.getWorld();
+				Location worldSpawn = player.getLocation();
 
-    			PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, properties.getDefaultGamemode(), Limbo.getInstance().getWorlds().stream().map(each -> new NamespacedKey(each.getName()).toString()).collect(Collectors.toList()).toArray(new String[Limbo.getInstance().getWorlds().size()]), Limbo.getInstance().getDimensionRegistry().getCodec(), world, 0, (byte) properties.getMaxPlayers(), 8, properties.isReducedDebugInfo(), true, false, true);
+				Limbo.getInstance().getEventsManager().callEvent(new PlayerJoinEvent(player));
+
+    			PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, properties.getDefaultGamemode(), Limbo.getInstance().getWorlds().stream().map(each -> new NamespacedKey(each.getName()).toString()).collect(Collectors.toList()).toArray(new String[Limbo.getInstance().getWorlds().size()]), Limbo.getInstance().getDimensionRegistry().getCodec(), worldSpawn.getWorld(), 0, (byte) properties.getMaxPlayers(), 8, properties.isReducedDebugInfo(), true, false, true);
     			sendPacket(join);
     			Limbo.getInstance().getUnsafe().setPlayerGameModeSilently(player, properties.getDefaultGamemode());
-				
+
 				player.playerInteractManager.update();
-				
+
 				SkinResponse skinresponce = isBungeecord && bungeeSkin != null ? bungeeSkin : MojangAPIUtils.getSkinFromMojangServer(player.getName());
 				PlayerSkinProperty skin = skinresponce != null ? new PlayerSkinProperty(skinresponce.getSkin(), skinresponce.getSignature()) : null;
 				PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(PlayerInfoAction.ADD_PLAYER, player.getUniqueId(), new PlayerInfoData.PlayerInfoDataAddPlayer(player.getName(), Optional.ofNullable(skin), properties.getDefaultGamemode(), 0, false, Optional.empty()));
 				sendPacket(info);
-				
+
 				Set<PlayerAbilityFlags> flags = new HashSet<>();
 				if (properties.isAllowFlight()) {
 					flags.add(PlayerAbilityFlags.FLY);
@@ -333,7 +339,7 @@ public class ClientConnection extends Thread {
 				sendPacket(spawnPos);
 
 				PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(worldSpawn.getX(), worldSpawn.getY(), worldSpawn.getZ(), worldSpawn.getYaw(), worldSpawn.getPitch(), 1);
-				Limbo.getInstance().getUnsafe().setPlayerLocationSilently(player, new Location(world, worldSpawn.getX(), worldSpawn.getY(), worldSpawn.getZ(), worldSpawn.getYaw(), worldSpawn.getPitch()));
+				Limbo.getInstance().getUnsafe().setPlayerLocationSilently(player, worldSpawn);
 				sendPacket(positionLook);
 
 				player.getDataWatcher().update();
