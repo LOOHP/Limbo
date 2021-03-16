@@ -16,9 +16,9 @@ import com.loohp.limbo.Location.Location;
 import com.loohp.limbo.Server.ClientConnection;
 import com.loohp.limbo.Server.Packets.PacketPlayOutChat;
 import com.loohp.limbo.Server.Packets.PacketPlayOutGameState;
+import com.loohp.limbo.Server.Packets.PacketPlayOutHeldItemChange;
 import com.loohp.limbo.Server.Packets.PacketPlayOutPositionAndLook;
 import com.loohp.limbo.Server.Packets.PacketPlayOutRespawn;
-import com.loohp.limbo.Server.Packets.PacketPlayOutHeldItemChange;
 import com.loohp.limbo.Utils.GameMode;
 
 import net.md_5.bungee.api.chat.BaseComponent;

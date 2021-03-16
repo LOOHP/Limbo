@@ -7,12 +7,12 @@ import com.loohp.limbo.World.World;
 
 public class Location implements Cloneable {
 	
-	World world;
-	double x;
-	double y;
-	double z;
-	float yaw;
-	float pitch;
+	private World world;
+	private double x;
+	private double y;
+	private double z;
+	private float yaw;
+	private float pitch;
 	
 	public Location(World world, double x, double y, double z, float yaw, float pitch) {
 		this.world = world;

@@ -49,11 +49,11 @@ public class LightEngineSky extends LightEngine {
 			if (skyLightArray[x][y + 16][z] < level) {
 				skyLightArray[x][y + 16][z] = (byte) level;
 				if (level > 1) {
-					propergate(level - 1, x + 1, y, z);
-					propergate(level - 1, x - 1, y, z);
-					propergate(level - 1, x, y + 1, z);
-					propergate(level - 1, x, y, z + 1);
-					propergate(level - 1, x, y, z - 1);
+					try {propergate(level - 1, x + 1, y, z);} catch (ArrayIndexOutOfBoundsException e) {}
+					try {propergate(level - 1, x - 1, y, z);} catch (ArrayIndexOutOfBoundsException e) {}
+					try {propergate(level - 1, x, y + 1, z);} catch (ArrayIndexOutOfBoundsException e) {}
+					try {propergate(level - 1, x, y, z + 1);} catch (ArrayIndexOutOfBoundsException e) {}
+					try {propergate(level - 1, x, y, z - 1);} catch (ArrayIndexOutOfBoundsException e) {}
 				}
 			}
 		} catch (ArrayIndexOutOfBoundsException e) {}
