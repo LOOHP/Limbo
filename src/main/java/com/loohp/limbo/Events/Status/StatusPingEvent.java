@@ -1,7 +1,8 @@
-package com.loohp.limbo.Events;
+package com.loohp.limbo.Events.Status;
 
 import java.awt.image.BufferedImage;
 
+import com.loohp.limbo.Events.Event;
 import com.loohp.limbo.Server.ClientConnection;
 
 import net.md_5.bungee.api.chat.BaseComponent;

@@ -22,7 +22,7 @@ public class KeepAliveSender extends Thread {
 		while (true) {
 			try {
 				for (ClientConnection client : Limbo.getInstance().getServerConnection().getClients()) {
-					if (client.getClientState().equals(ClientState.PLAY)) {
+					if (client.getClientState() != null && client.getClientState().equals(ClientState.PLAY)) {
 						try {
 							PacketPlayOutKeepAlive packet = new PacketPlayOutKeepAlive(random.nextLong());
 							client.setLastKeepAlivePayLoad(packet.getPayload());

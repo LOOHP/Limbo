@@ -42,6 +42,7 @@ public class ServerProperties {
 	private boolean bungeecord;
 	private int viewDistance;
 	private double ticksPerSecond;
+	private boolean handshakeVerbose;
 	
 	Optional<BufferedImage> favicon;
 
@@ -92,6 +93,7 @@ public class ServerProperties {
 		bungeecord = Boolean.parseBoolean(prop.getProperty("bungeecord"));
 		viewDistance = Integer.parseInt(prop.getProperty("view-distance"));
 		ticksPerSecond = Double.parseDouble(prop.getProperty("ticks-per-second"));
+		handshakeVerbose = Boolean.parseBoolean(prop.getProperty("handshake-verbose"));
 		
 		File png = new File("server-icon.png");
 		if (png.exists()) {
@@ -191,6 +193,10 @@ public class ServerProperties {
 	
 	public double getDefinedTicksPerSecond() {
 		return ticksPerSecond;
+	}
+
+	public boolean handshakeVerboseEnabled() {
+		return handshakeVerbose;
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.loohp.limbo;
+package com.loohp.limbo.Utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import com.loohp.limbo.Limbo;
 import com.loohp.limbo.Commands.CommandSender;
 import com.loohp.limbo.Server.Packets.PacketPlayOutDeclareCommands;
-import com.loohp.limbo.Utils.DataTypeIO;
 
 public class DeclareCommands {
 	

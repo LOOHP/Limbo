@@ -16,14 +16,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import com.loohp.limbo.DeclareCommands;
 import com.loohp.limbo.Limbo;
-import com.loohp.limbo.Events.PlayerJoinEvent;
-import com.loohp.limbo.Events.PlayerLoginEvent;
-import com.loohp.limbo.Events.PlayerMoveEvent;
-import com.loohp.limbo.Events.PlayerQuitEvent;
-import com.loohp.limbo.Events.PlayerSelectedSlotChangeEvent;
-import com.loohp.limbo.Events.StatusPingEvent;
+import com.loohp.limbo.Events.Player.PlayerJoinEvent;
+import com.loohp.limbo.Events.Player.PlayerLoginEvent;
+import com.loohp.limbo.Events.Player.PlayerMoveEvent;
+import com.loohp.limbo.Events.Player.PlayerQuitEvent;
+import com.loohp.limbo.Events.Player.PlayerSelectedSlotChangeEvent;
+import com.loohp.limbo.Events.Status.StatusPingEvent;
 import com.loohp.limbo.File.ServerProperties;
 import com.loohp.limbo.Location.Location;
 import com.loohp.limbo.Player.Player;
@@ -63,6 +62,7 @@ import com.loohp.limbo.Server.Packets.PacketStatusOutPong;
 import com.loohp.limbo.Server.Packets.PacketStatusOutResponse;
 import com.loohp.limbo.Utils.CustomStringUtils;
 import com.loohp.limbo.Utils.DataTypeIO;
+import com.loohp.limbo.Utils.DeclareCommands;
 import com.loohp.limbo.Utils.GameMode;
 import com.loohp.limbo.Utils.MojangAPIUtils;
 import com.loohp.limbo.Utils.MojangAPIUtils.SkinResponse;
@@ -157,7 +157,7 @@ public class ClientConnection extends Thread {
 		} catch (IOException e) {}
 	}
 	
-	public void disconnectDuringLogin(BaseComponent[] reason) {
+	private void disconnectDuringLogin(BaseComponent[] reason) {
 		try {
 			PacketLoginOutDisconnect packet = new PacketLoginOutDisconnect(ComponentSerializer.toString(reason));
 			sendPacket(packet);
@@ -205,88 +205,95 @@ public class ClientConnection extends Thread {
 		    UUID bungeeUUID = null;
 		    SkinResponse bungeeSkin = null;
 		    
-		    switch (handshake.getHandshakeType()) {
-		    case STATUS:
-				state = ClientState.STATUS;
-				while (client_socket.isConnected()) {
-					DataTypeIO.readVarInt(input);
-					int packetId = DataTypeIO.readVarInt(input);
-					Class<? extends Packet> packetType = Packet.getStatusIn().get(packetId);
-					if (packetType == null) {
-						//do nothing
-					} else if (packetType.equals(PacketStatusInRequest.class)) {
-						String str = client_socket.getInetAddress().getHostName() + ":" + client_socket.getPort();
-						Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Handshake Status has pinged");
-						ServerProperties p = Limbo.getInstance().getServerProperties();		
-						StatusPingEvent event = Limbo.getInstance().getEventsManager().callEvent(new StatusPingEvent(this, p.getVersionString(), p.getProtocol(), ComponentSerializer.parse(p.getMotdJson()), p.getMaxPlayers(), Limbo.getInstance().getPlayers().size(), p.getFavicon().orElse(null)));												
-						PacketStatusOutResponse packet = new PacketStatusOutResponse(Limbo.getInstance().buildServerListResponseJson(event.getVersion(), event.getProtocol(), event.getMotd(), event.getMaxPlayers(), event.getPlayersOnline(), event.getFavicon()));
-						sendPacket(packet);
-					} else if (packetType.equals(PacketStatusInPing.class)) {
-						PacketStatusInPing ping = new PacketStatusInPing(input);
-						PacketStatusOutPong packet = new PacketStatusOutPong(ping.getPayload());
-						sendPacket(packet);
-						break;
+		    try {
+			    switch (handshake.getHandshakeType()) {
+			    case STATUS:
+					state = ClientState.STATUS;
+					while (client_socket.isConnected()) {
+						DataTypeIO.readVarInt(input);
+						int packetId = DataTypeIO.readVarInt(input);
+						Class<? extends Packet> packetType = Packet.getStatusIn().get(packetId);
+						if (packetType == null) {
+							//do nothing
+						} else if (packetType.equals(PacketStatusInRequest.class)) {
+							String str = client_socket.getInetAddress().getHostName() + ":" + client_socket.getPort();
+							if (Limbo.getInstance().getServerProperties().handshakeVerboseEnabled()) {
+								Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Handshake Status has pinged");
+							}
+							ServerProperties p = Limbo.getInstance().getServerProperties();		
+							StatusPingEvent event = Limbo.getInstance().getEventsManager().callEvent(new StatusPingEvent(this, p.getVersionString(), p.getProtocol(), ComponentSerializer.parse(p.getMotdJson()), p.getMaxPlayers(), Limbo.getInstance().getPlayers().size(), p.getFavicon().orElse(null)));												
+							PacketStatusOutResponse packet = new PacketStatusOutResponse(Limbo.getInstance().buildServerListResponseJson(event.getVersion(), event.getProtocol(), event.getMotd(), event.getMaxPlayers(), event.getPlayersOnline(), event.getFavicon()));
+							sendPacket(packet);
+						} else if (packetType.equals(PacketStatusInPing.class)) {
+							PacketStatusInPing ping = new PacketStatusInPing(input);
+							PacketStatusOutPong packet = new PacketStatusOutPong(ping.getPayload());
+							sendPacket(packet);
+							break;
+						}
 					}
-				}
-				break;
-			case LOGIN:
-				state = ClientState.LOGIN;
-				
-				if (isBungeecord) {
-					try {
-				    	String[] data = bungeeForwarding.split("\\x00");
-				    	//String host = data[0];
-				    	String ip = data[1];
-				    	
-				    	bungeeUUID = UUID.fromString(data[2].replaceFirst("([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)", "$1-$2-$3-$4-$5"));
-				    	inetAddress = InetAddress.getByName(ip);
-				    	
-				    	if (data.length > 3) {
-					    	String skinJson = data[3];
-					    	
-					    	String skin = skinJson.split("\"value\":\"")[1].split("\"")[0];
-				            String signature = skinJson.split("\"signature\":\"")[1].split("\"")[0];
-					    	bungeeSkin = new SkinResponse(skin, signature);
-				    	}
-					} catch (Exception e) {
-						Limbo.getInstance().getConsole().sendMessage("If you wish to use bungeecord's IP forwarding, please enable that in your bungeecord config.yml as well!");
-						disconnectDuringLogin(new BaseComponent[] {new TextComponent(ChatColor.RED + "Please connect from the proxy!")});
-					}
-			    }
-				
-				while (client_socket.isConnected()) {
-					int size = DataTypeIO.readVarInt(input);
-					int packetId = DataTypeIO.readVarInt(input);
-					Class<? extends Packet> packetType = Packet.getLoginIn().get(packetId);
+					break;
+				case LOGIN:
+					state = ClientState.LOGIN;
 					
-					if (packetType == null) {
-						input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
-					} else if (packetType.equals(PacketLoginInLoginStart.class)) {
-						PacketLoginInLoginStart start = new PacketLoginInLoginStart(input);
-						String username = start.getUsername();
-						UUID uuid = isBungeecord ? bungeeUUID : UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
+					if (isBungeecord) {
+						try {
+					    	String[] data = bungeeForwarding.split("\\x00");
+					    	//String host = data[0];
+					    	String ip = data[1];
+					    	
+					    	bungeeUUID = UUID.fromString(data[2].replaceFirst("([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)", "$1-$2-$3-$4-$5"));
+					    	inetAddress = InetAddress.getByName(ip);
+					    	
+					    	if (data.length > 3) {
+						    	String skinJson = data[3];
+						    	
+						    	String skin = skinJson.split("\"value\":\"")[1].split("\"")[0];
+					            String signature = skinJson.split("\"signature\":\"")[1].split("\"")[0];
+						    	bungeeSkin = new SkinResponse(skin, signature);
+					    	}
+						} catch (Exception e) {
+							Limbo.getInstance().getConsole().sendMessage("If you wish to use bungeecord's IP forwarding, please enable that in your bungeecord config.yml as well!");
+							disconnectDuringLogin(new BaseComponent[] {new TextComponent(ChatColor.RED + "Please connect from the proxy!")});
+						}
+				    }
+					
+					while (client_socket.isConnected()) {
+						int size = DataTypeIO.readVarInt(input);
+						int packetId = DataTypeIO.readVarInt(input);
+						Class<? extends Packet> packetType = Packet.getLoginIn().get(packetId);
 						
-						PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(uuid, username);
-						sendPacket(success);
-						
-						state = ClientState.PLAY;
-
-						player = new Player(this, username, uuid, Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
-						player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
-						Limbo.getInstance().addPlayer(player);
-						
-						break;
-					} else {
-						input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
+						if (packetType == null) {
+							input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
+						} else if (packetType.equals(PacketLoginInLoginStart.class)) {
+							PacketLoginInLoginStart start = new PacketLoginInLoginStart(input);
+							String username = start.getUsername();
+							UUID uuid = isBungeecord ? bungeeUUID : UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
+							
+							PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(uuid, username);
+							sendPacket(success);
+							
+							state = ClientState.PLAY;
+	
+							player = new Player(this, username, uuid, Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
+							player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
+							Limbo.getInstance().addPlayer(player);
+							
+							break;
+						} else {
+							input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
+						}
+		    		}
+					
+					PlayerLoginEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerLoginEvent(this, false));
+					if (event.isCancelled()) {
+						disconnectDuringLogin(event.getCancelReason());
 					}
-	    		}
-				
-				PlayerLoginEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerLoginEvent(this, false));
-				if (event.isCancelled()) {
-					disconnectDuringLogin(event.getCancelReason());
-				}
-				
-				break;
+					
+					break;
+			    }
+		    } catch (Exception e) {
+		    	client_socket.close();
+				state = ClientState.DISCONNECTED;
 		    }
 		    
 		    if (state == ClientState.PLAY) {

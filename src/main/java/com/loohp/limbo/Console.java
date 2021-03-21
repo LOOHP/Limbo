@@ -103,10 +103,12 @@ public class Console implements CommandSender {
 		tabReader.setAutosuggestion(SuggestionType.NONE);
 	}
 	
+	@Override
 	public String getName() {
 		return CONSOLE;
 	}
 	
+	@Override
 	public boolean hasPermission(String permission) {
 		return Limbo.getInstance().getPermissionsManager().hasPermission(this, permission);
 	}
@@ -121,6 +123,7 @@ public class Console implements CommandSender {
 		sendMessage(component);
 	}
 	
+	@Override
 	public void sendMessage(String message, UUID uuid) {
 		sendMessage(message);
 	}
@@ -135,6 +138,7 @@ public class Console implements CommandSender {
 		sendMessage(String.join("", Arrays.asList(component).stream().map(each -> each.toLegacyText()).collect(Collectors.toList())));
 	}
 	
+	@Override
 	public void sendMessage(String message) {
 		stashLine();
 		String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());

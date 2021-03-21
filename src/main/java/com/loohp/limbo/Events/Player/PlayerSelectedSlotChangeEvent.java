@@ -1,5 +1,6 @@
-package com.loohp.limbo.Events;
+package com.loohp.limbo.Events.Player;
 
+import com.loohp.limbo.Events.Cancellable;
 import com.loohp.limbo.Player.Player;
 
 public class PlayerSelectedSlotChangeEvent extends PlayerEvent implements Cancellable {
