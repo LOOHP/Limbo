@@ -1,0 +1,56 @@
+{
+  "HandshakeIn": {
+    "0x00": "PacketHandshakingIn"
+  },
+  "LoginIn": {
+    "0x00": "PacketLoginInLoginStart",
+    "0x02": "PacketLoginInPluginMessaging"
+  },
+  "LoginOut": {
+    "PacketLoginOutLoginSuccess": "0x02",
+    "PacketLoginOutDisconnect": "0x00",
+    "PacketLoginOutPluginMessaging": "0x04",
+  },
+  "PlayIn": {
+    "0x10": "PacketPlayInKeepAlive",
+    "0x03": "PacketPlayInChat",
+    "0x13": "PacketPlayInPositionAndLook",
+    "0x12": "PacketPlayInPosition",
+    "0x14": "PacketPlayInRotation",
+    "0x0B": "PacketPlayInPluginMessaging",
+    "0x06": "PacketPlayInTabComplete",
+    "0x25": "PacketPlayInHeldItemChange"
+  },
+  "PlayOut": {
+    "PacketPlayOutLogin": "0x24",
+    "PacketPlayOutPositionAndLook": "0x34",
+    "PacketPlayOutSpawnPosition": "0x42",
+    "PacketPlayOutChat": "0x0E",
+    "PacketPlayOutPlayerAbilities": "0x30",
+    "PacketPlayOutMapChunk": "0x20",
+    "PacketPlayOutUnloadChunk": "0x1C",
+    "PacketPlayOutLightUpdate": "0x23",
+    "PacketPlayOutKeepAlive": "0x1F",
+    "PacketPlayOutPlayerInfo": "0x32",
+    "PacketPlayOutUpdateViewPosition": "0x40",
+    "PacketPlayOutDisconnect": "0x19",
+    "PacketPlayOutPluginMessaging": "0x17",
+    "PacketPlayOutTabComplete": "0x0F",
+    "PacketPlayOutDeclareCommands": "0x10",
+    "PacketPlayOutRespawn": "0x39",
+    "PacketPlayOutGameState": "0x1D",
+    "PacketPlayOutEntityDestroy": "0x36",
+    "PacketPlayOutEntityMetadata": "0x44",
+    "PacketPlayOutSpawnEntity": "0x00",
+    "PacketPlayOutSpawnEntityLiving": "0x02",
+    "PacketPlayOutHeldItemChange": "0x3F"
+  },
+  "StatusIn": {
+    "0x01": "PacketStatusInPing",
+    "0x00": "PacketStatusInRequest"
+  },
+  "StatusOut": {
+    "PacketStatusOutResponse": "0x00",
+    "PacketStatusOutPong": "0x01"
+  }
+}
