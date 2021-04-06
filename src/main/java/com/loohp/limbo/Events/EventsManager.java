@@ -1,10 +1,10 @@
-package com.loohp.limbo.Events;
+package com.loohp.limbo.events;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.loohp.limbo.Plugins.LimboPlugin;
+import com.loohp.limbo.plugins.LimboPlugin;
 
 public class EventsManager {
 	

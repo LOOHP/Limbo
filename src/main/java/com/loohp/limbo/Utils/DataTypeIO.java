@@ -1,4 +1,4 @@
-package com.loohp.limbo.Utils;
+package com.loohp.limbo.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.UUID;
 
-import com.loohp.limbo.World.BlockPosition;
+import com.loohp.limbo.world.BlockPosition;
 
 import net.querz.nbt.io.NBTOutputStream;
 import net.querz.nbt.tag.CompoundTag;

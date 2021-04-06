@@ -1,4 +1,4 @@
-package com.loohp.limbo.Server.Packets;
+package com.loohp.limbo.server.packets;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -9,10 +9,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.loohp.limbo.Utils.BitsUtils;
-import com.loohp.limbo.Utils.DataTypeIO;
-import com.loohp.limbo.World.Environment;
-import com.loohp.limbo.World.GeneratedBlockDataMappings;
+import com.loohp.limbo.utils.BitsUtils;
+import com.loohp.limbo.utils.DataTypeIO;
+import com.loohp.limbo.world.Environment;
+import com.loohp.limbo.world.GeneratedBlockDataMappings;
 
 import net.querz.mca.Chunk;
 import net.querz.mca.Section;

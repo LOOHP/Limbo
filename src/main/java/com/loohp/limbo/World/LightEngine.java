@@ -1,4 +1,4 @@
-package com.loohp.limbo.World;
+package com.loohp.limbo.world;
 
 import java.util.HashMap;
 import java.util.Map;

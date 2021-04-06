@@ -1,12 +1,12 @@
-package com.loohp.limbo.Server;
+package com.loohp.limbo.server;
 
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import com.loohp.limbo.Limbo;
-import com.loohp.limbo.Server.ClientConnection.ClientState;
-import com.loohp.limbo.Server.Packets.PacketPlayOutKeepAlive;
+import com.loohp.limbo.server.ClientConnection.ClientState;
+import com.loohp.limbo.server.packets.PacketPlayOutKeepAlive;
 
 public class KeepAliveSender extends Thread {
 	

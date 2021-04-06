@@ -1,4 +1,4 @@
-package com.loohp.limbo.GUI;
+package com.loohp.limbo.consolegui;
 
 import java.awt.Font;
 import java.awt.GridBagConstraints;

@@ -1,4 +1,4 @@
-package com.loohp.limbo.Plugins;
+package com.loohp.limbo.plugins;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,10 +13,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import com.loohp.limbo.Limbo;
-import com.loohp.limbo.Commands.CommandExecutor;
-import com.loohp.limbo.Commands.CommandSender;
-import com.loohp.limbo.Commands.TabCompletor;
-import com.loohp.limbo.File.FileConfiguration;
+import com.loohp.limbo.commands.CommandExecutor;
+import com.loohp.limbo.commands.CommandSender;
+import com.loohp.limbo.commands.TabCompletor;
+import com.loohp.limbo.file.FileConfiguration;
 
 public class PluginManager {
 

@@ -1,4 +1,4 @@
-package com.loohp.limbo.Player;
+package com.loohp.limbo.player;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,16 +11,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.loohp.limbo.Limbo;
-import com.loohp.limbo.Entity.Entity;
-import com.loohp.limbo.Location.Location;
-import com.loohp.limbo.Server.Packets.PacketPlayOutEntityDestroy;
-import com.loohp.limbo.Server.Packets.PacketPlayOutEntityMetadata;
-import com.loohp.limbo.Server.Packets.PacketPlayOutLightUpdate;
-import com.loohp.limbo.Server.Packets.PacketPlayOutMapChunk;
-import com.loohp.limbo.Server.Packets.PacketPlayOutSpawnEntity;
-import com.loohp.limbo.Server.Packets.PacketPlayOutSpawnEntityLiving;
-import com.loohp.limbo.Server.Packets.PacketPlayOutUnloadChunk;
-import com.loohp.limbo.World.World;
+import com.loohp.limbo.server.packets.PacketPlayOutEntityDestroy;
+import com.loohp.limbo.server.packets.PacketPlayOutEntityMetadata;
+import com.loohp.limbo.server.packets.PacketPlayOutLightUpdate;
+import com.loohp.limbo.server.packets.PacketPlayOutMapChunk;
+import com.loohp.limbo.server.packets.PacketPlayOutSpawnEntity;
+import com.loohp.limbo.server.packets.PacketPlayOutSpawnEntityLiving;
+import com.loohp.limbo.server.packets.PacketPlayOutUnloadChunk;
+import com.loohp.limbo.entity.Entity;
+import com.loohp.limbo.location.Location;
+import com.loohp.limbo.world.World;
 
 import net.querz.mca.Chunk;
 

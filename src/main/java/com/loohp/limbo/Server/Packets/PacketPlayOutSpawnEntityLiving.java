@@ -1,12 +1,12 @@
-package com.loohp.limbo.Server.Packets;
+package com.loohp.limbo.server.packets;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
-import com.loohp.limbo.Entity.EntityType;
-import com.loohp.limbo.Utils.DataTypeIO;
+import com.loohp.limbo.entity.EntityType;
+import com.loohp.limbo.utils.DataTypeIO;
 
 public class PacketPlayOutSpawnEntityLiving extends PacketOut {
 	

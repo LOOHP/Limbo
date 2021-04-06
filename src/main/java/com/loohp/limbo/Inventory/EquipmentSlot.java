@@ -1,4 +1,4 @@
-package com.loohp.limbo.Inventory;
+package com.loohp.limbo.inventory;
 
 public enum EquipmentSlot {
 	

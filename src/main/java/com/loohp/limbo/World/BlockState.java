@@ -1,10 +1,10 @@
-package com.loohp.limbo.World;
+package com.loohp.limbo.world;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.loohp.limbo.Utils.NamespacedKey;
+import com.loohp.limbo.utils.NamespacedKey;
 
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.StringTag;

@@ -1,25 +1,25 @@
-package com.loohp.limbo.Player;
+package com.loohp.limbo.player;
 
 import java.io.IOException;
 import java.util.UUID;
 
 import com.loohp.limbo.Limbo;
-import com.loohp.limbo.Commands.CommandSender;
-import com.loohp.limbo.Entity.DataWatcher;
-import com.loohp.limbo.Entity.DataWatcher.WatchableField;
-import com.loohp.limbo.Entity.DataWatcher.WatchableObjectType;
-import com.loohp.limbo.Entity.EntityType;
-import com.loohp.limbo.Entity.LivingEntity;
-import com.loohp.limbo.Events.Player.PlayerChatEvent;
-import com.loohp.limbo.Events.Player.PlayerTeleportEvent;
-import com.loohp.limbo.Location.Location;
-import com.loohp.limbo.Server.ClientConnection;
-import com.loohp.limbo.Server.Packets.PacketPlayOutChat;
-import com.loohp.limbo.Server.Packets.PacketPlayOutGameState;
-import com.loohp.limbo.Server.Packets.PacketPlayOutHeldItemChange;
-import com.loohp.limbo.Server.Packets.PacketPlayOutPositionAndLook;
-import com.loohp.limbo.Server.Packets.PacketPlayOutRespawn;
-import com.loohp.limbo.Utils.GameMode;
+import com.loohp.limbo.events.player.PlayerChatEvent;
+import com.loohp.limbo.events.player.PlayerTeleportEvent;
+import com.loohp.limbo.server.ClientConnection;
+import com.loohp.limbo.server.packets.PacketPlayOutChat;
+import com.loohp.limbo.server.packets.PacketPlayOutGameState;
+import com.loohp.limbo.server.packets.PacketPlayOutHeldItemChange;
+import com.loohp.limbo.server.packets.PacketPlayOutPositionAndLook;
+import com.loohp.limbo.server.packets.PacketPlayOutRespawn;
+import com.loohp.limbo.commands.CommandSender;
+import com.loohp.limbo.entity.DataWatcher;
+import com.loohp.limbo.entity.EntityType;
+import com.loohp.limbo.entity.LivingEntity;
+import com.loohp.limbo.entity.DataWatcher.WatchableField;
+import com.loohp.limbo.entity.DataWatcher.WatchableObjectType;
+import com.loohp.limbo.location.Location;
+import com.loohp.limbo.utils.GameMode;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;

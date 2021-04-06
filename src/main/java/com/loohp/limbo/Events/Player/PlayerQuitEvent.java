@@ -1,6 +1,6 @@
-package com.loohp.limbo.Events.Player;
+package com.loohp.limbo.events.player;
 
-import com.loohp.limbo.Player.Player;
+import com.loohp.limbo.player.Player;
 
 public class PlayerQuitEvent extends PlayerEvent {
 	

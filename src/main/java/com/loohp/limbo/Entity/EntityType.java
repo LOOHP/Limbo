@@ -1,12 +1,12 @@
-package com.loohp.limbo.Entity;
+package com.loohp.limbo.entity;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.loohp.limbo.Location.Location;
-import com.loohp.limbo.Player.Player;
-import com.loohp.limbo.Utils.NamespacedKey;
-import com.loohp.limbo.World.World;
+import com.loohp.limbo.location.Location;
+import com.loohp.limbo.player.Player;
+import com.loohp.limbo.utils.NamespacedKey;
+import com.loohp.limbo.world.World;
 
 public enum EntityType {
 

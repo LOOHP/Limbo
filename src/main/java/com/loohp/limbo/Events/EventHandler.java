@@ -1,4 +1,4 @@
-package com.loohp.limbo.Events;
+package com.loohp.limbo.events;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

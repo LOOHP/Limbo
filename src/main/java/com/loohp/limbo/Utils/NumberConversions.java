@@ -1,4 +1,4 @@
-package com.loohp.limbo.Utils;
+package com.loohp.limbo.utils;
 
 /**
  * Utils for casting number types to other number types

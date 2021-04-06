@@ -1,7 +1,7 @@
-package com.loohp.limbo.Events.Player;
+package com.loohp.limbo.events.player;
 
-import com.loohp.limbo.Location.Location;
-import com.loohp.limbo.Player.Player;
+import com.loohp.limbo.location.Location;
+import com.loohp.limbo.player.Player;
 
 public class PlayerJoinEvent extends PlayerEvent {
 

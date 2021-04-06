@@ -1,4 +1,4 @@
-package com.loohp.limbo.World;
+package com.loohp.limbo.world;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,7 +13,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.loohp.limbo.Limbo;
-import com.loohp.limbo.Utils.CustomNBTUtils;
+import com.loohp.limbo.utils.CustomNBTUtils;
 
 import net.querz.nbt.tag.CompoundTag;
 

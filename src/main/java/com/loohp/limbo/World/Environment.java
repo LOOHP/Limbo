@@ -1,9 +1,9 @@
-package com.loohp.limbo.World;
+package com.loohp.limbo.world;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import com.loohp.limbo.Utils.NamespacedKey;
+import com.loohp.limbo.utils.NamespacedKey;
 
 public class Environment {
 

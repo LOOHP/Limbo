@@ -1,9 +1,9 @@
-package com.loohp.limbo.Plugins;
+package com.loohp.limbo.plugins;
 
 import java.io.File;
 
 import com.loohp.limbo.Limbo;
-import com.loohp.limbo.File.FileConfiguration;
+import com.loohp.limbo.file.FileConfiguration;
 
 public class LimboPlugin {
 

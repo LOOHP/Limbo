@@ -1,4 +1,4 @@
-package com.loohp.limbo.Server.Packets;
+package com.loohp.limbo.server.packets;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -13,13 +13,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import com.loohp.limbo.Entity.DataWatcher.WatchableObject;
-import com.loohp.limbo.Entity.DataWatcher.WatchableObjectType;
-import com.loohp.limbo.Entity.Entity;
-import com.loohp.limbo.Entity.Pose;
-import com.loohp.limbo.Utils.DataTypeIO;
-import com.loohp.limbo.Utils.Rotation3f;
-import com.loohp.limbo.World.BlockPosition;
+import com.loohp.limbo.entity.Entity;
+import com.loohp.limbo.entity.Pose;
+import com.loohp.limbo.entity.DataWatcher.WatchableObject;
+import com.loohp.limbo.entity.DataWatcher.WatchableObjectType;
+import com.loohp.limbo.utils.DataTypeIO;
+import com.loohp.limbo.utils.Rotation3f;
+import com.loohp.limbo.world.BlockPosition;
 
 import net.md_5.bungee.chat.ComponentSerializer;
 

@@ -1,4 +1,4 @@
-package com.loohp.limbo.World;
+package com.loohp.limbo.world;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -11,16 +11,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.loohp.limbo.Limbo;
-import com.loohp.limbo.Entity.ArmorStand;
-import com.loohp.limbo.Entity.DataWatcher;
-import com.loohp.limbo.Entity.DataWatcher.WatchableObject;
-import com.loohp.limbo.Entity.Entity;
-import com.loohp.limbo.Entity.EntityType;
-import com.loohp.limbo.Location.Location;
-import com.loohp.limbo.Player.Player;
-import com.loohp.limbo.Server.Packets.PacketPlayOutEntityDestroy;
-import com.loohp.limbo.Server.Packets.PacketPlayOutEntityMetadata;
-import com.loohp.limbo.Utils.SchematicConvertionUtils;
+import com.loohp.limbo.server.packets.PacketPlayOutEntityDestroy;
+import com.loohp.limbo.server.packets.PacketPlayOutEntityMetadata;
+import com.loohp.limbo.entity.ArmorStand;
+import com.loohp.limbo.entity.DataWatcher;
+import com.loohp.limbo.entity.Entity;
+import com.loohp.limbo.entity.EntityType;
+import com.loohp.limbo.entity.DataWatcher.WatchableObject;
+import com.loohp.limbo.location.Location;
+import com.loohp.limbo.player.Player;
+import com.loohp.limbo.utils.SchematicConvertionUtils;
 
 import net.querz.mca.Chunk;
 import net.querz.nbt.tag.CompoundTag;

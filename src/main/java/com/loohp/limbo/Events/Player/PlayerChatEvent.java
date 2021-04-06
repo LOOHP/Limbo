@@ -1,7 +1,7 @@
-package com.loohp.limbo.Events.Player;
+package com.loohp.limbo.events.player;
 
-import com.loohp.limbo.Events.Cancellable;
-import com.loohp.limbo.Player.Player;
+import com.loohp.limbo.events.Cancellable;
+import com.loohp.limbo.player.Player;
 
 public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 

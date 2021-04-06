@@ -1,11 +1,11 @@
-package com.loohp.limbo.Server.Packets;
+package com.loohp.limbo.server.packets;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import com.loohp.limbo.Utils.DataTypeIO;
-import com.loohp.limbo.World.BlockPosition;
+import com.loohp.limbo.utils.DataTypeIO;
+import com.loohp.limbo.world.BlockPosition;
 
 public class PacketPlayOutSpawnPosition extends PacketOut {
 	

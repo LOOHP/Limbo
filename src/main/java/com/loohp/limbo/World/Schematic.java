@@ -1,10 +1,10 @@
-package com.loohp.limbo.World;
+package com.loohp.limbo.world;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.loohp.limbo.Utils.SchematicConvertionUtils;
+import com.loohp.limbo.utils.SchematicConvertionUtils;
 
 import net.querz.mca.Chunk;
 import net.querz.nbt.tag.CompoundTag;

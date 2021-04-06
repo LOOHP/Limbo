@@ -1,4 +1,4 @@
-package com.loohp.limbo.Server;
+package com.loohp.limbo.server;
 
 import java.io.IOException;
 import java.net.InetAddress;

@@ -1,4 +1,4 @@
-package com.loohp.limbo.Utils;
+package com.loohp.limbo.utils;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.util.UUID;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.loohp.limbo.Server.Packets.PacketPlayOutPluginMessaging;
+import com.loohp.limbo.server.packets.PacketPlayOutPluginMessaging;
 
 public class BungeeLoginMessageUtils {
 

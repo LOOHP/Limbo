@@ -1,14 +1,14 @@
-package com.loohp.limbo.Entity;
+package com.loohp.limbo.entity;
 
 import java.util.UUID;
 
 import com.loohp.limbo.Limbo;
-import com.loohp.limbo.Entity.DataWatcher.WatchableField;
-import com.loohp.limbo.Entity.DataWatcher.WatchableObjectType;
-import com.loohp.limbo.Inventory.EquipmentSlot;
-import com.loohp.limbo.Location.Location;
-import com.loohp.limbo.World.BlockPosition;
-import com.loohp.limbo.World.World;
+import com.loohp.limbo.entity.DataWatcher.WatchableField;
+import com.loohp.limbo.entity.DataWatcher.WatchableObjectType;
+import com.loohp.limbo.inventory.EquipmentSlot;
+import com.loohp.limbo.location.Location;
+import com.loohp.limbo.world.BlockPosition;
+import com.loohp.limbo.world.World;
 
 public abstract class LivingEntity extends Entity {
 	

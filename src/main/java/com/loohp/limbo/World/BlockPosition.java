@@ -1,6 +1,6 @@
-package com.loohp.limbo.World;
+package com.loohp.limbo.world;
 
-import com.loohp.limbo.Location.Location;
+import com.loohp.limbo.location.Location;
 
 public class BlockPosition {
 	private int x;

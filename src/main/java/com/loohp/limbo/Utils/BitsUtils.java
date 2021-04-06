@@ -1,4 +1,4 @@
-package com.loohp.limbo.Utils;
+package com.loohp.limbo.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;

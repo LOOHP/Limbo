@@ -1,4 +1,4 @@
-package com.loohp.limbo.File;
+package com.loohp.limbo.file;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -16,10 +16,10 @@ import java.util.Properties;
 import javax.imageio.ImageIO;
 
 import com.loohp.limbo.Limbo;
-import com.loohp.limbo.Location.Location;
-import com.loohp.limbo.Utils.GameMode;
-import com.loohp.limbo.Utils.NamespacedKey;
-import com.loohp.limbo.World.World;
+import com.loohp.limbo.location.Location;
+import com.loohp.limbo.utils.GameMode;
+import com.loohp.limbo.utils.NamespacedKey;
+import com.loohp.limbo.world.World;
 
 public class ServerProperties {
 	

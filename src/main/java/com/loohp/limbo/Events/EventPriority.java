@@ -1,4 +1,4 @@
-package com.loohp.limbo.Events;
+package com.loohp.limbo.events;
 
 public enum EventPriority {
 	LOWEST(0),

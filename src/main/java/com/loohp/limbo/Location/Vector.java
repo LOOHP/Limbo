@@ -1,11 +1,11 @@
-package com.loohp.limbo.Location;
+package com.loohp.limbo.location;
 
 import java.util.Random;
 
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.Doubles;
-import com.loohp.limbo.Utils.NumberConversions;
-import com.loohp.limbo.World.World;
+import com.loohp.limbo.utils.NumberConversions;
+import com.loohp.limbo.world.World;
 
 /**
  * Represents a mutable vector. Because the components of Vectors are mutable,

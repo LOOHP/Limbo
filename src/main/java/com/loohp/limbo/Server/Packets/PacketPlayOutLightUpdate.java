@@ -1,11 +1,11 @@
-package com.loohp.limbo.Server.Packets;
+package com.loohp.limbo.server.packets;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import com.loohp.limbo.Utils.DataTypeIO;
+import com.loohp.limbo.utils.DataTypeIO;
 
 public class PacketPlayOutLightUpdate extends PacketOut {
 

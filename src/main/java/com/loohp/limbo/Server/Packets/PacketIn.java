@@ -1,4 +1,4 @@
-package com.loohp.limbo.Server.Packets;
+package com.loohp.limbo.server.packets;
 
 public abstract class PacketIn extends Packet {
 

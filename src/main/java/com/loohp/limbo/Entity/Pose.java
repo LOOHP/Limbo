@@ -1,4 +1,4 @@
-package com.loohp.limbo.Entity;
+package com.loohp.limbo.entity;
 
 public enum Pose {
 	

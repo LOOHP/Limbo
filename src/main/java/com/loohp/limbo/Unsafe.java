@@ -2,27 +2,27 @@ package com.loohp.limbo;
 
 import java.lang.reflect.Constructor;
 
-import com.loohp.limbo.Entity.DataWatcher;
-import com.loohp.limbo.Entity.Entity;
-import com.loohp.limbo.Location.Location;
-import com.loohp.limbo.Player.Player;
-import com.loohp.limbo.Utils.GameMode;
-import com.loohp.limbo.World.World;
+import com.loohp.limbo.entity.DataWatcher;
+import com.loohp.limbo.entity.Entity;
+import com.loohp.limbo.location.Location;
+import com.loohp.limbo.player.Player;
+import com.loohp.limbo.utils.GameMode;
+import com.loohp.limbo.world.World;
 
 @Deprecated
 public class Unsafe {
 	
-	private com.loohp.limbo.Player.Unsafe playerUnsafe;
-	private com.loohp.limbo.World.Unsafe worldUnsafe;
+	private com.loohp.limbo.player.Unsafe playerUnsafe;
+	private com.loohp.limbo.world.Unsafe worldUnsafe;
 	
 	protected Unsafe() {
 		try {
-			Constructor<com.loohp.limbo.Player.Unsafe> playerConstructor = com.loohp.limbo.Player.Unsafe.class.getDeclaredConstructor();
+			Constructor<com.loohp.limbo.player.Unsafe> playerConstructor = com.loohp.limbo.player.Unsafe.class.getDeclaredConstructor();
 			playerConstructor.setAccessible(true);
 			playerUnsafe = playerConstructor.newInstance();
 			playerConstructor.setAccessible(false);
 			
-			Constructor<com.loohp.limbo.World.Unsafe> worldConstructor = com.loohp.limbo.World.Unsafe.class.getDeclaredConstructor();
+			Constructor<com.loohp.limbo.world.Unsafe> worldConstructor = com.loohp.limbo.world.Unsafe.class.getDeclaredConstructor();
 			worldConstructor.setAccessible(true);
 			worldUnsafe = worldConstructor.newInstance();
 			worldConstructor.setAccessible(false);

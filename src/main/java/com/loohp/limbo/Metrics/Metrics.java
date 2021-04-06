@@ -1,4 +1,4 @@
-package com.loohp.limbo.Metrics;
+package com.loohp.limbo.metrics;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -22,7 +22,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.loohp.limbo.Limbo;
-import com.loohp.limbo.File.FileConfiguration;
+import com.loohp.limbo.file.FileConfiguration;
 
 /**
  * bStats collects some data for plugin authors.

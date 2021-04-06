@@ -1,8 +1,8 @@
-package com.loohp.limbo.Events.Player;
+package com.loohp.limbo.events.player;
 
-import com.loohp.limbo.Events.Cancellable;
-import com.loohp.limbo.Events.Event;
-import com.loohp.limbo.Server.ClientConnection;
+import com.loohp.limbo.events.Cancellable;
+import com.loohp.limbo.events.Event;
+import com.loohp.limbo.server.ClientConnection;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 

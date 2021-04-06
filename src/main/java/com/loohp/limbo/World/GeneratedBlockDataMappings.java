@@ -1,4 +1,4 @@
-package com.loohp.limbo.World;
+package com.loohp.limbo.world;
 
 import java.io.File;
 import java.io.FileReader;

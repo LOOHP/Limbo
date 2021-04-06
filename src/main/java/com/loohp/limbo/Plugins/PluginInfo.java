@@ -1,6 +1,6 @@
-package com.loohp.limbo.Plugins;
+package com.loohp.limbo.plugins;
 
-import com.loohp.limbo.File.FileConfiguration;
+import com.loohp.limbo.file.FileConfiguration;
 
 public class PluginInfo {
 	

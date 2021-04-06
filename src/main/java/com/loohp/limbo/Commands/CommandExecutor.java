@@ -1,4 +1,4 @@
-package com.loohp.limbo.Commands;
+package com.loohp.limbo.commands;
 
 public interface CommandExecutor {
 	

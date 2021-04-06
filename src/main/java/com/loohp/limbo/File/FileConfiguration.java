@@ -1,4 +1,4 @@
-package com.loohp.limbo.File;
+package com.loohp.limbo.file;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -19,7 +19,7 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.representer.Representer;
 
-import com.loohp.limbo.Utils.YamlOrder;
+import com.loohp.limbo.utils.YamlOrder;
 
 public class FileConfiguration {
 	

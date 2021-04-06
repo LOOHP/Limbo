@@ -1,7 +1,7 @@
-package com.loohp.limbo.World;
+package com.loohp.limbo.world;
 
-import com.loohp.limbo.Entity.DataWatcher;
-import com.loohp.limbo.Entity.Entity;
+import com.loohp.limbo.entity.DataWatcher;
+import com.loohp.limbo.entity.Entity;
 
 @Deprecated
 public class Unsafe {

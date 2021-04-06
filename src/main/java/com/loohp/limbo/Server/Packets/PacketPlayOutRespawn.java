@@ -1,15 +1,15 @@
-package com.loohp.limbo.Server.Packets;
+package com.loohp.limbo.server.packets;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import com.loohp.limbo.Utils.DataTypeIO;
-import com.loohp.limbo.Utils.GameMode;
-import com.loohp.limbo.Utils.NamespacedKey;
-import com.loohp.limbo.World.Environment;
-import com.loohp.limbo.World.World;
+import com.loohp.limbo.utils.DataTypeIO;
+import com.loohp.limbo.utils.GameMode;
+import com.loohp.limbo.utils.NamespacedKey;
+import com.loohp.limbo.world.Environment;
+import com.loohp.limbo.world.World;
 
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;

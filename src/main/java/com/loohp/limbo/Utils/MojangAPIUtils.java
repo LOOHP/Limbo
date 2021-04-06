@@ -1,4 +1,4 @@
-package com.loohp.limbo.Utils;
+package com.loohp.limbo.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

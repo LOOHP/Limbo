@@ -1,7 +1,7 @@
-package com.loohp.limbo.Player;
+package com.loohp.limbo.player;
 
-import com.loohp.limbo.Location.Location;
-import com.loohp.limbo.Utils.GameMode;
+import com.loohp.limbo.location.Location;
+import com.loohp.limbo.utils.GameMode;
 
 @Deprecated
 public class Unsafe {

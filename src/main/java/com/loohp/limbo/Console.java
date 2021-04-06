@@ -29,9 +29,9 @@ import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
-import com.loohp.limbo.Commands.CommandSender;
-import com.loohp.limbo.GUI.ConsoleTextOutput;
-import com.loohp.limbo.Utils.CustomStringUtils;
+import com.loohp.limbo.commands.CommandSender;
+import com.loohp.limbo.consolegui.ConsoleTextOutput;
+import com.loohp.limbo.utils.CustomStringUtils;
 
 import jline.console.ConsoleReader;
 import net.md_5.bungee.api.ChatColor;

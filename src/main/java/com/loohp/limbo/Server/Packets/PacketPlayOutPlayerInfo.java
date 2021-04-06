@@ -1,4 +1,4 @@
-package com.loohp.limbo.Server.Packets;
+package com.loohp.limbo.server.packets;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -7,9 +7,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.loohp.limbo.Server.Packets.PacketPlayOutPlayerInfo.PlayerInfoData.PlayerInfoDataAddPlayer;
-import com.loohp.limbo.Utils.DataTypeIO;
-import com.loohp.limbo.Utils.GameMode;
+import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoData.PlayerInfoDataAddPlayer;
+import com.loohp.limbo.utils.DataTypeIO;
+import com.loohp.limbo.utils.GameMode;
 
 public class PacketPlayOutPlayerInfo extends PacketOut {
 

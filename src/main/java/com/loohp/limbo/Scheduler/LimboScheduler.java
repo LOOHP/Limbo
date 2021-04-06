@@ -1,4 +1,4 @@
-package com.loohp.limbo.Scheduler;
+package com.loohp.limbo.scheduler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.loohp.limbo.Limbo;
-import com.loohp.limbo.Plugins.LimboPlugin;
+import com.loohp.limbo.plugins.LimboPlugin;
 
 public class LimboScheduler {
 	

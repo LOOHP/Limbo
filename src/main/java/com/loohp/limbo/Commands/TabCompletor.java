@@ -1,4 +1,4 @@
-package com.loohp.limbo.Commands;
+package com.loohp.limbo.commands;
 
 import java.util.List;
 
