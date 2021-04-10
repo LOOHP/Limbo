@@ -182,7 +182,7 @@ public class ClientConnection extends Thread {
 		    if (handShakeSize == 0xFE) {
 		    	state = ClientState.LEGACY;			    
 		    	output.writeByte(255);
-		    	String str = client_socket.getInetAddress().getHostName() + ":" + client_socket.getPort();
+		    	String str = inetAddress.getHostName() + ":" + client_socket.getPort();
 		    	Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Legacy Status has pinged");
 		    	ServerProperties p = Limbo.getInstance().getServerProperties();
 		    	StatusPingEvent event = Limbo.getInstance().getEventsManager().callEvent(new StatusPingEvent(this, p.getVersionString(), p.getProtocol(), ComponentSerializer.parse(p.getMotdJson()), p.getMaxPlayers(), Limbo.getInstance().getPlayers().size(), p.getFavicon().orElse(null)));
@@ -216,7 +216,7 @@ public class ClientConnection extends Thread {
 						if (packetType == null) {
 							//do nothing
 						} else if (packetType.equals(PacketStatusInRequest.class)) {
-							String str = client_socket.getInetAddress().getHostName() + ":" + client_socket.getPort();
+							String str = inetAddress.getHostName() + ":" + client_socket.getPort();
 							if (Limbo.getInstance().getServerProperties().handshakeVerboseEnabled()) {
 								Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Handshake Status has pinged");
 							}
@@ -328,7 +328,7 @@ public class ClientConnection extends Thread {
 				PacketPlayOutPlayerAbilities abilities = new PacketPlayOutPlayerAbilities(0.05F, 0.1F, flags.toArray(new PlayerAbilityFlags[flags.size()]));
 				sendPacket(abilities);
 
-				String str = client_socket.getInetAddress().getHostName() + ":" + client_socket.getPort() + "|" + player.getName();
+				String str = inetAddress.getHostName() + ":" + client_socket.getPort() + "|" + player.getName();
 				Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had connected to the Limbo server!");
 
 				PacketPlayOutDeclareCommands declare = DeclareCommands.getDeclareCommandsPacket(player);
@@ -446,7 +446,7 @@ public class ClientConnection extends Thread {
 
 				Limbo.getInstance().getEventsManager().callEvent(new PlayerQuitEvent(player));
 
-		    	str = client_socket.getInetAddress().getHostName() + ":" + client_socket.getPort() + "|" + player.getName();
+		    	str = inetAddress.getHostName() + ":" + client_socket.getPort() + "|" + player.getName();
 		    	Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had disconnected!");
 
 	    	}

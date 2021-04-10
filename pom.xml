@@ -5,7 +5,7 @@
 	<groupId>com.loohp.limbo</groupId>
 	<artifactId>Limbo</artifactId>
 	<name>Limbo</name>
-	<version>0.4.3-ALPHA</version>
+	<version>0.4.4-ALPHA</version>
 	
 	<description>Standalone Limbo Minecraft Server.</description>
 	<url>https://github.com/LOOHP/Limbo</url>
