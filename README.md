@@ -17,3 +17,20 @@ IP: mc.loohpjames.com
 ***
 ### Downloads (1.16-1.16.5)
 - [Jenkins](http://ci.loohpjames.com/job/Limbo/)
+***
+### Maven
+```html
+<repository>
+  <id>loohp-repo</id>
+  <url>https://repo.loohpjames.com/repository</url>
+</repository>
+```
+```html
+<dependency>
+  <groupId>com.loohp</groupId>
+  <artifactId>Limbo</artifactId>
+  <version>VERSION</version>
+  <scope>provided</scope>
+</dependency>
+```
+Replace `VERSION` with the version.
