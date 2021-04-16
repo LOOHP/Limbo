@@ -16,8 +16,8 @@ import java.util.*;
 public class YamlOrder extends PropertyUtils {
 
     private static final String TRANSIENT = "transient";
-    private final Map<Class<?>, Map<String, Property>> propertiesCache = new HashMap<Class<?>, Map<String, Property>>();
-    private final Map<Class<?>, Set<Property>> readableProperties = new HashMap<Class<?>, Set<Property>>();
+    private final Map<Class<?>, Map<String, Property>> propertiesCache = new HashMap<>();
+    private final Map<Class<?>, Set<Property>> readableProperties = new HashMap<>();
     private BeanAccess beanAccess = BeanAccess.DEFAULT;
     private boolean allowReadOnlyProperties = false;
     private boolean skipMissingProperties = false;
@@ -40,47 +40,44 @@ public class YamlOrder extends PropertyUtils {
             return propertiesCache.get(type);
         }
 
-        Map<String, Property> properties = new LinkedHashMap<String, Property>();
+        Map<String, Property> properties = new LinkedHashMap<>();
         boolean inaccessableFieldsExist = false;
-        switch (bAccess) {
-            case FIELD:
-                for (Class<?> c = type; c != null; c = c.getSuperclass()) {
-                    for (Field field : c.getDeclaredFields()) {
-                        int modifiers = field.getModifiers();
-                        if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)
-                                && !properties.containsKey(field.getName())) {
-                            properties.put(field.getName(), new FieldProperty(field));
-                        }
+        if (bAccess == BeanAccess.FIELD) {
+            for (Class<?> c = type; c != null; c = c.getSuperclass()) {
+                for (Field field : c.getDeclaredFields()) {
+                    int modifiers = field.getModifiers();
+                    if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)
+                            && !properties.containsKey(field.getName())) {
+                        properties.put(field.getName(), new FieldProperty(field));
                     }
                 }
-                break;
-            default:
-                try {
-                    for (PropertyDescriptor property : Introspector.getBeanInfo(type)
-                            .getPropertyDescriptors()) {
-                        Method readMethod = property.getReadMethod();
-                        if ((readMethod == null || !readMethod.getName().equals("getClass"))
-                                && !isTransient(property)) {
-                            properties.put(property.getName(), new MethodProperty(property));
-                        }
+            }
+        } else {
+            try {
+                for (PropertyDescriptor property : Introspector.getBeanInfo(type)
+                        .getPropertyDescriptors()) {
+                    Method readMethod = property.getReadMethod();
+                    if ((readMethod == null || !readMethod.getName().equals("getClass"))
+                            && !isTransient(property)) {
+                        properties.put(property.getName(), new MethodProperty(property));
                     }
-                } catch (IntrospectionException e) {
-                    throw new YAMLException(e);
                 }
+            } catch (IntrospectionException e) {
+                throw new YAMLException(e);
+            }
 
-                for (Class<?> c = type; c != null; c = c.getSuperclass()) {
-                    for (Field field : c.getDeclaredFields()) {
-                        int modifiers = field.getModifiers();
-                        if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)) {
-                            if (Modifier.isPublic(modifiers)) {
-                                properties.put(field.getName(), new FieldProperty(field));
-                            } else {
-                                inaccessableFieldsExist = true;
-                            }
+            for (Class<?> c = type; c != null; c = c.getSuperclass()) {
+                for (Field field : c.getDeclaredFields()) {
+                    int modifiers = field.getModifiers();
+                    if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)) {
+                        if (Modifier.isPublic(modifiers)) {
+                            properties.put(field.getName(), new FieldProperty(field));
+                        } else {
+                            inaccessableFieldsExist = true;
                         }
                     }
                 }
-                break;
+            }
         }
         if (properties.isEmpty() && inaccessableFieldsExist) {
             throw new YAMLException("No JavaBean properties found in " + type.getName());
@@ -94,11 +91,11 @@ public class YamlOrder extends PropertyUtils {
         return Boolean.TRUE.equals(fd.getValue(TRANSIENT));
     }
 
-    public Set<Property> getProperties(Class<? extends Object> type) {
+    public Set<Property> getProperties(Class<?> type) {
         return getProperties(type, beanAccess);
     }
 
-    public Set<Property> getProperties(Class<? extends Object> type, BeanAccess bAccess) {
+    public Set<Property> getProperties(Class<?> type, BeanAccess bAccess) {
         if (readableProperties.containsKey(type)) {
             return readableProperties.get(type);
         }
@@ -107,7 +104,7 @@ public class YamlOrder extends PropertyUtils {
         return properties;
     }
 
-    protected Set<Property> createPropertySet(Class<? extends Object> type, BeanAccess bAccess) {
+    protected Set<Property> createPropertySet(Class<?> type, BeanAccess bAccess) {
         Set<Property> properties = new LinkedHashSet<>();
         Collection<Property> props = getPropertiesMap(type, bAccess).values();
         for (Property property : props) {
@@ -118,11 +115,11 @@ public class YamlOrder extends PropertyUtils {
         return properties;
     }
 
-    public Property getProperty(Class<? extends Object> type, String name) {
+    public Property getProperty(Class<?> type, String name) {
         return getProperty(type, name, beanAccess);
     }
 
-    public Property getProperty(Class<? extends Object> type, String name, BeanAccess bAccess) {
+    public Property getProperty(Class<?> type, String name, BeanAccess bAccess) {
         Map<String, Property> properties = getPropertiesMap(type, bAccess);
         Property property = properties.get(name);
         if (property == null && skipMissingProperties) {

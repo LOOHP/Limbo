@@ -57,7 +57,7 @@ public class World {
                                 1281525273222484040L, 9548107335L});
                 chunk.setHeightMaps(heightMap);
                 chunk.setBiomes(new int[256]);
-                chunk.setTileEntities(new ListTag<CompoundTag>(CompoundTag.class));
+                chunk.setTileEntities(new ListTag<>(CompoundTag.class));
             }
         }
 

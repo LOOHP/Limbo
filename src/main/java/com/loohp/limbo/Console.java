@@ -96,14 +96,11 @@ public class Console implements CommandSender {
         reader.setHandleUserInterrupt(false);
 
         terminal = TerminalBuilder.builder().streams(in, out).system(true).jansi(true).build();
-        tabReader = LineReaderBuilder.builder().terminal(terminal).completer(new Completer() {
-            @Override
-            public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
-                String[] args = CustomStringUtils.splitStringToArgs(line.line());
-                List<String> tab = Limbo.getInstance().getPluginManager().getTabOptions(Limbo.getInstance().getConsole(), args);
-                for (String each : tab) {
-                    candidates.add(new Candidate(each));
-                }
+        tabReader = LineReaderBuilder.builder().terminal(terminal).completer((reader, line, candidates) -> {
+            String[] args = CustomStringUtils.splitStringToArgs(line.line());
+            List<String> tab = Limbo.getInstance().getPluginManager().getTabOptions(Limbo.getInstance().getConsole(), args);
+            for (String each : tab) {
+                candidates.add(new Candidate(each));
             }
         }).build();
         tabReader.setAutosuggestion(SuggestionType.NONE);
@@ -149,7 +146,7 @@ public class Console implements CommandSender {
 
     @Override
     public void sendMessage(BaseComponent[] component) {
-        sendMessage(String.join("", Arrays.asList(component).stream().map(each -> each.toLegacyText()).collect(Collectors.toList())));
+        sendMessage(Arrays.stream(component).map(BaseComponent::toLegacyText).collect(Collectors.joining("")));
     }
 
     @Override
@@ -159,7 +156,7 @@ public class Console implements CommandSender {
         ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Info] " + message), true);
         logs.println(ChatColor.stripColor("[" + date + " Info] " + message));
         try {
-            reader.getOutput().append("[" + date + " Info] " + translateToConsole(message) + "\n");
+            reader.getOutput().append("[").append(date).append(" Info] ").append(translateToConsole(message)).append("\n");
             reader.getOutput().flush();
         } catch (IOException e) {
             e.printStackTrace();

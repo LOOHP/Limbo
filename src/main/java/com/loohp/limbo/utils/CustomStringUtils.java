@@ -7,7 +7,7 @@ import java.util.List;
 public class CustomStringUtils {
 
     public static boolean arrayContains(String compare, String[] args, boolean IgnoreCase) {
-        return IgnoreCase ? Arrays.asList(args).stream().anyMatch(each -> each.equalsIgnoreCase(compare)) : Arrays.asList(args).stream().anyMatch(each -> each.equals(compare));
+        return IgnoreCase ? Arrays.stream(args).anyMatch(each -> each.equalsIgnoreCase(compare)) : Arrays.asList(args).contains(compare);
     }
 
     public static boolean arrayContains(String compare, String[] args) {
@@ -34,7 +34,7 @@ public class CustomStringUtils {
         }
         tokens.add(sb.toString());
 
-        return tokens.toArray(new String[tokens.size()]);
+        return tokens.toArray(new String[0]);
     }
 
     public static int getIndexOfArg(String str, int ordinal) {

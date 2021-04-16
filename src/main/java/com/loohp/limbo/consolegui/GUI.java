@@ -191,12 +191,7 @@ public class GUI extends JFrame {
         GUI frame = new GUI();
         frame.setVisible(true);
 
-        Thread t1 = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SystemInfo.printInfo();
-            }
-        });
+        Thread t1 = new Thread(SystemInfo::printInfo);
         t1.start();
 
         loadFinish = true;

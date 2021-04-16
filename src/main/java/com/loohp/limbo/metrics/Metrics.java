@@ -93,26 +93,11 @@ public class Metrics {
             startSubmitting();
         }
 
-        addCustomChart(new Metrics.SingleLineChart("players", new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                return Limbo.getInstance().getPlayers().size();
-            }
-        }));
+        addCustomChart(new Metrics.SingleLineChart("players", () -> Limbo.getInstance().getPlayers().size()));
 
-        addCustomChart(new Metrics.SimplePie("limbo_version", new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                return limboVersion;
-            }
-        }));
+        addCustomChart(new Metrics.SimplePie("limbo_version", () -> limboVersion));
 
-        addCustomChart(new Metrics.SimplePie("minecraftVersion", new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                return Limbo.getInstance().serverImplementationVersion;
-            }
-        }));
+        addCustomChart(new Metrics.SimplePie("minecraftVersion", () -> Limbo.getInstance().serverImplementationVersion));
     }
 
     /**

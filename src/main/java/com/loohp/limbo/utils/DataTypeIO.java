@@ -15,7 +15,7 @@ import java.util.UUID;
 public class DataTypeIO {
 
     public static void writeBlockPosition(DataOutputStream out, BlockPosition position) throws IOException {
-        out.writeLong(((position.getX() & 0x3FFFFFF) << 38) | ((position.getZ() & 0x3FFFFFF) << 12) | (position.getY() & 0xFFF));
+        out.writeLong(((long) (position.getX() & 0x3FFFFFF) << 38) | ((long) (position.getZ() & 0x3FFFFFF) << 12) | (position.getY() & 0xFFF));
     }
 
     public static void writeUUID(DataOutputStream out, UUID uuid) throws IOException {

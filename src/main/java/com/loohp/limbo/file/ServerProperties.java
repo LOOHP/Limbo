@@ -17,7 +17,7 @@ import java.util.Properties;
 public class ServerProperties {
 
     public static final String COMMENT = "For explaination of what each of the options does, please visit:\nhttps://github.com/LOOHP/Limbo/blob/master/src/main/resources/server.properties";
-    Optional<BufferedImage> favicon;
+    private BufferedImage favicon;
     private final File file;
     private final int maxPlayers;
     private final int serverPort;
@@ -91,7 +91,7 @@ public class ServerProperties {
             try {
                 BufferedImage image = ImageIO.read(png);
                 if (image.getHeight() == 64 && image.getWidth() == 64) {
-                    favicon = Optional.of(image);
+                    favicon = image;
                 } else {
                     Limbo.getInstance().getConsole().sendMessage("Unable to load server-icon.png! The image is not 64 x 64 in size!");
                 }
@@ -100,7 +100,7 @@ public class ServerProperties {
             }
         } else {
             Limbo.getInstance().getConsole().sendMessage("No server-icon.png found");
-            favicon = Optional.empty();
+            favicon = null;
         }
 
         Limbo.getInstance().getConsole().sendMessage("Loaded server.properties");
@@ -115,7 +115,7 @@ public class ServerProperties {
     }
 
     public Optional<BufferedImage> getFavicon() {
-        return favicon;
+        return Optional.ofNullable(favicon);
     }
 
     public File getFile() {
