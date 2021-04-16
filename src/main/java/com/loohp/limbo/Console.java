@@ -96,11 +96,14 @@ public class Console implements CommandSender {
         reader.setHandleUserInterrupt(false);
 
         terminal = TerminalBuilder.builder().streams(in, out).system(true).jansi(true).build();
-        tabReader = LineReaderBuilder.builder().terminal(terminal).completer((reader, line, candidates) -> {
-            String[] args = CustomStringUtils.splitStringToArgs(line.line());
-            List<String> tab = Limbo.getInstance().getPluginManager().getTabOptions(Limbo.getInstance().getConsole(), args);
-            for (String each : tab) {
-                candidates.add(new Candidate(each));
+        tabReader = LineReaderBuilder.builder().terminal(terminal).completer(new Completer() {
+            @Override
+            public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
+                String[] args = CustomStringUtils.splitStringToArgs(line.line());
+                List<String> tab = Limbo.getInstance().getPluginManager().getTabOptions(Limbo.getInstance().getConsole(), args);
+                for (String each : tab) {
+                    candidates.add(new Candidate(each));
+                }
             }
         }).build();
         tabReader.setAutosuggestion(SuggestionType.NONE);
@@ -146,7 +149,7 @@ public class Console implements CommandSender {
 
     @Override
     public void sendMessage(BaseComponent[] component) {
-        sendMessage(Arrays.stream(component).map(BaseComponent::toLegacyText).collect(Collectors.joining("")));
+        sendMessage(String.join("", Arrays.asList(component).stream().map(each -> each.toLegacyText()).collect(Collectors.toList())));
     }
 
     @Override
