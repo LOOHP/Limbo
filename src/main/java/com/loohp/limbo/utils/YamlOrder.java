@@ -1,5 +1,9 @@
 package com.loohp.limbo.utils;
 
+import org.yaml.snakeyaml.error.YAMLException;
+import org.yaml.snakeyaml.introspector.*;
+import org.yaml.snakeyaml.util.PlatformFeatureDetector;
+
 import java.beans.FeatureDescriptor;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -7,31 +11,17 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.yaml.snakeyaml.error.YAMLException;
-import org.yaml.snakeyaml.introspector.BeanAccess;
-import org.yaml.snakeyaml.introspector.FieldProperty;
-import org.yaml.snakeyaml.introspector.MethodProperty;
-import org.yaml.snakeyaml.introspector.MissingProperty;
-import org.yaml.snakeyaml.introspector.Property;
-import org.yaml.snakeyaml.introspector.PropertyUtils;
-import org.yaml.snakeyaml.util.PlatformFeatureDetector;
+import java.util.*;
 
 public class YamlOrder extends PropertyUtils {
 
+    private static final String TRANSIENT = "transient";
     private final Map<Class<?>, Map<String, Property>> propertiesCache = new HashMap<Class<?>, Map<String, Property>>();
     private final Map<Class<?>, Set<Property>> readableProperties = new HashMap<Class<?>, Set<Property>>();
     private BeanAccess beanAccess = BeanAccess.DEFAULT;
     private boolean allowReadOnlyProperties = false;
     private boolean skipMissingProperties = false;
-
-    private PlatformFeatureDetector platformFeatureDetector;
+    private final PlatformFeatureDetector platformFeatureDetector;
 
     public YamlOrder() {
         this(new PlatformFeatureDetector());
@@ -100,8 +90,6 @@ public class YamlOrder extends PropertyUtils {
         return properties;
     }
 
-    private static final String TRANSIENT = "transient";
-
     private boolean isTransient(FeatureDescriptor fd) {
         return Boolean.TRUE.equals(fd.getValue(TRANSIENT));
     }
@@ -160,6 +148,10 @@ public class YamlOrder extends PropertyUtils {
         }
     }
 
+    public boolean isAllowReadOnlyProperties() {
+        return allowReadOnlyProperties;
+    }
+
     public void setAllowReadOnlyProperties(boolean allowReadOnlyProperties) {
         if (this.allowReadOnlyProperties != allowReadOnlyProperties) {
             this.allowReadOnlyProperties = allowReadOnlyProperties;
@@ -167,8 +159,8 @@ public class YamlOrder extends PropertyUtils {
         }
     }
 
-    public boolean isAllowReadOnlyProperties() {
-        return allowReadOnlyProperties;
+    public boolean isSkipMissingProperties() {
+        return skipMissingProperties;
     }
 
     public void setSkipMissingProperties(boolean skipMissingProperties) {
@@ -176,9 +168,5 @@ public class YamlOrder extends PropertyUtils {
             this.skipMissingProperties = skipMissingProperties;
             readableProperties.clear();
         }
-    }
-
-    public boolean isSkipMissingProperties() {
-        return skipMissingProperties;
     }
 }

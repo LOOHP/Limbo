@@ -5,8 +5,8 @@ import com.loohp.limbo.player.Player;
 
 public class PlayerTeleportEvent extends PlayerMoveEvent {
 
-	public PlayerTeleportEvent(Player player, Location from, Location to) {
-		super(player, from, to);
-	}
+    public PlayerTeleportEvent(Player player, Location from, Location to) {
+        super(player, from, to);
+    }
 
 }

@@ -1,12 +1,12 @@
 package com.loohp.limbo.entity;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.player.Player;
 import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.world.World;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public enum EntityType {
 
@@ -270,13 +270,6 @@ public enum EntityType {
      */
     UNKNOWN(null, null, -1, false);
 
-    private final String name;
-    private final Class<? extends Entity> clazz;
-    private final short typeId;
-    private final boolean independent;
-    private final boolean living;
-    private final NamespacedKey key;
-
     private static final Map<String, EntityType> NAME_MAP = new HashMap<>();
     private static final Map<Short, EntityType> ID_MAP = new HashMap<>();
 
@@ -308,45 +301,24 @@ public enum EntityType {
         */
     }
 
-    private EntityType(String name, Class<? extends Entity> clazz, int typeId) {
+    private final String name;
+    private final Class<? extends Entity> clazz;
+    private final short typeId;
+    private final boolean independent;
+    private final boolean living;
+    private final NamespacedKey key;
+
+    EntityType(String name, Class<? extends Entity> clazz, int typeId) {
         this(name, clazz, typeId, true);
     }
 
-    private EntityType(String name, Class<? extends Entity> clazz, int typeId, boolean independent) {
+    EntityType(String name, Class<? extends Entity> clazz, int typeId, boolean independent) {
         this.name = name;
         this.clazz = clazz;
         this.typeId = (short) typeId;
         this.independent = independent;
         this.living = clazz != null && LivingEntity.class.isAssignableFrom(clazz);
         this.key = (name == null) ? null : NamespacedKey.minecraft(name);
-    }
-
-    /**
-     * Gets the entity type name.
-     *
-     * @return the entity type's name
-     * @deprecated Magic value
-     */
-    @Deprecated
-    public String getName() {
-        return name;
-    }
-
-    public NamespacedKey getKey() {
-        return key;
-    }
-
-    public Class<? extends Entity> getEntityClass() {
-        return clazz;
-    }
-
-    /**
-     * Gets the entity network type id.
-     *
-     * @return the network type id
-     */
-    public short getTypeId() {
-        return typeId;
     }
 
     /**
@@ -377,6 +349,34 @@ public enum EntityType {
             return null;
         }
         return ID_MAP.get((short) id);
+    }
+
+    /**
+     * Gets the entity type name.
+     *
+     * @return the entity type's name
+     * @deprecated Magic value
+     */
+    @Deprecated
+    public String getName() {
+        return name;
+    }
+
+    public NamespacedKey getKey() {
+        return key;
+    }
+
+    public Class<? extends Entity> getEntityClass() {
+        return clazz;
+    }
+
+    /**
+     * Gets the entity network type id.
+     *
+     * @return the network type id
+     */
+    public short getTypeId() {
+        return typeId;
     }
 
     /**
