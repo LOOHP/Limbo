@@ -1,54 +1,54 @@
 package com.loohp.limbo.plugins;
 
-import java.io.File;
-
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.file.FileConfiguration;
 
+import java.io.File;
+
 public class LimboPlugin {
 
-	private String name;
-	private File dataFolder;
-	private PluginInfo info;
-	private File pluginJar;
-	
-	protected final void setInfo(FileConfiguration file, File pluginJar) {
-		this.info = new PluginInfo(file);
-		this.name = info.getName();
-		this.dataFolder = new File(Limbo.getInstance().getPluginFolder(), name);
-		this.pluginJar = pluginJar;
-	}
-	
-	protected final File getPluginJar() {
-		return pluginJar;
-	}
+    private String name;
+    private File dataFolder;
+    private PluginInfo info;
+    private File pluginJar;
 
-	public void onLoad() {
+    protected final void setInfo(FileConfiguration file, File pluginJar) {
+        this.info = new PluginInfo(file);
+        this.name = info.getName();
+        this.dataFolder = new File(Limbo.getInstance().getPluginFolder(), name);
+        this.pluginJar = pluginJar;
+    }
 
-	}
+    protected final File getPluginJar() {
+        return pluginJar;
+    }
 
-	public void onEnable() {
+    public void onLoad() {
 
-	}
+    }
 
-	public void onDisable() {
+    public void onEnable() {
 
-	}
+    }
 
-	public final String getName() {
-		return name;
-	}
+    public void onDisable() {
 
-	public final File getDataFolder() {
-		return new File(dataFolder.getAbsolutePath());
-	}
-	
-	public final PluginInfo getInfo() {
-		return info;
-	}
-	
-	public final Limbo getServer() {
-		return Limbo.getInstance();
-	}
+    }
+
+    public final String getName() {
+        return name;
+    }
+
+    public final File getDataFolder() {
+        return new File(dataFolder.getAbsolutePath());
+    }
+
+    public final PluginInfo getInfo() {
+        return info;
+    }
+
+    public final Limbo getServer() {
+        return Limbo.getInstance();
+    }
 
 }

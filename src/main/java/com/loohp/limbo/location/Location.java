@@ -6,102 +6,148 @@ import com.loohp.limbo.world.BlockState;
 import com.loohp.limbo.world.World;
 
 public class Location implements Cloneable {
-	
-	private World world;
-	private double x;
-	private double y;
-	private double z;
-	private float yaw;
-	private float pitch;
-	
-	public Location(World world, double x, double y, double z, float yaw, float pitch) {
-		this.world = world;
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.yaw = yaw;
-		this.pitch = pitch;
-	}
-	
-	public Location(World world, double x, double y, double z) {
-		this(world, x, y, z, 0, 0);
-	}
-	
-	@Override
-	public Location clone() {
-		try {
+
+    private World world;
+    private double x;
+    private double y;
+    private double z;
+    private float yaw;
+    private float pitch;
+
+    public Location(World world, double x, double y, double z, float yaw, float pitch) {
+        this.world = world;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.yaw = yaw;
+        this.pitch = pitch;
+    }
+
+    public Location(World world, double x, double y, double z) {
+        this(world, x, y, z, 0, 0);
+    }
+
+    /**
+     * Safely converts a double (location coordinate) to an int (block
+     * coordinate)
+     *
+     * @param loc Precise coordinate
+     * @return Block coordinate
+     */
+    public static int locToBlock(double loc) {
+        return NumberConversions.floor(loc);
+    }
+
+    /**
+     * Normalizes the given yaw angle to a value between <code>+/-180</code>
+     * degrees.
+     *
+     * @param yaw the yaw in degrees
+     * @return the normalized yaw in degrees
+     * @see Location#getYaw()
+     */
+    public static float normalizeYaw(float yaw) {
+        yaw %= 360.0f;
+        if (yaw >= 180.0f) {
+            yaw -= 360.0f;
+        } else if (yaw < -180.0f) {
+            yaw += 360.0f;
+        }
+        return yaw;
+    }
+
+    /**
+     * Normalizes the given pitch angle to a value between <code>+/-90</code>
+     * degrees.
+     *
+     * @param pitch the pitch in degrees
+     * @return the normalized pitch in degrees
+     * @see Location#getPitch()
+     */
+    public static float normalizePitch(float pitch) {
+        if (pitch > 90.0f) {
+            pitch = 90.0f;
+        } else if (pitch < -90.0f) {
+            pitch = -90.0f;
+        }
+        return pitch;
+    }
+
+    @Override
+    public Location clone() {
+        try {
             return (Location) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new Error(e);
         }
-	}
-	
-	public BlockState getBlockState() {
-		return world.getBlock((int) x,(int) y,(int) z);
-	}
-	
-	public void setBlockState(BlockState state) {
-		world.setBlock((int) x, (int) y, (int) z, state);
-	}
-	
-	public boolean isWorldLoaded() {
-		return Limbo.getInstance().getWorld(world.getName()) != null;
-	}
+    }
 
-	public World getWorld() {
-		return world;
-	}
+    public BlockState getBlockState() {
+        return world.getBlock((int) x, (int) y, (int) z);
+    }
 
-	public void setWorld(World world) {
-		this.world = world;
-	}
+    public void setBlockState(BlockState state) {
+        world.setBlock((int) x, (int) y, (int) z, state);
+    }
 
-	public double getX() {
-		return x;
-	}
+    public boolean isWorldLoaded() {
+        return Limbo.getInstance().getWorld(world.getName()) != null;
+    }
 
-	public void setX(double x) {
-		this.x = x;
-	}
+    public World getWorld() {
+        return world;
+    }
 
-	public double getY() {
-		return y;
-	}
+    public void setWorld(World world) {
+        this.world = world;
+    }
 
-	public void setY(double y) {
-		this.y = y;
-	}
+    public double getX() {
+        return x;
+    }
 
-	public double getZ() {
-		return z;
-	}
+    public void setX(double x) {
+        this.x = x;
+    }
 
-	public void setZ(double z) {
-		this.z = z;
-	}
+    public double getY() {
+        return y;
+    }
 
-	public float getYaw() {
-		return yaw;
-	}
+    public void setY(double y) {
+        this.y = y;
+    }
 
-	public void setYaw(float yaw) {
-		this.yaw = yaw;
-	}
+    public double getZ() {
+        return z;
+    }
 
-	public float getPitch() {
-		return pitch;
-	}
+    public void setZ(double z) {
+        this.z = z;
+    }
 
-	public void setPitch(float pitch) {
-		this.pitch = pitch;
-	}
-	
-	/**
+    public float getYaw() {
+        return yaw;
+    }
+
+    public void setYaw(float yaw) {
+        this.yaw = yaw;
+    }
+
+    public float getPitch() {
+        return pitch;
+    }
+
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
+    }
+
+    /**
      * Gets a unit-vector pointing in the direction that this Location is
      * facing.
      *
      * @return a vector pointing the direction of this location's {@link
-     *     #getPitch() pitch} and {@link #getYaw() yaw}
+     * #getPitch() pitch} and {@link #getYaw() yaw}
      */
     public Vector getDirection() {
         Vector vector = new Vector();
@@ -158,10 +204,10 @@ public class Location implements Cloneable {
     /**
      * Adds the location by another.
      *
-     * @see Vector
      * @param vec The other location
      * @return the same location
      * @throws IllegalArgumentException for differing worlds
+     * @see Vector
      */
     public Location add(Location vec) {
         if (vec == null || vec.getWorld() != getWorld()) {
@@ -177,9 +223,9 @@ public class Location implements Cloneable {
     /**
      * Adds the location by a vector.
      *
-     * @see Vector
      * @param vec Vector to use
      * @return the same location
+     * @see Vector
      */
     public Location add(Vector vec) {
         this.x += vec.getX();
@@ -191,11 +237,11 @@ public class Location implements Cloneable {
     /**
      * Adds the location by another. Not world-aware.
      *
-     * @see Vector
      * @param x X coordinate
      * @param y Y coordinate
      * @param z Z coordinate
      * @return the same location
+     * @see Vector
      */
     public Location add(double x, double y, double z) {
         this.x += x;
@@ -207,10 +253,10 @@ public class Location implements Cloneable {
     /**
      * Subtracts the location by another.
      *
-     * @see Vector
      * @param vec The other location
      * @return the same location
      * @throws IllegalArgumentException for differing worlds
+     * @see Vector
      */
     public Location subtract(Location vec) {
         if (vec == null || vec.getWorld() != getWorld()) {
@@ -226,9 +272,9 @@ public class Location implements Cloneable {
     /**
      * Subtracts the location by a vector.
      *
-     * @see Vector
      * @param vec The vector to use
      * @return the same location
+     * @see Vector
      */
     public Location subtract(Vector vec) {
         this.x -= vec.getX();
@@ -241,11 +287,11 @@ public class Location implements Cloneable {
      * Subtracts the location by another. Not world-aware and
      * orientation independent.
      *
-     * @see Vector
      * @param x X coordinate
      * @param y Y coordinate
      * @param z Z coordinate
      * @return the same location
+     * @see Vector
      */
     public Location subtract(double x, double y, double z) {
         this.x -= x;
@@ -348,7 +394,7 @@ public class Location implements Cloneable {
      * Constructs a new {@link Vector} based on this Location
      *
      * @return New Vector containing the coordinates represented by this
-     *     Location
+     * Location
      */
     public Vector toVector() {
         return new Vector(x, y, z);
@@ -367,58 +413,12 @@ public class Location implements Cloneable {
         NumberConversions.checkFinite(yaw, "yaw not finite");
     }
 
-    /**
-     * Safely converts a double (location coordinate) to an int (block
-     * coordinate)
-     *
-     * @param loc Precise coordinate
-     * @return Block coordinate
-     */
-    public static int locToBlock(double loc) {
-        return NumberConversions.floor(loc);
+    @Override
+    public String toString() {
+        return "Location{" + "world=" + world + ",x=" + x + ",y=" + y + ",z=" + z + ",pitch=" + pitch + ",yaw=" + yaw + "}";
     }
 
-    /**
-     * Normalizes the given yaw angle to a value between <code>+/-180</code>
-     * degrees.
-     *
-     * @param yaw the yaw in degrees
-     * @return the normalized yaw in degrees
-     * @see Location#getYaw()
-     */
-    public static float normalizeYaw(float yaw) {
-        yaw %= 360.0f;
-        if (yaw >= 180.0f) {
-            yaw -= 360.0f;
-        } else if (yaw < -180.0f) {
-            yaw += 360.0f;
-        }
-        return yaw;
-    }
-
-    /**
-     * Normalizes the given pitch angle to a value between <code>+/-90</code>
-     * degrees.
-     *
-     * @param pitch the pitch in degrees
-     * @return the normalized pitch in degrees
-     * @see Location#getPitch()
-     */
-    public static float normalizePitch(float pitch) {
-        if (pitch > 90.0f) {
-            pitch = 90.0f;
-        } else if (pitch < -90.0f) {
-            pitch = -90.0f;
-        }
-        return pitch;
-    }
-	
-	@Override
-	public String toString() {
-		return "Location{" + "world=" + world + ",x=" + x + ",y=" + y + ",z=" + z + ",pitch=" + pitch + ",yaw=" + yaw + "}"; 
-	}
-
-	@Override
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
@@ -445,10 +445,7 @@ public class Location implements Cloneable {
         if (Float.floatToIntBits(this.pitch) != Float.floatToIntBits(other.pitch)) {
             return false;
         }
-        if (Float.floatToIntBits(this.yaw) != Float.floatToIntBits(other.yaw)) {
-            return false;
-        }
-        return true;
+        return Float.floatToIntBits(this.yaw) == Float.floatToIntBits(other.yaw);
     }
 
     @Override
