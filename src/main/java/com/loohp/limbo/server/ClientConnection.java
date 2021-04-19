@@ -451,7 +451,7 @@ public class ClientConnection extends Thread {
 
 	    	}
 
-    	} catch (Exception e) {}
+    	} catch (Exception e) {e.printStackTrace();}
 
     	try {
 			client_socket.close();
