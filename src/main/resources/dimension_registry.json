@@ -69,13 +69,21 @@
                       "type": "DoubleTag",
                       "value": 1
                     },
-                    "ultrawarm": {
-                      "type": "ByteTag",
+                    "min_y": {
+                      "type": "IntTag",
                       "value": 0
                     },
                     "has_ceiling": {
                       "type": "ByteTag",
                       "value": 0
+                    },
+                    "ultrawarm": {
+                      "type": "ByteTag",
+                      "value": 0
+                    },
+                    "height": {
+                      "type": "IntTag",
+                      "value": 256
                     }
                   }
                 }
@@ -136,13 +144,21 @@
                       "type": "DoubleTag",
                       "value": 1
                     },
-                    "ultrawarm": {
-                      "type": "ByteTag",
+                    "min_y": {
+                      "type": "IntTag",
                       "value": 0
                     },
                     "has_ceiling": {
                       "type": "ByteTag",
                       "value": 1
+                    },
+                    "ultrawarm": {
+                      "type": "ByteTag",
+                      "value": 0
+                    },
+                    "height": {
+                      "type": "IntTag",
+                      "value": 256
                     }
                   }
                 }
@@ -207,13 +223,21 @@
                       "type": "DoubleTag",
                       "value": 8
                     },
-                    "ultrawarm": {
-                      "type": "ByteTag",
-                      "value": 1
+                    "min_y": {
+                      "type": "IntTag",
+                      "value": 0
                     },
                     "has_ceiling": {
                       "type": "ByteTag",
                       "value": 1
+                    },
+                    "ultrawarm": {
+                      "type": "ByteTag",
+                      "value": 1
+                    },
+                    "height": {
+                      "type": "IntTag",
+                      "value": 256
                     }
                   }
                 }
@@ -278,13 +302,21 @@
                       "type": "DoubleTag",
                       "value": 1
                     },
-                    "ultrawarm": {
-                      "type": "ByteTag",
+                    "min_y": {
+                      "type": "IntTag",
                       "value": 0
                     },
                     "has_ceiling": {
                       "type": "ByteTag",
                       "value": 0
+                    },
+                    "ultrawarm": {
+                      "type": "ByteTag",
+                      "value": 0
+                    },
+                    "height": {
+                      "type": "IntTag",
+                      "value": 256
                     }
                   }
                 }
@@ -7043,6 +7075,147 @@
                     "category": {
                       "type": "StringTag",
                       "value": "nether"
+                    }
+                  }
+                }
+              },
+              {
+                "name": {
+                  "type": "StringTag",
+                  "value": "minecraft:dripstone_caves"
+                },
+                "id": {
+                  "type": "IntTag",
+                  "value": 174
+                },
+                "element": {
+                  "type": "CompoundTag",
+                  "value": {
+                    "precipitation": {
+                      "type": "StringTag",
+                      "value": "rain"
+                    },
+                    "effects": {
+                      "type": "CompoundTag",
+                      "value": {
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
+                        "sky_color": {
+                          "type": "IntTag",
+                          "value": 7907327
+                        },
+                        "fog_color": {
+                          "type": "IntTag",
+                          "value": 12638463
+                        },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
+                        "mood_sound": {
+                          "type": "CompoundTag",
+                          "value": {
+                            "tick_delay": {
+                              "type": "IntTag",
+                              "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
+                            },
+                            "block_search_extent": {
+                              "type": "IntTag",
+                              "value": 8
+                            },
+                            "sound": {
+                              "type": "StringTag",
+                              "value": "minecraft:ambient.cave"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "depth": {
+                      "type": "FloatTag",
+                      "value": 0.125
+                    },
+                    "temperature": {
+                      "type": "FloatTag",
+                      "value": 0.8
+                    },
+                    "scale": {
+                      "type": "FloatTag",
+                      "value": 0.05
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.4
+                    },
+                    "category": {
+                      "type": "StringTag",
+                      "value": "underground"
+                    }
+                  }
+                }
+              },
+              {
+                "name": {
+                  "type": "StringTag",
+                  "value": "minecraft:lush_caves"
+                },
+                "id": {
+                  "type": "IntTag",
+                  "value": 175
+                },
+                "element": {
+                  "type": "CompoundTag",
+                  "value": {
+                    "precipitation": {
+                      "type": "StringTag",
+                      "value": "rain"
+                    },
+                    "effects": {
+                      "type": "CompoundTag",
+                      "value": {
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
+                        "sky_color": {
+                          "type": "IntTag",
+                          "value": 8103167
+                        },
+                        "fog_color": {
+                          "type": "IntTag",
+                          "value": 12638463
+                        },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        }
+                      }
+                    },
+                    "depth": {
+                      "type": "FloatTag",
+                      "value": 0.1
+                    },
+                    "temperature": {
+                      "type": "FloatTag",
+                      "value": 0.5
+                    },
+                    "scale": {
+                      "type": "FloatTag",
+                      "value": 0.2
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
+                    },
+                    "category": {
+                      "type": "StringTag",
+                      "value": "underground"
                     }
                   }
                 }

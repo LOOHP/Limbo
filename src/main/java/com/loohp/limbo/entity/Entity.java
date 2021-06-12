@@ -41,6 +41,8 @@ public abstract class Entity {
 	protected boolean noGravity = false;
 	@WatchableField(MetadataIndex = 6, WatchableObjectType = WatchableObjectType.POSE) 
 	protected Pose pose = Pose.STANDING;
+	@WatchableField(MetadataIndex = 7, WatchableObjectType = WatchableObjectType.VARINT)
+	protected int frozenTicks = 0;
 	
 	protected final EntityType type;
 	

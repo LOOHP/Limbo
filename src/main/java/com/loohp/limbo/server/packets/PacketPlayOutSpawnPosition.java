@@ -10,13 +10,19 @@ import com.loohp.limbo.world.BlockPosition;
 public class PacketPlayOutSpawnPosition extends PacketOut {
 	
 	private BlockPosition position;
+	private float angle;
 	
-	public PacketPlayOutSpawnPosition(BlockPosition position) {
+	public PacketPlayOutSpawnPosition(BlockPosition position, float angle) {
 		this.position = position;
+		this.angle = angle;
 	}
 
 	public BlockPosition getPosition() {
 		return position;
+	}
+	
+	public float getAngle() {
+		return angle;
 	}
 	
 	public byte[] serializePacket() throws IOException {
@@ -25,6 +31,7 @@ public class PacketPlayOutSpawnPosition extends PacketOut {
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(Packet.getPlayOut().get(getClass()));
 		DataTypeIO.writeBlockPosition(output, position);
+		output.writeFloat(angle);
 		
 		return buffer.toByteArray();
 	}

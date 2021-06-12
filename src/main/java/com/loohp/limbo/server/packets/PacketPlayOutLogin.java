@@ -31,10 +31,7 @@ public class PacketPlayOutLogin extends PacketOut {
 	private boolean isDebug;
 	private boolean isFlat;
 
-	public PacketPlayOutLogin(int entityId, boolean isHardcore, GameMode gamemode,
-			String[] worldsNames, CompoundTag dimensionCodec, World world, long hashedSeed,
-			byte maxPlayers, int viewDistance, boolean reducedDebugInfo, boolean enableRespawnScreen, boolean isDebug,
-			boolean isFlat) {
+	public PacketPlayOutLogin(int entityId, boolean isHardcore, GameMode gamemode, String[] worldsNames, CompoundTag dimensionCodec, World world, long hashedSeed, byte maxPlayers, int viewDistance, boolean reducedDebugInfo, boolean enableRespawnScreen, boolean isDebug, boolean isFlat) {
 		this.entityId = entityId;
 		this.isHardcore = isHardcore;
 		this.gamemode = gamemode;
@@ -130,7 +127,7 @@ public class PacketPlayOutLogin extends PacketOut {
 				break;
 			}
 		}
-		DataTypeIO.writeCompoundTag(output, tag != null ? tag : list.get(0));
+		DataTypeIO.writeCompoundTag(output, tag != null ? tag : list.get(0).getCompoundTag("element"));
 		DataTypeIO.writeString(output, worldName, StandardCharsets.UTF_8);
 		output.writeLong(hashedSeed);
 		DataTypeIO.writeVarInt(output, maxPlayers);

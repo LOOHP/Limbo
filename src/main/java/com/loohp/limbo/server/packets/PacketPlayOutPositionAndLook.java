@@ -36,8 +36,9 @@ public class PacketPlayOutPositionAndLook extends PacketOut {
     private float pitch;
     private Set<PlayerTeleportFlags> flags;
     private int teleportId;
+    private boolean dismountVehicle;
 	
-	public PacketPlayOutPositionAndLook(double x, double y, double z, float yaw, float pitch, int teleportId, PlayerTeleportFlags... flags) {
+	public PacketPlayOutPositionAndLook(double x, double y, double z, float yaw, float pitch, int teleportId, boolean dismountVehicle, PlayerTeleportFlags... flags) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -45,6 +46,7 @@ public class PacketPlayOutPositionAndLook extends PacketOut {
 		this.pitch = pitch;
 		this.teleportId = teleportId;
 		this.flags = Arrays.asList(flags).stream().collect(Collectors.toSet());
+		this.dismountVehicle = dismountVehicle;
 	}
 
 	public double getX() {
@@ -75,6 +77,10 @@ public class PacketPlayOutPositionAndLook extends PacketOut {
 		return teleportId;
 	}
 	
+	public boolean isDismountVehicle() {
+		return dismountVehicle;
+	}
+	
 	@Override
 	public byte[] serializePacket() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -94,6 +100,7 @@ public class PacketPlayOutPositionAndLook extends PacketOut {
 		
 		output.writeByte(flag);
 		DataTypeIO.writeVarInt(output, teleportId);
+		output.writeBoolean(dismountVehicle);
 		
 		return buffer.toByteArray();
 	}

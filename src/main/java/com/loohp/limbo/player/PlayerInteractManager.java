@@ -77,8 +77,10 @@ public class PlayerInteractManager {
 				ids.add(entity.getEntityId());
 			}
 		}
-		PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(ids.stream().mapToInt(each -> each).toArray());
-		player.clientConnection.sendPacket(packet);
+		for (int id : ids) {
+			PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(id);
+			player.clientConnection.sendPacket(packet);
+		}
 		
 		entities = entitiesInRange;
 		

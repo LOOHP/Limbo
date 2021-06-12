@@ -35,17 +35,17 @@ public class Player extends LivingEntity implements CommandSender {
 	protected DataWatcher watcher;
 	protected byte selectedSlot;
 	
-	@WatchableField(MetadataIndex = 14, WatchableObjectType = WatchableObjectType.FLOAT) 
+	@WatchableField(MetadataIndex = 15, WatchableObjectType = WatchableObjectType.FLOAT) 
 	protected float additionalHearts = 0.0F;
-	@WatchableField(MetadataIndex = 15, WatchableObjectType = WatchableObjectType.VARINT) 
+	@WatchableField(MetadataIndex = 16, WatchableObjectType = WatchableObjectType.VARINT) 
 	protected int score = 0;
-	@WatchableField(MetadataIndex = 16, WatchableObjectType = WatchableObjectType.BYTE) 
-	protected byte skinLayers = 0;
 	@WatchableField(MetadataIndex = 17, WatchableObjectType = WatchableObjectType.BYTE) 
+	protected byte skinLayers = 0;
+	@WatchableField(MetadataIndex = 18, WatchableObjectType = WatchableObjectType.BYTE) 
 	protected byte mainHand = 1;
-	//@WatchableField(MetadataIndex = 18, WatchableObjectType = WatchableObjectType.NBT) 
-	//protected Entity leftShoulder = null;
 	//@WatchableField(MetadataIndex = 19, WatchableObjectType = WatchableObjectType.NBT) 
+	//protected Entity leftShoulder = null;
+	//@WatchableField(MetadataIndex = 20, WatchableObjectType = WatchableObjectType.NBT) 
 	//protected Entity rightShoulder = null;
 	
 	public Player(ClientConnection clientConnection, String username, UUID uuid, int entityId, Location location, PlayerInteractManager playerInteractManager) throws IllegalArgumentException, IllegalAccessException {
@@ -182,7 +182,7 @@ public class Player extends LivingEntity implements CommandSender {
 					PacketPlayOutRespawn respawn = new PacketPlayOutRespawn(location.getWorld(), Limbo.getInstance().getDimensionRegistry().getCodec(), 0, gamemode, false, false, true);
 					clientConnection.sendPacket(respawn);
 				}
-				PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch(), 1);
+				PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch(), 1, false);
 				clientConnection.sendPacket(positionLook);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -247,10 +247,10 @@ public class Player extends LivingEntity implements CommandSender {
 	}
 	
 	public void chat(String message) {
-		String prefix = "<" + username + "> ";
-		PlayerChatEvent event = (PlayerChatEvent) Limbo.getInstance().getEventsManager().callEvent(new PlayerChatEvent(this, prefix, message, false));
+		String format = "<%name%> %message%";
+		PlayerChatEvent event = (PlayerChatEvent) Limbo.getInstance().getEventsManager().callEvent(new PlayerChatEvent(this, format, message, false));
 		if (!event.isCancelled()) {
-			String chat = event.getPrefix() + event.getMessage();
+			String chat = event.getFormat().replace("%name%", username).replace("%message%", event.getMessage());
 			Limbo.getInstance().getConsole().sendMessage(chat);
 			for (Player each : Limbo.getInstance().getPlayers()) {
 				each.sendMessage(chat, uuid);

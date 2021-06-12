@@ -12,23 +12,23 @@ import com.loohp.limbo.world.World;
 
 public abstract class LivingEntity extends Entity {
 	
-	@WatchableField(MetadataIndex = 7, WatchableObjectType = WatchableObjectType.BYTE, IsBitmask = true, Bitmask = 0x01) 
+	@WatchableField(MetadataIndex = 8, WatchableObjectType = WatchableObjectType.BYTE, IsBitmask = true, Bitmask = 0x01) 
 	protected boolean handActive = false;
-	@WatchableField(MetadataIndex = 7, WatchableObjectType = WatchableObjectType.BYTE, IsBitmask = true, Bitmask = 0x02) 
+	@WatchableField(MetadataIndex = 8, WatchableObjectType = WatchableObjectType.BYTE, IsBitmask = true, Bitmask = 0x02) 
 	protected boolean activeHand = false; //false = main hand, true = off hand
-	@WatchableField(MetadataIndex = 7, WatchableObjectType = WatchableObjectType.BYTE, IsBitmask = true, Bitmask = 0x04) 
+	@WatchableField(MetadataIndex = 8, WatchableObjectType = WatchableObjectType.BYTE, IsBitmask = true, Bitmask = 0x04) 
 	protected boolean inRiptideSpinAttack = false;
-	@WatchableField(MetadataIndex = 8, WatchableObjectType = WatchableObjectType.FLOAT) 
+	@WatchableField(MetadataIndex = 9, WatchableObjectType = WatchableObjectType.FLOAT) 
 	protected float health = 1.0F;
-	@WatchableField(MetadataIndex = 9, WatchableObjectType = WatchableObjectType.VARINT) 
+	@WatchableField(MetadataIndex = 10, WatchableObjectType = WatchableObjectType.VARINT) 
 	protected int potionEffectColor = 0;
-	@WatchableField(MetadataIndex = 10, WatchableObjectType = WatchableObjectType.BOOLEAN) 
+	@WatchableField(MetadataIndex = 11, WatchableObjectType = WatchableObjectType.BOOLEAN) 
 	protected boolean potionEffectAmbient = false;
-	@WatchableField(MetadataIndex = 11, WatchableObjectType = WatchableObjectType.VARINT) 
-	protected int arrowsInEntity = 0;
 	@WatchableField(MetadataIndex = 12, WatchableObjectType = WatchableObjectType.VARINT) 
+	protected int arrowsInEntity = 0;
+	@WatchableField(MetadataIndex = 13, WatchableObjectType = WatchableObjectType.VARINT) 
 	protected int absorption = 0;
-	@WatchableField(MetadataIndex = 13, WatchableObjectType = WatchableObjectType.POSITION, IsOptional = true) 
+	@WatchableField(MetadataIndex = 14, WatchableObjectType = WatchableObjectType.POSITION, IsOptional = true) 
 	protected BlockPosition sleepingLocation = null;
 
 	public LivingEntity(EntityType type, int entityId, UUID uuid, World world, double x, double y, double z, float yaw, float pitch) {

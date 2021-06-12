@@ -5,23 +5,23 @@ import com.loohp.limbo.player.Player;
 
 public class PlayerChatEvent extends PlayerEvent implements Cancellable {
 
-	private String prefix;
+	private String format;
 	private String message;
 	private boolean cancelled;
 
-	public PlayerChatEvent(Player player, String prefix, String message, boolean cancelled) {
+	public PlayerChatEvent(Player player, String format, String message, boolean cancelled) {
 		super(player);
-		this.prefix = prefix;
+		this.format = format;
 		this.message = message;
 		this.cancelled = cancelled;
 	}
 
-	public String getPrefix() {
-		return prefix;
+	public String getFormat() {
+		return format;
 	}
 
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
+	public void setFormat(String format) {
+		this.format = format;
 	}
 
 	public String getMessage() {

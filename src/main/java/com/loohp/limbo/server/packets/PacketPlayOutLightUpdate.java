@@ -3,6 +3,7 @@ package com.loohp.limbo.server.packets;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.BitSet;
 import java.util.List;
 
 import com.loohp.limbo.utils.DataTypeIO;
@@ -12,8 +13,10 @@ public class PacketPlayOutLightUpdate extends PacketOut {
 	private int chunkX;
 	private int chunkZ;
 	private boolean trustEdges;
-	private int skyLightBitMask;
-	private int blockLightBitMask;
+	private long[] skyLightBitMasks;
+	private long[] blockLightBitMasks;
+	private long[] skyLightBitMasksEmpty;
+	private long[] blockLightBitMasksEmpty;
 	private List<Byte[]> skylightArrays;
 	private List<Byte[]> blocklightArrays;
 
@@ -24,21 +27,23 @@ public class PacketPlayOutLightUpdate extends PacketOut {
 		this.skylightArrays = skylightArrays;
 		this.blocklightArrays = blocklightArrays;
 		
-		skyLightBitMask = 0;
+		BitSet skyLightBitSet = new BitSet();
+		BitSet skyLightBitSetInverse = new BitSet();
 		for (int i = Math.min(17, skylightArrays.size() - 1); i >= 0; i--) {
-			skyLightBitMask = skyLightBitMask >> 1;
-			if (skylightArrays.get(i) != null) {
-				skyLightBitMask |= 131072;
-			}
+			skyLightBitSet.set(i, skylightArrays.get(i) != null);
+			skyLightBitSetInverse.set(i, skylightArrays.get(i) == null);
 		}
+		skyLightBitMasks = skyLightBitSet.toLongArray();
+		skyLightBitMasksEmpty = skyLightBitSetInverse.toLongArray();
 		
-		blockLightBitMask = 0;
+		BitSet blockLightBitSet = new BitSet();
+		BitSet blockLightBitSetInverse = new BitSet();
 		for (int i = Math.min(17, blocklightArrays.size() - 1); i >= 0; i--) {
-			blockLightBitMask = blockLightBitMask >> 1;
-			if (blocklightArrays.get(i) != null) {
-				blockLightBitMask |= 131072;
-			}
+			blockLightBitSet.set(i, blocklightArrays.get(i) != null);
+			blockLightBitSetInverse.set(i, blocklightArrays.get(i) == null);
 		}
+		blockLightBitMasks = blockLightBitSet.toLongArray();
+		blockLightBitMasksEmpty = blockLightBitSetInverse.toLongArray();
 	}
 
 	public int getChunkX() {
@@ -53,12 +58,12 @@ public class PacketPlayOutLightUpdate extends PacketOut {
 		return trustEdges;
 	}
 
-	public int getSkyLightBitMask() {
-		return skyLightBitMask;
+	public long[] getSkyLightBitMasks() {
+		return skyLightBitMasks;
 	}
 
-	public int getBlockLightBitMask() {
-		return blockLightBitMask;
+	public long[] getBlockLightBitMasks() {
+		return blockLightBitMasks;
 	}
 
 	public List<Byte[]> getSkylightArrays() {
@@ -78,11 +83,24 @@ public class PacketPlayOutLightUpdate extends PacketOut {
 		DataTypeIO.writeVarInt(output, chunkX);
 		DataTypeIO.writeVarInt(output, chunkZ);
 		output.writeBoolean(trustEdges);
-		DataTypeIO.writeVarInt(output, skyLightBitMask);
-		DataTypeIO.writeVarInt(output, blockLightBitMask);
-		DataTypeIO.writeVarInt(output, ~skyLightBitMask & 262143);
-		DataTypeIO.writeVarInt(output, ~blockLightBitMask & 262143);
+		DataTypeIO.writeVarInt(output, skyLightBitMasks.length);
+		for (long l : skyLightBitMasks) {
+			output.writeLong(l);
+		}
+		DataTypeIO.writeVarInt(output, blockLightBitMasks.length);
+		for (long l : blockLightBitMasks) {
+			output.writeLong(l);
+		}
+		DataTypeIO.writeVarInt(output, skyLightBitMasksEmpty.length);
+		for (long l : skyLightBitMasksEmpty) {
+			output.writeLong(l);
+		}
+		DataTypeIO.writeVarInt(output, blockLightBitMasksEmpty.length);
+		for (long l : blockLightBitMasksEmpty) {
+			output.writeLong(l);
+		}
 		
+		DataTypeIO.writeVarInt(output, skylightArrays.stream().mapToInt(each -> each == null ? 0 : 1).sum());
 		for (int i = skylightArrays.size() - 1; i >= 0; i--) {
 			Byte[] array = skylightArrays.get(i);
 			if (array != null) {
@@ -94,6 +112,7 @@ public class PacketPlayOutLightUpdate extends PacketOut {
 			}
 		}
 		
+		DataTypeIO.writeVarInt(output, blocklightArrays.stream().mapToInt(each -> each == null ? 0 : 1).sum());
 		for (int i = blocklightArrays.size() - 1; i >= 0; i--) {
 			Byte[] array = blocklightArrays.get(i);
 			if (array != null) {

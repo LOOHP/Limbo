@@ -108,8 +108,8 @@ public class Limbo {
 	
 	//===========================
 	
-	public final String serverImplementationVersion = "1.16.5";
-	public final int serverImplmentationProtocol = 754;
+	public final String serverImplementationVersion = "1.17";
+	public final int serverImplmentationProtocol = 755;
 	public final String limboImplementationVersion;
 	
 	private AtomicBoolean isRunning;

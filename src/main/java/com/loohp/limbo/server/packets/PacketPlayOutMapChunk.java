@@ -63,15 +63,16 @@ public class PacketPlayOutMapChunk extends PacketOut {
 		
 		output.writeInt(chunkX);
 		output.writeInt(chunkZ);
-		output.writeBoolean(true);
-		int bitmask = 0;
+		BitSet chunkPresent = new BitSet();
 		for (int i = 0; i < 16; i++) {
 			Section section = chunk.getSection(i);
-			if (section != null) {
-				bitmask = bitmask | (int) Math.pow(2, i);
-			}
+			chunkPresent.set(i, section != null);
 		}
-		DataTypeIO.writeVarInt(output, bitmask);
+		long[] bitmasks = chunkPresent.toLongArray();
+		DataTypeIO.writeVarInt(output, bitmasks.length);
+		for (long l : bitmasks) {
+			output.writeLong(l);
+		}
 		DataTypeIO.writeCompoundTag(output, chunk.getHeightMaps());
 		
 		DataTypeIO.writeVarInt(output, 1024);
