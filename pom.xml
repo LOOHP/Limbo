@@ -5,7 +5,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>Limbo</artifactId>
 	<name>Limbo</name>
-	<version>0.5.0-ALPHA</version>
+	<version>0.5.1-ALPHA</version>
 	
 	<description>Standalone Limbo Minecraft Server.</description>
 	<url>https://github.com/LOOHP/Limbo</url>
@@ -161,6 +161,10 @@
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
+		<repository>
+			<id>bungeecord-repo</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -196,7 +200,8 @@
 		<dependency>
 			<groupId>net.md-5</groupId>
 			<artifactId>bungeecord-chat</artifactId>
-			<version>1.16-R0.3</version>
+			<version>1.17-R0.1-SNAPSHOT</version>
+			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
