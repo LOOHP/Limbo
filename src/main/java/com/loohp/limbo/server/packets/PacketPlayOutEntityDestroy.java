@@ -8,14 +8,14 @@ import com.loohp.limbo.utils.DataTypeIO;
 
 public class PacketPlayOutEntityDestroy extends PacketOut {
 	
-	private int entityId;
+	private int[] entityIds;
 	
-	public PacketPlayOutEntityDestroy(int entityId) {
-		this.entityId = entityId;
+	public PacketPlayOutEntityDestroy(int... entityIds) {
+		this.entityIds = entityIds;
 	}
 
-	public int getEntityId() {
-		return entityId;
+	public int[] getEntityIds() {
+		return entityIds;
 	}
 	
 	@Override
@@ -24,7 +24,10 @@ public class PacketPlayOutEntityDestroy extends PacketOut {
 		
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(Packet.getPlayOut().get(getClass()));
-		DataTypeIO.writeVarInt(output, entityId);
+		DataTypeIO.writeVarInt(output, entityIds.length);
+		for (int entityId : entityIds) {
+			DataTypeIO.writeVarInt(output, entityId);
+		}
 		
 		return buffer.toByteArray();
 	}

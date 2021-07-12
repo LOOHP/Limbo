@@ -5,7 +5,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>Limbo</artifactId>
 	<name>Limbo</name>
-	<version>0.5.1-ALPHA</version>
+	<version>0.5.2-ALPHA</version>
 	
 	<description>Standalone Limbo Minecraft Server.</description>
 	<url>https://github.com/LOOHP/Limbo</url>
@@ -87,7 +87,7 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<finalName>${project.artifactId}-${project.version}-1.17</finalName>
+		<finalName>${project.artifactId}-${project.version}-1.17.1</finalName>
 	</build>
 
 	<profiles>
