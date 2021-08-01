@@ -23,6 +23,10 @@ import com.loohp.limbo.events.player.PlayerMoveEvent;
 import com.loohp.limbo.events.player.PlayerQuitEvent;
 import com.loohp.limbo.events.player.PlayerSelectedSlotChangeEvent;
 import com.loohp.limbo.events.status.StatusPingEvent;
+import com.loohp.limbo.file.ServerProperties;
+import com.loohp.limbo.location.Location;
+import com.loohp.limbo.player.Player;
+import com.loohp.limbo.player.PlayerInteractManager;
 import com.loohp.limbo.server.packets.Packet;
 import com.loohp.limbo.server.packets.PacketHandshakingIn;
 import com.loohp.limbo.server.packets.PacketLoginInLoginStart;
@@ -39,34 +43,31 @@ import com.loohp.limbo.server.packets.PacketPlayInTabComplete;
 import com.loohp.limbo.server.packets.PacketPlayOutDeclareCommands;
 import com.loohp.limbo.server.packets.PacketPlayOutDisconnect;
 import com.loohp.limbo.server.packets.PacketPlayOutEntityMetadata;
+import com.loohp.limbo.server.packets.PacketPlayOutGameState;
 import com.loohp.limbo.server.packets.PacketPlayOutHeldItemChange;
 import com.loohp.limbo.server.packets.PacketPlayOutLogin;
 import com.loohp.limbo.server.packets.PacketPlayOutPlayerAbilities;
+import com.loohp.limbo.server.packets.PacketPlayOutPlayerAbilities.PlayerAbilityFlags;
 import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo;
+import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoAction;
+import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
+import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoData.PlayerInfoDataAddPlayer.PlayerSkinProperty;
 import com.loohp.limbo.server.packets.PacketPlayOutPositionAndLook;
 import com.loohp.limbo.server.packets.PacketPlayOutSpawnPosition;
 import com.loohp.limbo.server.packets.PacketPlayOutTabComplete;
+import com.loohp.limbo.server.packets.PacketPlayOutTabComplete.TabCompleteMatches;
 import com.loohp.limbo.server.packets.PacketPlayOutUpdateViewPosition;
 import com.loohp.limbo.server.packets.PacketStatusInPing;
 import com.loohp.limbo.server.packets.PacketStatusInRequest;
 import com.loohp.limbo.server.packets.PacketStatusOutPong;
 import com.loohp.limbo.server.packets.PacketStatusOutResponse;
-import com.loohp.limbo.server.packets.PacketPlayOutPlayerAbilities.PlayerAbilityFlags;
-import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoAction;
-import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
-import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoData.PlayerInfoDataAddPlayer.PlayerSkinProperty;
-import com.loohp.limbo.server.packets.PacketPlayOutTabComplete.TabCompleteMatches;
-import com.loohp.limbo.file.ServerProperties;
-import com.loohp.limbo.location.Location;
-import com.loohp.limbo.player.Player;
-import com.loohp.limbo.player.PlayerInteractManager;
 import com.loohp.limbo.utils.CustomStringUtils;
 import com.loohp.limbo.utils.DataTypeIO;
 import com.loohp.limbo.utils.DeclareCommands;
 import com.loohp.limbo.utils.GameMode;
 import com.loohp.limbo.utils.MojangAPIUtils;
-import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.utils.MojangAPIUtils.SkinResponse;
+import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.world.BlockPosition;
 import com.loohp.limbo.world.World;
 
@@ -314,7 +315,7 @@ public class ClientConnection extends Thread {
 				SkinResponse skinresponce = isBungeecord && bungeeSkin != null ? bungeeSkin : MojangAPIUtils.getSkinFromMojangServer(player.getName());
 				PlayerSkinProperty skin = skinresponce != null ? new PlayerSkinProperty(skinresponce.getSkin(), skinresponce.getSignature()) : null;
 				PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(PlayerInfoAction.ADD_PLAYER, player.getUniqueId(), new PlayerInfoData.PlayerInfoDataAddPlayer(player.getName(), Optional.ofNullable(skin), properties.getDefaultGamemode(), 0, false, Optional.empty()));
-				sendPacket(info);
+				sendPacket(info);			
 				
 				Set<PlayerAbilityFlags> flags = new HashSet<>();
 				if (properties.isAllowFlight()) {
@@ -346,6 +347,11 @@ public class ClientConnection extends Thread {
 				player.getDataWatcher().update();
 				PacketPlayOutEntityMetadata show = new PacketPlayOutEntityMetadata(player, false, Player.class.getDeclaredField("skinLayers"));
 				sendPacket(show);
+				
+				if (properties.isAllowFlight()) {
+					PacketPlayOutGameState state = new PacketPlayOutGameState(3, player.getGamemode().getId());
+					sendPacket(state);
+				}
 				
 				ready = true;
 
