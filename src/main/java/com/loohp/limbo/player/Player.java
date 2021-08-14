@@ -1,29 +1,24 @@
 package com.loohp.limbo.player;
 
-import java.io.IOException;
-import java.util.UUID;
-
 import com.loohp.limbo.Limbo;
-import com.loohp.limbo.events.player.PlayerChatEvent;
-import com.loohp.limbo.events.player.PlayerTeleportEvent;
-import com.loohp.limbo.server.ClientConnection;
-import com.loohp.limbo.server.packets.PacketPlayOutChat;
-import com.loohp.limbo.server.packets.PacketPlayOutGameState;
-import com.loohp.limbo.server.packets.PacketPlayOutHeldItemChange;
-import com.loohp.limbo.server.packets.PacketPlayOutPositionAndLook;
-import com.loohp.limbo.server.packets.PacketPlayOutRespawn;
 import com.loohp.limbo.commands.CommandSender;
 import com.loohp.limbo.entity.DataWatcher;
-import com.loohp.limbo.entity.EntityType;
-import com.loohp.limbo.entity.LivingEntity;
 import com.loohp.limbo.entity.DataWatcher.WatchableField;
 import com.loohp.limbo.entity.DataWatcher.WatchableObjectType;
+import com.loohp.limbo.entity.EntityType;
+import com.loohp.limbo.entity.LivingEntity;
+import com.loohp.limbo.events.player.PlayerChatEvent;
+import com.loohp.limbo.events.player.PlayerTeleportEvent;
 import com.loohp.limbo.location.Location;
+import com.loohp.limbo.server.ClientConnection;
+import com.loohp.limbo.server.packets.*;
 import com.loohp.limbo.utils.GameMode;
-
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
+
+import java.io.IOException;
+import java.util.UUID;
 
 public class Player extends LivingEntity implements CommandSender {
 
@@ -173,8 +168,8 @@ public class Player extends LivingEntity implements CommandSender {
 
 	@Override
 	public void teleport(Location location) {
-		PlayerTeleportEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerTeleportEvent(this, getLocation(), location));
-		if (!event.isCancelled()) {
+		PlayerTeleportEvent event = new PlayerTeleportEvent(this, getLocation(), location);
+		if (!PlayerTeleportEvent.PLAYER_TELEPORT_EVENT.invoker().onPlayerTeleport(event)) {
 			location = event.getTo();
 			super.teleport(location);
 			try {
@@ -248,8 +243,8 @@ public class Player extends LivingEntity implements CommandSender {
 	
 	public void chat(String message) {
 		String format = "<%name%> %message%";
-		PlayerChatEvent event = (PlayerChatEvent) Limbo.getInstance().getEventsManager().callEvent(new PlayerChatEvent(this, format, message, false));
-		if (!event.isCancelled()) {
+		PlayerChatEvent event = new PlayerChatEvent(this, format, message);
+		if (!PlayerChatEvent.PLAYER_CHAT_EVENT.invoker().onPlayerChat(event)) {
 			String chat = event.getFormat().replace("%name%", username).replace("%message%", event.getMessage());
 			Limbo.getInstance().getConsole().sendMessage(chat);
 			for (Player each : Limbo.getInstance().getPlayers()) {

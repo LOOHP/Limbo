@@ -39,7 +39,6 @@ import org.json.simple.parser.ParseException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.loohp.limbo.events.EventsManager;
 import com.loohp.limbo.server.ServerConnection;
 import com.loohp.limbo.server.packets.Packet;
 import com.loohp.limbo.server.packets.PacketIn;
@@ -124,7 +123,6 @@ public class Limbo {
 	private ServerProperties properties;
 	
 	private PluginManager pluginManager;
-	private EventsManager eventsManager;
 	private PermissionsManager permissionManager;
 	private File pluginFolder;
 	
@@ -287,9 +285,7 @@ public class Limbo {
 		tick = new Tick(this);
         
         permissionManager = new PermissionsManager();
-        permissionManager.loadDefaultPermissionFile(permissionFile);     
-        
-        eventsManager = new EventsManager();
+        permissionManager.loadDefaultPermissionFile(permissionFile);
         
         pluginFolder = new File("plugins");
         pluginFolder.mkdirs();
@@ -351,10 +347,6 @@ public class Limbo {
 
 	public File getInternalDataFolder() {
 		return internalDataFolder;
-	}
-
-	public EventsManager getEventsManager() {
-		return eventsManager;
 	}
 	
 	public File getPluginFolder() {
@@ -496,7 +488,7 @@ public class Limbo {
 	}
 	
 	public String buildLegacyPingResponse(String version, BaseComponent[] motd, int maxPlayers, int playersOnline) {
-		String begin = "§1";
+		String begin = "ï¿½1";
 		return String.join("\00", begin, "127", version, String.join("", Arrays.asList(motd).stream().map(each -> each.toLegacyText()).collect(Collectors.toList())), String.valueOf(playersOnline), String.valueOf(maxPlayers));
 	}
 	

@@ -1,15 +1,48 @@
 package com.loohp.limbo.events.player;
 
-import com.loohp.limbo.events.Cancellable;
+import com.loohp.limbo.events.api.Event;
+import com.loohp.limbo.events.api.EventFactory;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.player.Player;
 
 /**
  * Holds information for player movement events
  */
-public class PlayerMoveEvent extends PlayerEvent implements Cancellable {
+public class PlayerMoveEvent extends PlayerEvent {
 
-    private boolean cancel = false;
+    /**
+     * Called when the player sends a movement packet
+     *
+     * Cancelling this event will cause the player to stay in place
+     */
+    public static final Event<PlayerMoveEventCallback> PLAYER_MOVE_EVENT = EventFactory.createArrayBacked(PlayerMoveEventCallback.class, (_1, cancel) -> cancel, callbacks -> (event, _isCancelled) -> {
+        boolean isCancelled = _isCancelled;
+        for (PlayerMoveEventCallback callback : callbacks) {
+            isCancelled = callback.onPlayerMove(event, isCancelled);
+        }
+        return isCancelled;
+    });
+
+    public interface PlayerMoveEventCallback {
+        /**
+         * Callback for the {@link PlayerMoveEvent}
+         * This will initiate the event as non-cancelled
+         * @param event the move event
+         * @return true to cancel the event, otherwise return false
+         */
+        default boolean onPlayerMove(PlayerMoveEvent event) {
+            return this.onPlayerMove(event, false);
+        }
+
+        /**
+         * Callback for the {@link PlayerMoveEvent}
+         * @param event the move event
+         * @param isCancelled whether the event was cancelled before reaching this callback
+         * @return true to cancel the event, otherwise return false
+         */
+        boolean onPlayerMove(PlayerMoveEvent event, boolean isCancelled);
+    }
+
     private Location from;
     private Location to;
 
@@ -17,36 +50,6 @@ public class PlayerMoveEvent extends PlayerEvent implements Cancellable {
         super(player);
         this.from = from;
         this.to = to;
-    }
-
-    /**
-     * Gets the cancellation state of this event. A cancelled event will not
-     * be executed in the server, but will still pass to other plugins
-     * <p>
-     * If a move or teleport event is cancelled, the player will be moved or
-     * teleported back to the Location as defined by getFrom(). This will not
-     * fire an event
-     *
-     * @return true if this event is cancelled
-     */
-    @Override
-    public boolean isCancelled() {
-        return cancel;
-    }
-
-    /**
-     * Sets the cancellation state of this event. A cancelled event will not
-     * be executed in the server, but will still pass to other plugins
-     * <p>
-     * If a move or teleport event is cancelled, the player will be moved or
-     * teleported back to the Location as defined by getFrom(). This will not
-     * fire an event
-     *
-     * @param cancel true if you wish to cancel this event
-     */
-    @Override
-    public void setCancelled(boolean cancel) {
-        this.cancel = cancel;
     }
 
     /**

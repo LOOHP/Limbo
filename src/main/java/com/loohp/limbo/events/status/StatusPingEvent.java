@@ -1,15 +1,35 @@
 package com.loohp.limbo.events.status;
 
-import java.awt.image.BufferedImage;
-
-import com.loohp.limbo.events.Event;
+import com.loohp.limbo.events.api.Event;
+import com.loohp.limbo.events.api.EventFactory;
 import com.loohp.limbo.server.ClientConnection;
-
 import net.md_5.bungee.api.chat.BaseComponent;
 
-public class StatusPingEvent extends Event {
+import java.awt.image.BufferedImage;
 
-	private ClientConnection connection;
+public class StatusPingEvent {
+
+	/**
+	 * Called when the ping request is being constructed
+	 *
+	 * Can be used to alter the status information
+	 */
+	public static final Event<StatusPingEventCallback> STATUS_PING_EVENT = EventFactory.createArrayBacked(StatusPingEventCallback.class, event -> {}, callbacks -> statusPingEvent -> {
+		for (StatusPingEventCallback callback : callbacks) {
+			callback.onStatusPing(statusPingEvent);
+		}
+	});
+
+	public interface StatusPingEventCallback {
+
+		/**
+		 * Callback for the {@link StatusPingEvent}
+		 * @return the (modified) event that will be used to construct a response
+		 */
+		void onStatusPing(StatusPingEvent statusData);
+	}
+
+	private final ClientConnection connection;
 	private String version;
 	private int protocol;
 	private BaseComponent[] motd;
@@ -26,7 +46,7 @@ public class StatusPingEvent extends Event {
 		this.playersOnline = playersOnline;
 		this.favicon = favicon;
 	}
-	
+
 	public ClientConnection getConnection() {
 		return connection;
 	}
