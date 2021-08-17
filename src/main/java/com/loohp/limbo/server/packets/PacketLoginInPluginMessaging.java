@@ -1,39 +1,39 @@
 package com.loohp.limbo.server.packets;
 
+import com.loohp.limbo.utils.DataTypeIO;
+
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import com.loohp.limbo.utils.DataTypeIO;
-import com.loohp.limbo.utils.NamespacedKey;
 
 public class PacketLoginInPluginMessaging extends PacketIn {
 
 	private int messageId;
-	private NamespacedKey channel;
-	private byte[] data;
+	private boolean successful;
+	private byte[] data = null;
 
-	public PacketLoginInPluginMessaging(int messageId, NamespacedKey channel, byte[] data) {
+	public PacketLoginInPluginMessaging(int messageId, boolean successful, byte[] data) {
 		this.messageId = messageId;
-		this.channel = channel;
 		this.data = data;
 	}
 	
 	public PacketLoginInPluginMessaging(DataInputStream in, int packetLength, int packetId) throws IOException {
 		messageId = DataTypeIO.readVarInt(in);
-		String rawChannel = DataTypeIO.readString(in, StandardCharsets.UTF_8);
-		channel = new NamespacedKey(rawChannel);
-		int dataLength = packetLength - DataTypeIO.getVarIntLength(packetId) - DataTypeIO.getVarIntLength(messageId) - DataTypeIO.getStringLength(rawChannel, StandardCharsets.UTF_8);
-		data = new byte[dataLength];
-		in.read(data);
+		successful = in.readBoolean();
+		if (successful) {
+			int dataLength = packetLength - DataTypeIO.getVarIntLength(packetId) - DataTypeIO.getVarIntLength(messageId) - 1;
+			if (dataLength != 0) {
+				data = new byte[dataLength];
+				in.readFully(data);
+			}
+		}
 	}
 	
 	public int getMessageId() {
 		return messageId;
 	}
 
-	public NamespacedKey getChannel() {
-		return channel;
+	public boolean isSuccessful() {
+		return successful;
 	}
 
 	public byte[] getData() {

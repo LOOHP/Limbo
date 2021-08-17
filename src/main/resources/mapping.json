@@ -9,7 +9,7 @@
   "LoginOut": {
     "PacketLoginOutLoginSuccess": "0x02",
     "PacketLoginOutDisconnect": "0x00",
-    "PacketLoginOutPluginMessaging": "0x04",
+    "PacketLoginOutPluginMessaging": "0x04"
   },
   "PlayIn": {
     "0x0F": "PacketPlayInKeepAlive",
