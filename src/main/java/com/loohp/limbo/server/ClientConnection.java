@@ -1,5 +1,8 @@
 package com.loohp.limbo.server;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.events.player.*;
 import com.loohp.limbo.events.status.StatusPingEvent;
@@ -19,7 +22,6 @@ import com.loohp.limbo.world.BlockPosition;
 import com.loohp.limbo.world.World;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 
@@ -46,6 +48,7 @@ public class ClientConnection extends Thread {
 	}
 
 	private final Random random = new Random();
+	private final JsonParser jsonParser = new JsonParser();
 
     private final Socket client_socket;
     private boolean running;
@@ -162,6 +165,7 @@ public class ClientConnection extends Thread {
 		    PacketHandshakingIn handshake = new PacketHandshakingIn(input);
 		    
 		    boolean isBungeecord = Limbo.getInstance().getServerProperties().isBungeecord();
+		    boolean isBungeeGuard = Limbo.getInstance().getServerProperties().isBungeeGuard();
 		    boolean isVelocityModern = Limbo.getInstance().getServerProperties().isVelocityModern();
 		    String bungeeForwarding = handshake.getServerAddress();
 		    UUID bungeeUUID = null;
@@ -197,7 +201,7 @@ public class ClientConnection extends Thread {
 				case LOGIN:
 					state = ClientState.LOGIN;
 					
-					if (isBungeecord) {
+					if (isBungeecord || isBungeeGuard) {
 						try {
 					    	String[] data = bungeeForwarding.split("\\x00");
 					    	//String host = data[0];
@@ -205,14 +209,27 @@ public class ClientConnection extends Thread {
 					    	
 					    	bungeeUUID = UUID.fromString(data[2].replaceFirst("([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)", "$1-$2-$3-$4-$5"));
 					    	inetAddress = InetAddress.getByName(ip);
-					    	
+
+							boolean bungeeGuardFound = false;
 					    	if (data.length > 3) {
-						    	String skinJson = data[3];
-						    	
-						    	String skin = skinJson.split("\"value\":\"")[1].split("\"")[0];
-					            String signature = skinJson.split("\"signature\":\"")[1].split("\"")[0];
-						    	forwardedSkin = new SkinResponse(skin, signature);
+						    	JsonArray skinJson = this.jsonParser.parse(data[3]).getAsJsonArray();
+
+						    	for (JsonElement property : skinJson) {
+						    		if (property.getAsJsonObject().get("name").getAsString().equals("textures")) {
+						    			String skin = property.getAsJsonObject().get("value").getAsString();
+						    			String signature = property.getAsJsonObject().get("signature").getAsString();
+						    			forwardedSkin = new SkinResponse(skin, signature);
+									} else if (isBungeeGuard && property.getAsJsonObject().get("name").getAsString().equals("bungeeguard-token")) {
+						    			String token = property.getAsJsonObject().get("value").getAsString();
+						    			bungeeGuardFound = Limbo.getInstance().getServerProperties().getForwardingSecrets().contains(token);
+									}
+								}
 					    	}
+
+					    	if (isBungeeGuard && !bungeeGuardFound) {
+					    		disconnectDuringLogin(TextComponent.fromLegacyText("Invalid information forwarding"));
+					    		break;
+							}
 						} catch (Exception e) {
 							Limbo.getInstance().getConsole().sendMessage("If you wish to use bungeecord's IP forwarding, please enable that in your bungeecord config.yml as well!");
 							disconnectDuringLogin(new BaseComponent[] {new TextComponent(ChatColor.RED + "Please connect from the proxy!")});
@@ -237,7 +254,7 @@ public class ClientConnection extends Thread {
 								continue;
 							}
 
-							UUID uuid = isBungeecord ? bungeeUUID : UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
+							UUID uuid = isBungeecord || isBungeeGuard ? bungeeUUID : UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
 							
 							PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(uuid, username);
 							sendPacket(success);
@@ -253,15 +270,15 @@ public class ClientConnection extends Thread {
 							PacketLoginInPluginMessaging response = new PacketLoginInPluginMessaging(input, size, packetId);
 							if (response.getMessageId() != messageId) {
 								disconnectDuringLogin(TextComponent.fromLegacyText("Internal error, messageId did not match"));
-								return;
+								break;
 							}
 							if (response.getData() == null) {
 								disconnectDuringLogin(TextComponent.fromLegacyText("Unknown login plugin response packet!"));
-								return;
+								break;
 							}
 							if (!ForwardingUtils.validateVelocityModernResponse(response.getData())) {
 								disconnectDuringLogin(TextComponent.fromLegacyText("Invalid playerinfo forwarding!"));
-								return;
+								break;
 							}
 							ForwardingUtils.VelocityModernForwardingData data = ForwardingUtils.getVelocityDataFrom(response.getData());
 							inetAddress = InetAddress.getByName(data.getIpAddress());
@@ -310,7 +327,7 @@ public class ClientConnection extends Thread {
     			sendPacket(join);
     			Limbo.getInstance().getUnsafe().setPlayerGameModeSilently(player, properties.getDefaultGamemode());
     			
-				SkinResponse skinresponce = (isVelocityModern || isBungeecord) && forwardedSkin != null ? forwardedSkin : MojangAPIUtils.getSkinFromMojangServer(player.getName());
+				SkinResponse skinresponce = (isVelocityModern || isBungeeGuard || isBungeecord) && forwardedSkin != null ? forwardedSkin : MojangAPIUtils.getSkinFromMojangServer(player.getName());
 				PlayerSkinProperty skin = skinresponce != null ? new PlayerSkinProperty(skinresponce.getSkin(), skinresponce.getSignature()) : null;
 				PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(PlayerInfoAction.ADD_PLAYER, player.getUniqueId(), new PlayerInfoData.PlayerInfoDataAddPlayer(player.getName(), Optional.ofNullable(skin), properties.getDefaultGamemode(), 0, false, Optional.empty()));
 				sendPacket(info);			

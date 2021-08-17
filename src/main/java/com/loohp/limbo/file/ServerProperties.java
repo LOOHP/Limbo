@@ -1,5 +1,6 @@
 package com.loohp.limbo.file;
 
+import com.google.common.collect.Lists;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.utils.GameMode;
@@ -10,6 +11,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
@@ -35,7 +37,7 @@ public class ServerProperties {
 	private boolean bungeecord;
 	private boolean velocityModern;
 	private boolean bungeeGuard;
-	private String[] forwardingSecrets;
+	private List<String> forwardingSecrets;
 	private int viewDistance;
 	private double ticksPerSecond;
 	private boolean handshakeVerbose;
@@ -97,7 +99,7 @@ public class ServerProperties {
 				System.exit(1);
 				return;
 			}
-			this.forwardingSecrets = forwardingSecretsStr.split(";");
+			this.forwardingSecrets = Lists.newArrayList(forwardingSecretsStr.split(";"));
 			if (bungeecord) {
 				Limbo.getInstance().getConsole().sendMessage("BungeeCord is enabled but so is Velocity Modern Forwarding or BungeeGuard, We will automatically disable BungeeCord forwarding because of this");
 				bungeecord = false;
@@ -148,7 +150,7 @@ public class ServerProperties {
 		return bungeeGuard;
 	}
 
-	public String[] getForwardingSecrets() {
+	public List<String> getForwardingSecrets() {
 		return forwardingSecrets;
 	}
 
