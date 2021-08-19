@@ -4,21 +4,21 @@ import java.io.IOException;
 import java.util.UUID;
 
 import com.loohp.limbo.Limbo;
+import com.loohp.limbo.commands.CommandSender;
+import com.loohp.limbo.entity.DataWatcher;
+import com.loohp.limbo.entity.DataWatcher.WatchableField;
+import com.loohp.limbo.entity.DataWatcher.WatchableObjectType;
+import com.loohp.limbo.entity.EntityType;
+import com.loohp.limbo.entity.LivingEntity;
 import com.loohp.limbo.events.player.PlayerChatEvent;
 import com.loohp.limbo.events.player.PlayerTeleportEvent;
+import com.loohp.limbo.location.Location;
 import com.loohp.limbo.server.ClientConnection;
 import com.loohp.limbo.server.packets.PacketPlayOutChat;
 import com.loohp.limbo.server.packets.PacketPlayOutGameState;
 import com.loohp.limbo.server.packets.PacketPlayOutHeldItemChange;
 import com.loohp.limbo.server.packets.PacketPlayOutPositionAndLook;
 import com.loohp.limbo.server.packets.PacketPlayOutRespawn;
-import com.loohp.limbo.commands.CommandSender;
-import com.loohp.limbo.entity.DataWatcher;
-import com.loohp.limbo.entity.EntityType;
-import com.loohp.limbo.entity.LivingEntity;
-import com.loohp.limbo.entity.DataWatcher.WatchableField;
-import com.loohp.limbo.entity.DataWatcher.WatchableObjectType;
-import com.loohp.limbo.location.Location;
 import com.loohp.limbo.utils.GameMode;
 
 import net.md_5.bungee.api.chat.BaseComponent;

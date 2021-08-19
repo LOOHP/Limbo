@@ -5,7 +5,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>Limbo</artifactId>
 	<name>Limbo</name>
-	<version>0.5.3-ALPHA</version>
+	<version>0.6.0-ALPHA</version>
 	
 	<description>Standalone Limbo Minecraft Server.</description>
 	<url>https://github.com/LOOHP/Limbo</url>
@@ -25,6 +25,21 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
+				<excludes>
+					<exclude>**/*.java</exclude>
+					<exclude>**/*.ttf</exclude>
+					<exclude>**/*.jar</exclude>
+					<exclude>**/*.schem</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>**/*.ttf</include>
+					<include>**/*.jar</include>
+					<include>**/*.schem</include>
+				</includes>
 			</resource>
 		</resources>
 		<plugins>

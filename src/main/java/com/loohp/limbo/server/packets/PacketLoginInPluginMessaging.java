@@ -1,19 +1,21 @@
 package com.loohp.limbo.server.packets;
 
-import com.loohp.limbo.utils.DataTypeIO;
-
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.Optional;
+
+import com.loohp.limbo.utils.DataTypeIO;
 
 public class PacketLoginInPluginMessaging extends PacketIn {
 
 	private int messageId;
 	private boolean successful;
-	private byte[] data = null;
+	private Optional<byte[]> data;
 
 	public PacketLoginInPluginMessaging(int messageId, boolean successful, byte[] data) {
 		this.messageId = messageId;
-		this.data = data;
+		this.successful = successful;
+		this.data = successful ? Optional.of(data) : Optional.empty();
 	}
 	
 	public PacketLoginInPluginMessaging(DataInputStream in, int packetLength, int packetId) throws IOException {
@@ -22,9 +24,14 @@ public class PacketLoginInPluginMessaging extends PacketIn {
 		if (successful) {
 			int dataLength = packetLength - DataTypeIO.getVarIntLength(packetId) - DataTypeIO.getVarIntLength(messageId) - 1;
 			if (dataLength != 0) {
-				data = new byte[dataLength];
+				byte[] data = new byte[dataLength];
 				in.readFully(data);
+				this.data = Optional.of(data);
+			} else {
+				this.data = Optional.of(new byte[0]);
 			}
+		} else {
+			data = Optional.empty();
 		}
 	}
 	
@@ -36,7 +43,7 @@ public class PacketLoginInPluginMessaging extends PacketIn {
 		return successful;
 	}
 
-	public byte[] getData() {
+	public Optional<byte[]> getData() {
 		return data;
 	}
 

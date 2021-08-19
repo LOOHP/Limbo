@@ -1,6 +1,7 @@
 package com.loohp.limbo.events;
 
 public enum EventPriority {
+	
 	LOWEST(0),
 	LOW(1),
 	NORMAL(2),
@@ -34,4 +35,5 @@ public enum EventPriority {
 		}
 		return array;
 	}
+	
 }

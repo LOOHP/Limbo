@@ -1,20 +1,27 @@
 package com.loohp.limbo.file;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Properties;
+
+import javax.imageio.ImageIO;
+
 import com.google.common.collect.Lists;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.utils.GameMode;
 import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.world.World;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Properties;
 
 public class ServerProperties {
 	

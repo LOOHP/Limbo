@@ -1,40 +1,89 @@
 package com.loohp.limbo.server;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.loohp.limbo.Limbo;
-import com.loohp.limbo.events.player.*;
-import com.loohp.limbo.events.status.StatusPingEvent;
-import com.loohp.limbo.file.ServerProperties;
-import com.loohp.limbo.location.Location;
-import com.loohp.limbo.player.Player;
-import com.loohp.limbo.player.PlayerInteractManager;
-import com.loohp.limbo.server.packets.*;
-import com.loohp.limbo.server.packets.PacketPlayOutPlayerAbilities.PlayerAbilityFlags;
-import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoAction;
-import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
-import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoData.PlayerInfoDataAddPlayer.PlayerSkinProperty;
-import com.loohp.limbo.server.packets.PacketPlayOutTabComplete.TabCompleteMatches;
-import com.loohp.limbo.utils.*;
-import com.loohp.limbo.utils.MojangAPIUtils.SkinResponse;
-import com.loohp.limbo.world.BlockPosition;
-import com.loohp.limbo.world.World;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import com.loohp.limbo.Limbo;
+import com.loohp.limbo.events.player.PlayerJoinEvent;
+import com.loohp.limbo.events.player.PlayerLoginEvent;
+import com.loohp.limbo.events.player.PlayerMoveEvent;
+import com.loohp.limbo.events.player.PlayerQuitEvent;
+import com.loohp.limbo.events.player.PlayerSelectedSlotChangeEvent;
+import com.loohp.limbo.events.status.StatusPingEvent;
+import com.loohp.limbo.file.ServerProperties;
+import com.loohp.limbo.location.Location;
+import com.loohp.limbo.player.Player;
+import com.loohp.limbo.player.PlayerInteractManager;
+import com.loohp.limbo.server.packets.Packet;
+import com.loohp.limbo.server.packets.PacketHandshakingIn;
+import com.loohp.limbo.server.packets.PacketLoginInLoginStart;
+import com.loohp.limbo.server.packets.PacketLoginInPluginMessaging;
+import com.loohp.limbo.server.packets.PacketLoginOutDisconnect;
+import com.loohp.limbo.server.packets.PacketLoginOutLoginSuccess;
+import com.loohp.limbo.server.packets.PacketLoginOutPluginMessaging;
+import com.loohp.limbo.server.packets.PacketOut;
+import com.loohp.limbo.server.packets.PacketPlayInChat;
+import com.loohp.limbo.server.packets.PacketPlayInHeldItemChange;
+import com.loohp.limbo.server.packets.PacketPlayInKeepAlive;
+import com.loohp.limbo.server.packets.PacketPlayInPosition;
+import com.loohp.limbo.server.packets.PacketPlayInPositionAndLook;
+import com.loohp.limbo.server.packets.PacketPlayInRotation;
+import com.loohp.limbo.server.packets.PacketPlayInTabComplete;
+import com.loohp.limbo.server.packets.PacketPlayOutDeclareCommands;
+import com.loohp.limbo.server.packets.PacketPlayOutDisconnect;
+import com.loohp.limbo.server.packets.PacketPlayOutEntityMetadata;
+import com.loohp.limbo.server.packets.PacketPlayOutGameState;
+import com.loohp.limbo.server.packets.PacketPlayOutHeldItemChange;
+import com.loohp.limbo.server.packets.PacketPlayOutLogin;
+import com.loohp.limbo.server.packets.PacketPlayOutPlayerAbilities;
+import com.loohp.limbo.server.packets.PacketPlayOutPlayerAbilities.PlayerAbilityFlags;
+import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo;
+import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoAction;
+import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
+import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoData.PlayerInfoDataAddPlayer.PlayerSkinProperty;
+import com.loohp.limbo.server.packets.PacketPlayOutPositionAndLook;
+import com.loohp.limbo.server.packets.PacketPlayOutSpawnPosition;
+import com.loohp.limbo.server.packets.PacketPlayOutTabComplete;
+import com.loohp.limbo.server.packets.PacketPlayOutTabComplete.TabCompleteMatches;
+import com.loohp.limbo.server.packets.PacketPlayOutUpdateViewPosition;
+import com.loohp.limbo.server.packets.PacketStatusInPing;
+import com.loohp.limbo.server.packets.PacketStatusInRequest;
+import com.loohp.limbo.server.packets.PacketStatusOutPong;
+import com.loohp.limbo.server.packets.PacketStatusOutResponse;
+import com.loohp.limbo.utils.CheckedBiConsumer;
+import com.loohp.limbo.utils.CustomStringUtils;
+import com.loohp.limbo.utils.DataTypeIO;
+import com.loohp.limbo.utils.DeclareCommands;
+import com.loohp.limbo.utils.ForwardingUtils;
+import com.loohp.limbo.utils.GameMode;
+import com.loohp.limbo.utils.MojangAPIUtils;
+import com.loohp.limbo.utils.MojangAPIUtils.SkinResponse;
+import com.loohp.limbo.utils.NamespacedKey;
+import com.loohp.limbo.world.BlockPosition;
+import com.loohp.limbo.world.World;
+
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 
 public class ClientConnection extends Thread {
 	
@@ -48,7 +97,6 @@ public class ClientConnection extends Thread {
 	}
 
 	private final Random random = new Random();
-	private final JsonParser jsonParser = new JsonParser();
 
     private final Socket client_socket;
     private boolean running;
@@ -212,15 +260,16 @@ public class ClientConnection extends Thread {
 
 							boolean bungeeGuardFound = false;
 					    	if (data.length > 3) {
-						    	JsonArray skinJson = this.jsonParser.parse(data[3]).getAsJsonArray();
+						    	JSONArray skinJson = (JSONArray) new JSONParser().parse(data[3]);
 
-						    	for (JsonElement property : skinJson) {
-						    		if (property.getAsJsonObject().get("name").getAsString().equals("textures")) {
-						    			String skin = property.getAsJsonObject().get("value").getAsString();
-						    			String signature = property.getAsJsonObject().get("signature").getAsString();
+						    	for (Object obj : skinJson) {
+						    		JSONObject property = (JSONObject) obj;
+						    		if (property.get("name").toString().equals("textures")) {
+						    			String skin = property.get("value").toString();
+						    			String signature = property.get("signature").toString();
 						    			forwardedSkin = new SkinResponse(skin, signature);
-									} else if (isBungeeGuard && property.getAsJsonObject().get("name").getAsString().equals("bungeeguard-token")) {
-						    			String token = property.getAsJsonObject().get("value").getAsString();
+									} else if (isBungeeGuard && property.get("name").toString().equals("bungeeguard-token")) {
+						    			String token = property.get("value").toString();
 						    			bungeeGuardFound = Limbo.getInstance().getServerProperties().getForwardingSecrets().contains(token);
 									}
 								}
@@ -272,15 +321,16 @@ public class ClientConnection extends Thread {
 								disconnectDuringLogin(TextComponent.fromLegacyText("Internal error, messageId did not match"));
 								break;
 							}
-							if (response.getData() == null) {
+							if (!response.getData().isPresent()) {
 								disconnectDuringLogin(TextComponent.fromLegacyText("Unknown login plugin response packet!"));
 								break;
 							}
-							if (!ForwardingUtils.validateVelocityModernResponse(response.getData())) {
+							byte[] responseData = response.getData().get();
+							if (!ForwardingUtils.validateVelocityModernResponse(responseData)) {
 								disconnectDuringLogin(TextComponent.fromLegacyText("Invalid playerinfo forwarding!"));
 								break;
 							}
-							ForwardingUtils.VelocityModernForwardingData data = ForwardingUtils.getVelocityDataFrom(response.getData());
+							ForwardingUtils.VelocityModernForwardingData data = ForwardingUtils.getVelocityDataFrom(responseData);
 							inetAddress = InetAddress.getByName(data.getIpAddress());
 							forwardedSkin = data.getSkinResponse();
 
@@ -376,8 +426,7 @@ public class ClientConnection extends Thread {
 						int packetId = DataTypeIO.readVarInt(input);
 						Class<? extends Packet> packetType = Packet.getPlayIn().get(packetId);
 						//Limbo.getInstance().getConsole().sendMessage(packetId + " -> " + packetType);
-						CheckedConsumer<PlayerMoveEvent, IOException> processMoveEvent = event -> {
-							Location originalTo = event.getTo().clone();
+						CheckedBiConsumer<PlayerMoveEvent, Location, IOException> processMoveEvent = (event, originalTo) -> {
 							if (event.isCancelled()) {
 								Location returnTo = event.getFrom();
 								PacketPlayOutPositionAndLook cancel = new PacketPlayOutPositionAndLook(returnTo.getX(), returnTo.getY(), returnTo.getZ(), returnTo.getYaw(), returnTo.getPitch(), 1, false);
@@ -401,22 +450,28 @@ public class ClientConnection extends Thread {
 							Location from = player.getLocation();
 							Location to = new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ(), pos.getYaw(), pos.getPitch());
 
-							PlayerMoveEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerMoveEvent(player, from, to));
-							processMoveEvent.consume(event);
+							if (!from.equals(to)) {
+								PlayerMoveEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerMoveEvent(player, from, to));
+								processMoveEvent.consume(event, to);
+							}
 						} else if (packetType.equals(PacketPlayInPosition.class)) {
 							PacketPlayInPosition pos = new PacketPlayInPosition(input);
 							Location from = player.getLocation();
 							Location to = new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ(), player.getLocation().getYaw(), player.getLocation().getPitch());
 
-							PlayerMoveEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerMoveEvent(player, from, to));
-							processMoveEvent.consume(event);
+							if (!from.equals(to)) {
+								PlayerMoveEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerMoveEvent(player, from, to));
+								processMoveEvent.consume(event, to);
+							}
 						} else if (packetType.equals(PacketPlayInRotation.class)) {
 							PacketPlayInRotation pos = new PacketPlayInRotation(input);
 							Location from = player.getLocation();
 							Location to = new Location(player.getWorld(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), pos.getYaw(), pos.getPitch());
 
-							PlayerMoveEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerMoveEvent(player, from, to));
-							processMoveEvent.consume(event);
+							if (!from.equals(to)) {
+								PlayerMoveEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerMoveEvent(player, from, to));
+								processMoveEvent.consume(event, to);
+							}
 						} else if (packetType.equals(PacketPlayInKeepAlive.class)) {
 							PacketPlayInKeepAlive alive = new PacketPlayInKeepAlive(input);
 							if (alive.getPayload() != getLastKeepAlivePayLoad()) {
@@ -485,9 +540,5 @@ public class ClientConnection extends Thread {
     	Limbo.getInstance().getServerConnection().getClients().remove(this);
 		running = false;
 	}
-
-	@FunctionalInterface
-	public interface CheckedConsumer<T, TException extends Throwable> {
-		void consume(T t) throws TException;
-	}
+	
 }

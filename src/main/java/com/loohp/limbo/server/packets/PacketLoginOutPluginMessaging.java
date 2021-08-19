@@ -1,12 +1,12 @@
 package com.loohp.limbo.server.packets;
 
-import com.loohp.limbo.utils.DataTypeIO;
-import com.loohp.limbo.utils.NamespacedKey;
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+
+import com.loohp.limbo.utils.DataTypeIO;
+import com.loohp.limbo.utils.NamespacedKey;
 
 public class PacketLoginOutPluginMessaging extends PacketOut {
 
