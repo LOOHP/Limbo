@@ -1,80 +1,40 @@
 package com.loohp.limbo.server;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.loohp.limbo.Limbo;
+import com.loohp.limbo.events.player.*;
+import com.loohp.limbo.events.status.StatusPingEvent;
+import com.loohp.limbo.file.ServerProperties;
+import com.loohp.limbo.location.Location;
+import com.loohp.limbo.player.Player;
+import com.loohp.limbo.player.PlayerInteractManager;
+import com.loohp.limbo.server.packets.*;
+import com.loohp.limbo.server.packets.PacketPlayOutPlayerAbilities.PlayerAbilityFlags;
+import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoAction;
+import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
+import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoData.PlayerInfoDataAddPlayer.PlayerSkinProperty;
+import com.loohp.limbo.server.packets.PacketPlayOutTabComplete.TabCompleteMatches;
+import com.loohp.limbo.utils.*;
+import com.loohp.limbo.utils.MojangAPIUtils.SkinResponse;
+import com.loohp.limbo.world.BlockPosition;
+import com.loohp.limbo.world.World;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-
-import com.loohp.limbo.Limbo;
-import com.loohp.limbo.events.player.PlayerJoinEvent;
-import com.loohp.limbo.events.player.PlayerLoginEvent;
-import com.loohp.limbo.events.player.PlayerMoveEvent;
-import com.loohp.limbo.events.player.PlayerQuitEvent;
-import com.loohp.limbo.events.player.PlayerSelectedSlotChangeEvent;
-import com.loohp.limbo.events.status.StatusPingEvent;
-import com.loohp.limbo.file.ServerProperties;
-import com.loohp.limbo.location.Location;
-import com.loohp.limbo.player.Player;
-import com.loohp.limbo.player.PlayerInteractManager;
-import com.loohp.limbo.server.packets.Packet;
-import com.loohp.limbo.server.packets.PacketHandshakingIn;
-import com.loohp.limbo.server.packets.PacketLoginInLoginStart;
-import com.loohp.limbo.server.packets.PacketLoginOutDisconnect;
-import com.loohp.limbo.server.packets.PacketLoginOutLoginSuccess;
-import com.loohp.limbo.server.packets.PacketOut;
-import com.loohp.limbo.server.packets.PacketPlayInChat;
-import com.loohp.limbo.server.packets.PacketPlayInHeldItemChange;
-import com.loohp.limbo.server.packets.PacketPlayInKeepAlive;
-import com.loohp.limbo.server.packets.PacketPlayInPosition;
-import com.loohp.limbo.server.packets.PacketPlayInPositionAndLook;
-import com.loohp.limbo.server.packets.PacketPlayInRotation;
-import com.loohp.limbo.server.packets.PacketPlayInTabComplete;
-import com.loohp.limbo.server.packets.PacketPlayOutDeclareCommands;
-import com.loohp.limbo.server.packets.PacketPlayOutDisconnect;
-import com.loohp.limbo.server.packets.PacketPlayOutEntityMetadata;
-import com.loohp.limbo.server.packets.PacketPlayOutGameState;
-import com.loohp.limbo.server.packets.PacketPlayOutHeldItemChange;
-import com.loohp.limbo.server.packets.PacketPlayOutLogin;
-import com.loohp.limbo.server.packets.PacketPlayOutPlayerAbilities;
-import com.loohp.limbo.server.packets.PacketPlayOutPlayerAbilities.PlayerAbilityFlags;
-import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo;
-import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoAction;
-import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
-import com.loohp.limbo.server.packets.PacketPlayOutPlayerInfo.PlayerInfoData.PlayerInfoDataAddPlayer.PlayerSkinProperty;
-import com.loohp.limbo.server.packets.PacketPlayOutPositionAndLook;
-import com.loohp.limbo.server.packets.PacketPlayOutSpawnPosition;
-import com.loohp.limbo.server.packets.PacketPlayOutTabComplete;
-import com.loohp.limbo.server.packets.PacketPlayOutTabComplete.TabCompleteMatches;
-import com.loohp.limbo.server.packets.PacketPlayOutUpdateViewPosition;
-import com.loohp.limbo.server.packets.PacketStatusInPing;
-import com.loohp.limbo.server.packets.PacketStatusInRequest;
-import com.loohp.limbo.server.packets.PacketStatusOutPong;
-import com.loohp.limbo.server.packets.PacketStatusOutResponse;
-import com.loohp.limbo.utils.CustomStringUtils;
-import com.loohp.limbo.utils.DataTypeIO;
-import com.loohp.limbo.utils.DeclareCommands;
-import com.loohp.limbo.utils.GameMode;
-import com.loohp.limbo.utils.MojangAPIUtils;
-import com.loohp.limbo.utils.MojangAPIUtils.SkinResponse;
-import com.loohp.limbo.utils.NamespacedKey;
-import com.loohp.limbo.world.BlockPosition;
-import com.loohp.limbo.world.World;
-
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 
 public class ClientConnection extends Thread {
 	
@@ -86,6 +46,9 @@ public class ClientConnection extends Thread {
 		PLAY,
 		DISCONNECTED;
 	}
+
+	private final Random random = new Random();
+	private final JsonParser jsonParser = new JsonParser();
 
     private final Socket client_socket;
     private boolean running;
@@ -201,10 +164,12 @@ public class ClientConnection extends Thread {
 		    
 		    PacketHandshakingIn handshake = new PacketHandshakingIn(input);
 		    
-		    boolean isBungeecord = Limbo.getInstance().getServerProperties().isBungeecord();		    
+		    boolean isBungeecord = Limbo.getInstance().getServerProperties().isBungeecord();
+		    boolean isBungeeGuard = Limbo.getInstance().getServerProperties().isBungeeGuard();
+		    boolean isVelocityModern = Limbo.getInstance().getServerProperties().isVelocityModern();
 		    String bungeeForwarding = handshake.getServerAddress();
 		    UUID bungeeUUID = null;
-		    SkinResponse bungeeSkin = null;
+		    SkinResponse forwardedSkin = null;
 		    
 		    try {
 			    switch (handshake.getHandshakeType()) {
@@ -236,7 +201,7 @@ public class ClientConnection extends Thread {
 				case LOGIN:
 					state = ClientState.LOGIN;
 					
-					if (isBungeecord) {
+					if (isBungeecord || isBungeeGuard) {
 						try {
 					    	String[] data = bungeeForwarding.split("\\x00");
 					    	//String host = data[0];
@@ -244,20 +209,34 @@ public class ClientConnection extends Thread {
 					    	
 					    	bungeeUUID = UUID.fromString(data[2].replaceFirst("([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)", "$1-$2-$3-$4-$5"));
 					    	inetAddress = InetAddress.getByName(ip);
-					    	
+
+							boolean bungeeGuardFound = false;
 					    	if (data.length > 3) {
-						    	String skinJson = data[3];
-						    	
-						    	String skin = skinJson.split("\"value\":\"")[1].split("\"")[0];
-					            String signature = skinJson.split("\"signature\":\"")[1].split("\"")[0];
-						    	bungeeSkin = new SkinResponse(skin, signature);
+						    	JsonArray skinJson = this.jsonParser.parse(data[3]).getAsJsonArray();
+
+						    	for (JsonElement property : skinJson) {
+						    		if (property.getAsJsonObject().get("name").getAsString().equals("textures")) {
+						    			String skin = property.getAsJsonObject().get("value").getAsString();
+						    			String signature = property.getAsJsonObject().get("signature").getAsString();
+						    			forwardedSkin = new SkinResponse(skin, signature);
+									} else if (isBungeeGuard && property.getAsJsonObject().get("name").getAsString().equals("bungeeguard-token")) {
+						    			String token = property.getAsJsonObject().get("value").getAsString();
+						    			bungeeGuardFound = Limbo.getInstance().getServerProperties().getForwardingSecrets().contains(token);
+									}
+								}
 					    	}
+
+					    	if (isBungeeGuard && !bungeeGuardFound) {
+					    		disconnectDuringLogin(TextComponent.fromLegacyText("Invalid information forwarding"));
+					    		break;
+							}
 						} catch (Exception e) {
 							Limbo.getInstance().getConsole().sendMessage("If you wish to use bungeecord's IP forwarding, please enable that in your bungeecord config.yml as well!");
 							disconnectDuringLogin(new BaseComponent[] {new TextComponent(ChatColor.RED + "Please connect from the proxy!")});
 						}
 				    }
-					
+
+					int messageId = this.random.nextInt();
 					while (client_socket.isConnected()) {
 						int size = DataTypeIO.readVarInt(input);
 						int packetId = DataTypeIO.readVarInt(input);
@@ -268,7 +247,14 @@ public class ClientConnection extends Thread {
 						} else if (packetType.equals(PacketLoginInLoginStart.class)) {
 							PacketLoginInLoginStart start = new PacketLoginInLoginStart(input);
 							String username = start.getUsername();
-							UUID uuid = isBungeecord ? bungeeUUID : UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
+
+							if (Limbo.getInstance().getServerProperties().isVelocityModern()) {
+								PacketLoginOutPluginMessaging loginPluginRequest = new PacketLoginOutPluginMessaging(messageId, ForwardingUtils.VELOCITY_FORWARDING_CHANNEL);
+								sendPacket(loginPluginRequest);
+								continue;
+							}
+
+							UUID uuid = isBungeecord || isBungeeGuard ? bungeeUUID : UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
 							
 							PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(uuid, username);
 							sendPacket(success);
@@ -279,6 +265,34 @@ public class ClientConnection extends Thread {
 							player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
 							Limbo.getInstance().addPlayer(player);
 							
+							break;
+						} else if (packetType.equals(PacketLoginInPluginMessaging.class)) {
+							PacketLoginInPluginMessaging response = new PacketLoginInPluginMessaging(input, size, packetId);
+							if (response.getMessageId() != messageId) {
+								disconnectDuringLogin(TextComponent.fromLegacyText("Internal error, messageId did not match"));
+								break;
+							}
+							if (response.getData() == null) {
+								disconnectDuringLogin(TextComponent.fromLegacyText("Unknown login plugin response packet!"));
+								break;
+							}
+							if (!ForwardingUtils.validateVelocityModernResponse(response.getData())) {
+								disconnectDuringLogin(TextComponent.fromLegacyText("Invalid playerinfo forwarding!"));
+								break;
+							}
+							ForwardingUtils.VelocityModernForwardingData data = ForwardingUtils.getVelocityDataFrom(response.getData());
+							inetAddress = InetAddress.getByName(data.getIpAddress());
+							forwardedSkin = data.getSkinResponse();
+
+							PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(data.getUuid(), data.getUsername());
+							sendPacket(success);
+
+							state = ClientState.PLAY;
+
+							player = new Player(this, data.getUsername(), data.getUuid(), Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
+							player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
+							Limbo.getInstance().addPlayer(player);
+
 							break;
 						} else {
 							input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
@@ -293,6 +307,7 @@ public class ClientConnection extends Thread {
 					break;
 			    }
 		    } catch (Exception e) {
+		    	e.printStackTrace();
 		    	client_socket.close();
 				state = ClientState.DISCONNECTED;
 		    }
@@ -312,7 +327,7 @@ public class ClientConnection extends Thread {
     			sendPacket(join);
     			Limbo.getInstance().getUnsafe().setPlayerGameModeSilently(player, properties.getDefaultGamemode());
     			
-				SkinResponse skinresponce = isBungeecord && bungeeSkin != null ? bungeeSkin : MojangAPIUtils.getSkinFromMojangServer(player.getName());
+				SkinResponse skinresponce = (isVelocityModern || isBungeeGuard || isBungeecord) && forwardedSkin != null ? forwardedSkin : MojangAPIUtils.getSkinFromMojangServer(player.getName());
 				PlayerSkinProperty skin = skinresponce != null ? new PlayerSkinProperty(skinresponce.getSkin(), skinresponce.getSignature()) : null;
 				PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(PlayerInfoAction.ADD_PLAYER, player.getUniqueId(), new PlayerInfoData.PlayerInfoDataAddPlayer(player.getName(), Optional.ofNullable(skin), properties.getDefaultGamemode(), 0, false, Optional.empty()));
 				sendPacket(info);			
@@ -327,7 +342,7 @@ public class ClientConnection extends Thread {
 				PacketPlayOutPlayerAbilities abilities = new PacketPlayOutPlayerAbilities(0.05F, 0.1F, flags.toArray(new PlayerAbilityFlags[flags.size()]));
 				sendPacket(abilities);
 				
-				String str = inetAddress.getHostName() + ":" + client_socket.getPort() + "|" + player.getName();
+				String str = inetAddress.getHostName() + ":" + client_socket.getPort() + "|" + player.getName() + "(" + player.getUniqueId() + ")";
 				Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had connected to the Limbo server!");
 				
 				PacketPlayOutDeclareCommands declare = DeclareCommands.getDeclareCommandsPacket(player);

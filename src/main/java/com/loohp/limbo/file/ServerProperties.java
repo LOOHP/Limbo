@@ -1,25 +1,20 @@
 package com.loohp.limbo.file;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Properties;
-
-import javax.imageio.ImageIO;
-
+import com.google.common.collect.Lists;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.utils.GameMode;
 import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.world.World;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Properties;
 
 public class ServerProperties {
 	
@@ -40,6 +35,9 @@ public class ServerProperties {
 	private String versionString;
 	private int protocol;
 	private boolean bungeecord;
+	private boolean velocityModern;
+	private boolean bungeeGuard;
+	private List<String> forwardingSecrets;
 	private int viewDistance;
 	private double ticksPerSecond;
 	private boolean handshakeVerbose;
@@ -91,6 +89,27 @@ public class ServerProperties {
 		motdJson = prop.getProperty("motd");
 		versionString = prop.getProperty("version");
 		bungeecord = Boolean.parseBoolean(prop.getProperty("bungeecord"));
+		velocityModern = Boolean.parseBoolean(prop.getProperty("velocity-modern"));
+		bungeeGuard = Boolean.parseBoolean(prop.getProperty("bungee-guard"));
+		if (velocityModern || bungeeGuard) {
+			String forwardingSecretsStr = prop.getProperty("forwarding-secrets");
+			if (forwardingSecretsStr == null || forwardingSecretsStr.equals("")) {
+				Limbo.getInstance().getConsole().sendMessage("Velocity Modern Forwarding or BungeeGuard is enabled but no forwarding-secret was found!");
+				Limbo.getInstance().getConsole().sendMessage("Server will exit!");
+				System.exit(1);
+				return;
+			}
+			this.forwardingSecrets = Lists.newArrayList(forwardingSecretsStr.split(";"));
+			if (bungeecord) {
+				Limbo.getInstance().getConsole().sendMessage("BungeeCord is enabled but so is Velocity Modern Forwarding or BungeeGuard, We will automatically disable BungeeCord forwarding because of this");
+				bungeecord = false;
+			}
+			if (velocityModern && bungeeGuard) {
+				Limbo.getInstance().getConsole().sendMessage("Both Velocity Modern Forwarding and BungeeGuard are enabled! Because of this we always prefer Modern Forwarding, disabling BungeeGuard");
+				bungeeGuard = false;
+			}
+		}
+
 		viewDistance = Integer.parseInt(prop.getProperty("view-distance"));
 		ticksPerSecond = Double.parseDouble(prop.getProperty("ticks-per-second"));
 		handshakeVerbose = Boolean.parseBoolean(prop.getProperty("handshake-verbose"));
@@ -121,6 +140,18 @@ public class ServerProperties {
 
 	public boolean isBungeecord() {
 		return bungeecord;
+	}
+
+	public boolean isVelocityModern() {
+		return velocityModern;
+	}
+
+	public boolean isBungeeGuard() {
+		return bungeeGuard;
+	}
+
+	public List<String> getForwardingSecrets() {
+		return forwardingSecrets;
 	}
 
 	public Optional<BufferedImage> getFavicon() {

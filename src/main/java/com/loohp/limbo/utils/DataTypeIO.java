@@ -23,6 +23,10 @@ public class DataTypeIO {
 		out.writeLong(uuid.getMostSignificantBits());
 		out.writeLong(uuid.getLeastSignificantBits());
 	}
+
+	public static UUID readUUID(DataInputStream in) throws IOException {
+		return new UUID(in.readLong(), in.readLong());
+	}
 	
 	public static void writeCompoundTag(DataOutputStream out, CompoundTag tag) throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
