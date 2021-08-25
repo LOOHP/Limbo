@@ -38,6 +38,7 @@ public class ServerProperties {
 	private Location worldSpawn;
 	private boolean reducedDebugInfo;
 	private boolean allowFlight;
+	private boolean allowChat;
 	private String motdJson;
 	private String versionString;
 	private int protocol;
@@ -93,6 +94,7 @@ public class ServerProperties {
 		worldSpawn = new Location(world, x, y, z, yaw, pitch);
 		reducedDebugInfo = Boolean.parseBoolean(prop.getProperty("reduced-debug-info"));
 		allowFlight = Boolean.parseBoolean(prop.getProperty("allow-flight"));
+		allowChat = Boolean.parseBoolean(prop.getProperty("allow-chat"));
 		motdJson = prop.getProperty("motd");
 		versionString = prop.getProperty("version");
 		bungeecord = Boolean.parseBoolean(prop.getProperty("bungeecord"));
@@ -211,6 +213,10 @@ public class ServerProperties {
 
 	public boolean isAllowFlight() {
 		return allowFlight;
+	}
+
+	public boolean isAllowChat() {
+		return this.allowChat;
 	}
 
 	public String getMotdJson() {
