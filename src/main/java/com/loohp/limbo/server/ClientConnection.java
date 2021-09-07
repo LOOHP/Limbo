@@ -357,7 +357,6 @@ public class ClientConnection extends Thread {
 					break;
 			    }
 		    } catch (Exception e) {
-		    	e.printStackTrace();
 		    	client_socket.close();
 				state = ClientState.DISCONNECTED;
 		    }
