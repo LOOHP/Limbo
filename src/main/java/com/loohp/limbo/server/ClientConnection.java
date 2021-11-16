@@ -26,6 +26,7 @@ import com.loohp.limbo.events.player.PlayerJoinEvent;
 import com.loohp.limbo.events.player.PlayerLoginEvent;
 import com.loohp.limbo.events.player.PlayerMoveEvent;
 import com.loohp.limbo.events.player.PlayerQuitEvent;
+import com.loohp.limbo.events.player.PlayerResourcePackStatusEvent;
 import com.loohp.limbo.events.player.PlayerSelectedSlotChangeEvent;
 import com.loohp.limbo.events.status.StatusPingEvent;
 import com.loohp.limbo.file.ServerProperties;
@@ -45,6 +46,7 @@ import com.loohp.limbo.server.packets.PacketPlayInHeldItemChange;
 import com.loohp.limbo.server.packets.PacketPlayInKeepAlive;
 import com.loohp.limbo.server.packets.PacketPlayInPosition;
 import com.loohp.limbo.server.packets.PacketPlayInPositionAndLook;
+import com.loohp.limbo.server.packets.PacketPlayInResourcePackStatus;
 import com.loohp.limbo.server.packets.PacketPlayInRotation;
 import com.loohp.limbo.server.packets.PacketPlayInTabComplete;
 import com.loohp.limbo.server.packets.PacketPlayOutDeclareCommands;
@@ -417,6 +419,20 @@ public class ClientConnection extends Thread {
 					sendPacket(state);
 				}
 				
+				if (properties.getResourcePackLink() != null && !properties.getResourcePackLink().equalsIgnoreCase("")) {
+					if (properties.getResourcePackSHA() != null && !properties.getResourcePackSHA().equalsIgnoreCase("")) {
+						//SEND RESOURCEPACK	
+						player.setResourcePack(properties.getResourcePackLink(),
+								properties.getResourcePackSHA(), properties.getResourcePackRequired(), 
+								ComponentSerializer.parse(properties.getResourcePackPrompt()));
+					} else {
+						//NO SHA
+						Limbo.getInstance().getConsole().sendMessage("ResourcePacks require SHA1s");
+					}
+				} else {
+					//RESOURCEPACK NOT ENABLED
+				}
+				
 				ready = true;
 
 				while (client_socket.isConnected()) {
@@ -510,6 +526,11 @@ public class ClientConnection extends Thread {
 							} else {
 								Limbo.getInstance().getUnsafe().setSelectedSlotSilently(player, event.getSlot());
 							}
+							
+						}  else if (packetType.equals(PacketPlayInResourcePackStatus.class)) {
+							PacketPlayInResourcePackStatus rpcheck = new PacketPlayInResourcePackStatus(input);
+							// Pass on result to the events
+							Limbo.getInstance().getEventsManager().callEvent(new PlayerResourcePackStatusEvent(player, rpcheck.getLoadedValue()));
 						} else {
 							input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
 						}

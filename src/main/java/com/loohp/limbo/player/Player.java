@@ -18,6 +18,7 @@ import com.loohp.limbo.server.packets.PacketPlayOutChat;
 import com.loohp.limbo.server.packets.PacketPlayOutGameState;
 import com.loohp.limbo.server.packets.PacketPlayOutHeldItemChange;
 import com.loohp.limbo.server.packets.PacketPlayOutPositionAndLook;
+import com.loohp.limbo.server.packets.PacketPlayOutResourcePackSend;
 import com.loohp.limbo.server.packets.PacketPlayOutRespawn;
 import com.loohp.limbo.utils.GameMode;
 
@@ -257,6 +258,18 @@ public class Player extends LivingEntity implements CommandSender {
 					each.sendMessage(chat, uuid);
 				}
 			}
+		}
+	}
+	
+
+	public void setResourcePack(String url, String hash, boolean forced, BaseComponent[] promptmessage) {
+		try {
+			PacketPlayOutResourcePackSend packsend = new PacketPlayOutResourcePackSend(url, hash, forced, 
+					(promptmessage != null || !ComponentSerializer.toString(promptmessage).equalsIgnoreCase("")) ? true : false, 
+							ComponentSerializer.toString(promptmessage));
+			clientConnection.sendPacket(packsend);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
