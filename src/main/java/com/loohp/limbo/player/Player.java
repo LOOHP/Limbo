@@ -24,9 +24,12 @@ import com.loohp.limbo.utils.GameMode;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.TranslatableComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 
 public class Player extends LivingEntity implements CommandSender {
+	
+	public static final String CHAT_DEFAULT_FORMAT = "<%name%> %message%";
 
 	public final ClientConnection clientConnection;
 	public final PlayerInteractManager playerInteractManager;
@@ -200,7 +203,7 @@ public class Player extends LivingEntity implements CommandSender {
 	}
 
 	public void sendMessage(BaseComponent component, UUID uuid) {
-		sendMessage(new BaseComponent[] { component }, uuid);
+		sendMessage(new BaseComponent[] {component}, uuid);
 	}
 
 	@Override
@@ -218,7 +221,7 @@ public class Player extends LivingEntity implements CommandSender {
 	}
 
 	public void sendMessage(BaseComponent component) {
-		sendMessage(new BaseComponent[] { component });
+		sendMessage(new BaseComponent[] {component});
 	}
 
 	@Override
@@ -232,7 +235,7 @@ public class Player extends LivingEntity implements CommandSender {
 	}
 	
 	public void disconnect() {
-		disconnect("Disconnected!");
+		disconnect(new TranslatableComponent("multiplayer.disconnect.kicked"));
 	}
 	
 	public void disconnect(String reason) {
@@ -249,24 +252,31 @@ public class Player extends LivingEntity implements CommandSender {
 	
 	public void chat(String message) {
 		if (Limbo.getInstance().getServerProperties().isAllowChat()) {
-			String format = "<%name%> %message%";
-			PlayerChatEvent event = (PlayerChatEvent) Limbo.getInstance().getEventsManager().callEvent(new PlayerChatEvent(this, format, message, false));
+			PlayerChatEvent event = (PlayerChatEvent) Limbo.getInstance().getEventsManager().callEvent(new PlayerChatEvent(this, CHAT_DEFAULT_FORMAT, message, false));
 			if (!event.isCancelled() && this.hasPermission("limboserver.chat")) {
 				String chat = event.getFormat().replace("%name%", username).replace("%message%", event.getMessage());
 				Limbo.getInstance().getConsole().sendMessage(chat);
-				for (Player each : Limbo.getInstance().getPlayers()) {
-					each.sendMessage(chat, uuid);
+				if (event.getFormat().equals(CHAT_DEFAULT_FORMAT)) {
+					TranslatableComponent translatable = new TranslatableComponent("chat.type.text", username, event.getMessage());
+					for (Player each : Limbo.getInstance().getPlayers()) {
+						each.sendMessage(translatable, uuid);
+					}
+				} else {
+					for (Player each : Limbo.getInstance().getPlayers()) {
+						each.sendMessage(chat, uuid);
+					}
 				}
 			}
 		}
 	}
 	
+	public void setResourcePack(String url, String hash, boolean forced, BaseComponent promptmessage) {
+		setResourcePack(url, hash, forced, new BaseComponent[] {promptmessage});
+	}
 
 	public void setResourcePack(String url, String hash, boolean forced, BaseComponent[] promptmessage) {
 		try {
-			PacketPlayOutResourcePackSend packsend = new PacketPlayOutResourcePackSend(url, hash, forced, 
-					(promptmessage != null || !ComponentSerializer.toString(promptmessage).equalsIgnoreCase("")) ? true : false, 
-							ComponentSerializer.toString(promptmessage));
+			PacketPlayOutResourcePackSend packsend = new PacketPlayOutResourcePackSend(url, hash, forced, promptmessage != null, promptmessage != null ? promptmessage : null);
 			clientConnection.sendPacket(packsend);
 		} catch (IOException e) {
 			e.printStackTrace();

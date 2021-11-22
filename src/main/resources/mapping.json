@@ -19,7 +19,8 @@
     "0x13": "PacketPlayInRotation",
     "0x0A": "PacketPlayInPluginMessaging",
     "0x06": "PacketPlayInTabComplete",
-    "0x25": "PacketPlayInHeldItemChange"
+    "0x25": "PacketPlayInHeldItemChange",
+    "0x21": "PacketPlayInResourcePackStatus"
   },
   "PlayOut": {
     "PacketPlayOutLogin": "0x26",
@@ -43,7 +44,8 @@
     "PacketPlayOutEntityMetadata": "0x4D",
     "PacketPlayOutSpawnEntity": "0x00",
     "PacketPlayOutSpawnEntityLiving": "0x02",
-    "PacketPlayOutHeldItemChange": "0x48"
+    "PacketPlayOutHeldItemChange": "0x48",
+    "PacketPlayOutResourcePackSend": "0x3C"
   },
   "StatusIn": {
     "0x01": "PacketStatusInPing",
