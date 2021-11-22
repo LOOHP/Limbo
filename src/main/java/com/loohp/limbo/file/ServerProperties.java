@@ -50,6 +50,11 @@ public class ServerProperties {
 	private double ticksPerSecond;
 	private boolean handshakeVerbose;
 	
+	private String resourcePackSHA;
+	private String resourcePackLink;
+	private boolean resourcePackRequired;
+	private String resourcePackPrompt;
+	
 	Optional<BufferedImage> favicon;
 
 	public ServerProperties(File file) throws IOException {
@@ -122,6 +127,11 @@ public class ServerProperties {
 		viewDistance = Integer.parseInt(prop.getProperty("view-distance"));
 		ticksPerSecond = Double.parseDouble(prop.getProperty("ticks-per-second"));
 		handshakeVerbose = Boolean.parseBoolean(prop.getProperty("handshake-verbose"));
+
+		resourcePackLink = prop.getProperty("resource-pack");
+		resourcePackSHA = prop.getProperty("resource-pack-sha1");
+		resourcePackRequired = Boolean.parseBoolean(prop.getProperty("required-resource-pack"));
+		resourcePackPrompt = prop.getProperty("resource-pack-prompt");
 		
 		File png = new File("server-icon.png");
 		if (png.exists()) {
@@ -241,6 +251,22 @@ public class ServerProperties {
 
 	public boolean handshakeVerboseEnabled() {
 		return handshakeVerbose;
+	}
+	
+	public String getResourcePackLink() {
+		return resourcePackLink;
+	}
+	
+	public String getResourcePackSHA() {
+		return resourcePackSHA;
+	}
+	
+	public boolean getResourcePackRequired() {
+		return resourcePackRequired;
+	}
+	
+	public String getResourcePackPrompt() {
+		return resourcePackPrompt;
 	}
 
 }
