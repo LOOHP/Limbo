@@ -45,6 +45,7 @@
     "PacketPlayOutSpawnEntity": "0x00",
     "PacketPlayOutSpawnEntityLiving": "0x02",
     "PacketPlayOutHeldItemChange": "0x48",
+    "PacketPlayOutPlayerListHeaderFooter": "0x5E",
     "PacketPlayOutResourcePackSend": "0x3C"
   },
   "StatusIn": {

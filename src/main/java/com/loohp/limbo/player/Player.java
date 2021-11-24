@@ -17,6 +17,7 @@ import com.loohp.limbo.server.ClientConnection;
 import com.loohp.limbo.server.packets.PacketPlayOutChat;
 import com.loohp.limbo.server.packets.PacketPlayOutGameState;
 import com.loohp.limbo.server.packets.PacketPlayOutHeldItemChange;
+import com.loohp.limbo.server.packets.PacketPlayOutPlayerListHeaderFooter;
 import com.loohp.limbo.server.packets.PacketPlayOutPositionAndLook;
 import com.loohp.limbo.server.packets.PacketPlayOutResourcePackSend;
 import com.loohp.limbo.server.packets.PacketPlayOutRespawn;
@@ -277,6 +278,39 @@ public class Player extends LivingEntity implements CommandSender {
 	public void setResourcePack(String url, String hash, boolean forced, BaseComponent[] promptmessage) {
 		try {
 			PacketPlayOutResourcePackSend packsend = new PacketPlayOutResourcePackSend(url, hash, forced, promptmessage != null, promptmessage != null ? promptmessage : null);
+			clientConnection.sendPacket(packsend);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void setPlayerListHeaderFooter(BaseComponent[] header, BaseComponent[] footer) {
+		try {
+			PacketPlayOutPlayerListHeaderFooter packsend = new PacketPlayOutPlayerListHeaderFooter(
+							ComponentSerializer.toString(header),
+							ComponentSerializer.toString(footer));
+			clientConnection.sendPacket(packsend);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void setPlayerListHeader(BaseComponent[] header) {
+		try {
+			PacketPlayOutPlayerListHeaderFooter packsend = new PacketPlayOutPlayerListHeaderFooter(
+							ComponentSerializer.toString(header),
+							null);
+			clientConnection.sendPacket(packsend);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void setPlayerListFooter(BaseComponent[] footer) {
+		try {
+			PacketPlayOutPlayerListHeaderFooter packsend = new PacketPlayOutPlayerListHeaderFooter(
+							null,
+							ComponentSerializer.toString(footer));
 			clientConnection.sendPacket(packsend);
 		} catch (IOException e) {
 			e.printStackTrace();

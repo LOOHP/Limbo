@@ -421,6 +421,8 @@ public class ClientConnection extends Thread {
 					sendPacket(state);
 				}
 				
+				// RESOURCEPACK CODE ADDED BY GAMERDUCK123
+				
 				if (properties.getResourcePackLink() != null && !properties.getResourcePackLink().equalsIgnoreCase("")) {
 					if (properties.getResourcePackSHA1() != null && !properties.getResourcePackSHA1().equalsIgnoreCase("")) {
 						//SEND RESOURCEPACK	
@@ -434,6 +436,20 @@ public class ClientConnection extends Thread {
 				} else {
 					//RESOURCEPACK NOT ENABLED
 				}
+
+				// PLAYER LIST HEADER AND FOOTER CODE ADDED BY GAMERDUCK123
+				// Sadly due to the limitations of minecraft (?) I cannot get the footer to work alone, it needs a header to have a footer, BUT
+				// You can have just a header with no footer (which is weird!)
+				String tabHeader = "";
+				String tabFooter = "";
+				if (properties.getTabHeader() != null && !properties.getTabHeader().equalsIgnoreCase("")) {
+					tabHeader = properties.getTabHeader();
+				} 
+				if (properties.getTabFooter() != null && !properties.getTabFooter().equalsIgnoreCase("")) {
+					tabFooter = properties.getTabFooter();
+				} 
+				player.setPlayerListHeaderFooter(ComponentSerializer.parse(tabHeader), 
+						ComponentSerializer.parse(tabFooter));
 				
 				ready = true;
 

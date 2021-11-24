@@ -55,6 +55,9 @@ public class ServerProperties {
 	private boolean resourcePackRequired;
 	private String resourcePackPromptJson;
 	
+	private String tabHeader;
+	private String tabFooter;
+
 	Optional<BufferedImage> favicon;
 
 	public ServerProperties(File file) throws IOException {
@@ -132,6 +135,9 @@ public class ServerProperties {
 		resourcePackSHA1 = prop.getProperty("resource-pack-sha1");
 		resourcePackRequired = Boolean.parseBoolean(prop.getProperty("required-resource-pack"));
 		resourcePackPromptJson = prop.getProperty("resource-pack-prompt");
+		
+		tabHeader = prop.getProperty("tab-header");
+		tabFooter = prop.getProperty("tab-footer");
 		
 		File png = new File("server-icon.png");
 		if (png.exists()) {
@@ -267,6 +273,14 @@ public class ServerProperties {
 	
 	public String getResourcePackPromptJson() {
 		return resourcePackPromptJson;
+	}
+	
+	public String getTabHeader() {
+		return tabHeader;
+	}
+	
+	public String getTabFooter() {
+		return tabFooter;
 	}
 
 }
