@@ -57,22 +57,27 @@ public class DefaultCommands implements CommandExecutor, TabCompletor {
 			if (sender.hasPermission("limboserver.kick")) {
 				BaseComponent reason = new TranslatableComponent("multiplayer.disconnect.kicked");
 				boolean customReason = false;
-				Player player = args.length > 1 ? Limbo.getInstance().getPlayer(args[1]) : null;
-				if (player != null) {
-					if (args.length < 2) {
+				if (args.length > 1) {
+					Player player = Limbo.getInstance().getPlayer(args[1]);
+					if (player != null) {
+						if (args.length >= 2) {
+							String reasonRaw = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
+							if (reasonRaw.trim().length() > 0) {
+								reason = new TextComponent(reasonRaw);
+								customReason = true;
+							}
+						}
 						player.disconnect(reason);
+						if (customReason) {
+							sender.sendMessage(ChatColor.RED + "Kicked the player " + player.getName() + " for the reason: " + reason.toLegacyText());
+						} else {
+							sender.sendMessage(ChatColor.RED + "Kicked the player " + player.getName());
+						}
 					} else {
-						reason = new TextComponent(String.join(" ", Arrays.copyOfRange(args, 2, args.length)));
-						customReason = true;
-						player.disconnect(reason);
-					}
-					if (customReason) {
-						sender.sendMessage(ChatColor.RED + "Kicked the player " + player.getName() + " for the reason: " + reason.toLegacyText());
-					} else {
-						sender.sendMessage(ChatColor.RED + "Kicked the player " + player.getName());
+						sender.sendMessage(ChatColor.RED + "Player is not online!");
 					}
 				} else {
-					sender.sendMessage(ChatColor.RED + "Player is not online!");
+					sender.sendMessage(ChatColor.RED + "You have to specifiy a player!");
 				}
 			} else {
 				sender.sendMessage(ChatColor.RED + "You do not have permission to use that command!");

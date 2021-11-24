@@ -190,9 +190,7 @@ public class Player extends LivingEntity implements CommandSender {
 				}
 				PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch(), 1, false);
 				clientConnection.sendPacket(positionLook);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			} catch (IOException e) {}
 		}
 	}
 	
@@ -201,7 +199,7 @@ public class Player extends LivingEntity implements CommandSender {
 	}
 	
 	public void sendMessage(String message, UUID uuid) {
-		sendMessage(TextComponent.fromLegacyText(message), uuid);
+		sendMessage(new TextComponent(message), uuid);
 	}
 
 	public void sendMessage(BaseComponent component, UUID uuid) {
@@ -213,13 +211,11 @@ public class Player extends LivingEntity implements CommandSender {
 		try {
 			PacketPlayOutChat chat = new PacketPlayOutChat(component, 0, uuid);
 			clientConnection.sendPacket(chat);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		} catch (IOException e) {}
 	}
 	
 	public void sendMessage(String message) {
-		sendMessage(TextComponent.fromLegacyText(message));
+		sendMessage(new TextComponent(message));
 	}
 
 	public void sendMessage(BaseComponent component) {
@@ -231,9 +227,7 @@ public class Player extends LivingEntity implements CommandSender {
 		try {
 			PacketPlayOutChat chat = new PacketPlayOutChat(component, 0, new UUID(0, 0));
 			clientConnection.sendPacket(chat);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		} catch (IOException e) {}
 	}
 	
 	public void disconnect() {
@@ -241,7 +235,7 @@ public class Player extends LivingEntity implements CommandSender {
 	}
 	
 	public void disconnect(String reason) {
-		disconnect(TextComponent.fromLegacyText(reason));
+		disconnect(new TextComponent(reason));
 	}
 	
 	public void disconnect(BaseComponent reason) {
