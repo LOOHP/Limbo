@@ -50,10 +50,10 @@ public class ServerProperties {
 	private double ticksPerSecond;
 	private boolean handshakeVerbose;
 	
-	private String resourcePackSHA;
+	private String resourcePackSHA1;
 	private String resourcePackLink;
 	private boolean resourcePackRequired;
-	private String resourcePackPrompt;
+	private String resourcePackPromptJson;
 	
 	private String tabHeader;
 	private String tabFooter;
@@ -132,9 +132,9 @@ public class ServerProperties {
 		handshakeVerbose = Boolean.parseBoolean(prop.getProperty("handshake-verbose"));
 
 		resourcePackLink = prop.getProperty("resource-pack");
-		resourcePackSHA = prop.getProperty("resource-pack-sha1");
+		resourcePackSHA1 = prop.getProperty("resource-pack-sha1");
 		resourcePackRequired = Boolean.parseBoolean(prop.getProperty("required-resource-pack"));
-		resourcePackPrompt = prop.getProperty("resource-pack-prompt");
+		resourcePackPromptJson = prop.getProperty("resource-pack-prompt");
 		
 		tabHeader = prop.getProperty("tab-header");
 		tabFooter = prop.getProperty("tab-footer");
@@ -263,16 +263,16 @@ public class ServerProperties {
 		return resourcePackLink;
 	}
 	
-	public String getResourcePackSHA() {
-		return resourcePackSHA;
+	public String getResourcePackSHA1() {
+		return resourcePackSHA1;
 	}
 	
 	public boolean getResourcePackRequired() {
 		return resourcePackRequired;
 	}
 	
-	public String getResourcePackPrompt() {
-		return resourcePackPrompt;
+	public String getResourcePackPromptJson() {
+		return resourcePackPromptJson;
 	}
 	
 	public String getTabHeader() {

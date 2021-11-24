@@ -47,6 +47,7 @@ import com.loohp.limbo.server.packets.PacketPlayInKeepAlive;
 import com.loohp.limbo.server.packets.PacketPlayInPosition;
 import com.loohp.limbo.server.packets.PacketPlayInPositionAndLook;
 import com.loohp.limbo.server.packets.PacketPlayInResourcePackStatus;
+import com.loohp.limbo.server.packets.PacketPlayInResourcePackStatus.EnumResourcePackStatus;
 import com.loohp.limbo.server.packets.PacketPlayInRotation;
 import com.loohp.limbo.server.packets.PacketPlayInTabComplete;
 import com.loohp.limbo.server.packets.PacketPlayOutDeclareCommands;
@@ -85,6 +86,7 @@ import com.loohp.limbo.world.World;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.TranslatableComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 
 public class ClientConnection extends Thread {
@@ -422,11 +424,11 @@ public class ClientConnection extends Thread {
 				// RESOURCEPACK CODE ADDED BY GAMERDUCK123
 				
 				if (properties.getResourcePackLink() != null && !properties.getResourcePackLink().equalsIgnoreCase("")) {
-					if (properties.getResourcePackSHA() != null && !properties.getResourcePackSHA().equalsIgnoreCase("")) {
+					if (properties.getResourcePackSHA1() != null && !properties.getResourcePackSHA1().equalsIgnoreCase("")) {
 						//SEND RESOURCEPACK	
 						player.setResourcePack(properties.getResourcePackLink(),
-								properties.getResourcePackSHA(), properties.getResourcePackRequired(), 
-								ComponentSerializer.parse(properties.getResourcePackPrompt()));
+								properties.getResourcePackSHA1(), properties.getResourcePackRequired(), 
+								ComponentSerializer.parse(properties.getResourcePackPromptJson()));
 					} else {
 						//NO SHA
 						Limbo.getInstance().getConsole().sendMessage("ResourcePacks require SHA1s");
@@ -547,6 +549,9 @@ public class ClientConnection extends Thread {
 							PacketPlayInResourcePackStatus rpcheck = new PacketPlayInResourcePackStatus(input);
 							// Pass on result to the events
 							Limbo.getInstance().getEventsManager().callEvent(new PlayerResourcePackStatusEvent(player, rpcheck.getLoadedValue()));
+							if (rpcheck.getLoadedValue().equals(EnumResourcePackStatus.DECLINED) && properties.getResourcePackRequired()) {
+								player.disconnect(new TranslatableComponent("multiplayer.requiredTexturePrompt.disconnect"));
+							}
 						} else {
 							input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
 						}

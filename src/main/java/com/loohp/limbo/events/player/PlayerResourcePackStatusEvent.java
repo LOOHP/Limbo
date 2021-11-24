@@ -12,6 +12,7 @@ public class PlayerResourcePackStatusEvent extends PlayerEvent {
 		super(player);	
 	}
 	
+	@Override
 	public Player getPlayer() {
 		return player;
 	}
