@@ -43,7 +43,8 @@
     "PacketPlayOutEntityMetadata": "0x4D",
     "PacketPlayOutSpawnEntity": "0x00",
     "PacketPlayOutSpawnEntityLiving": "0x02",
-    "PacketPlayOutHeldItemChange": "0x48"
+    "PacketPlayOutHeldItemChange": "0x48",
+    "PacketPlayOutPlayerListHeaderFooter": "0x5E"
   },
   "StatusIn": {
     "0x01": "PacketStatusInPing",
