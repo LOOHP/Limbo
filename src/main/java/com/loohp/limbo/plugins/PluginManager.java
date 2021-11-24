@@ -15,16 +15,19 @@ import java.util.zip.ZipInputStream;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.commands.CommandExecutor;
 import com.loohp.limbo.commands.CommandSender;
+import com.loohp.limbo.commands.DefaultCommands;
 import com.loohp.limbo.commands.TabCompletor;
 import com.loohp.limbo.file.FileConfiguration;
 
 public class PluginManager {
 
 	private Map<String, LimboPlugin> plugins;
+	private DefaultCommands defaultExecutor;
 	private List<Executor> executors;
 	private File pluginFolder;
 
-	public PluginManager(File pluginFolder) {
+	public PluginManager(DefaultCommands defaultExecutor, File pluginFolder) {
+		this.defaultExecutor = defaultExecutor;
 		this.pluginFolder = pluginFolder;
 		this.executors = new ArrayList<>();
 		this.plugins = new LinkedHashMap<>();
@@ -83,6 +86,12 @@ public class PluginManager {
 
 	public void fireExecutors(CommandSender sender, String[] args) throws Exception {
 		Limbo.getInstance().getConsole().sendMessage(sender.getName() + " executed server command: /" + String.join(" ", args));
+		try {
+			defaultExecutor.execute(sender, args);
+		} catch (Exception e) {
+			System.err.println("Error while running default command \"" + args[0] + "\"");
+			e.printStackTrace();
+		}
 		for (Executor entry : executors) {
 			try {
 				entry.executor.execute(sender, args);
@@ -95,12 +104,18 @@ public class PluginManager {
 
 	public List<String> getTabOptions(CommandSender sender, String[] args) {
 		List<String> options = new ArrayList<>();
+		try {
+			options.addAll(defaultExecutor.tabComplete(sender, args));
+		} catch (Exception e) {
+			System.err.println("Error while getting default command tab completions");
+			e.printStackTrace();
+		}
 		for (Executor entry : executors) {
 			if (entry.tab.isPresent()) {
 				try {
 					options.addAll(entry.tab.get().tabComplete(sender, args));
 				} catch (Exception e) {
-					System.err.println("Error while passing tab completion to the plugin \"" + entry.plugin.getName() + "\"");
+					System.err.println("Error while getting tab completions to the plugin \"" + entry.plugin.getName() + "\"");
 					e.printStackTrace();
 				}
 			}

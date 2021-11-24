@@ -23,14 +23,15 @@ import com.loohp.limbo.server.packets.PacketPlayOutResourcePackSend;
 import com.loohp.limbo.server.packets.PacketPlayOutRespawn;
 import com.loohp.limbo.utils.GameMode;
 
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 
 public class Player extends LivingEntity implements CommandSender {
 	
 	public static final String CHAT_DEFAULT_FORMAT = "<%name%> %message%";
+	public static final BaseComponent[] EMPTY_CHAT_COMPONENT = new BaseComponent[] {new TextComponent("")};
 
 	public final ClientConnection clientConnection;
 	public final PlayerInteractManager playerInteractManager;
@@ -210,7 +211,7 @@ public class Player extends LivingEntity implements CommandSender {
 	@Override
 	public void sendMessage(BaseComponent[] component, UUID uuid) {
 		try {
-			PacketPlayOutChat chat = new PacketPlayOutChat(ComponentSerializer.toString(component), 0, uuid);
+			PacketPlayOutChat chat = new PacketPlayOutChat(component, 0, uuid);
 			clientConnection.sendPacket(chat);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -228,7 +229,7 @@ public class Player extends LivingEntity implements CommandSender {
 	@Override
 	public void sendMessage(BaseComponent[] component) {
 		try {
-			PacketPlayOutChat chat = new PacketPlayOutChat(ComponentSerializer.toString(component), 0, new UUID(0, 0));
+			PacketPlayOutChat chat = new PacketPlayOutChat(component, 0, new UUID(0, 0));
 			clientConnection.sendPacket(chat);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -252,23 +253,35 @@ public class Player extends LivingEntity implements CommandSender {
 	}
 	
 	public void chat(String message) {
+		chat(message, false);
+	}
+	
+	public void chat(String message, boolean verbose) {
 		if (Limbo.getInstance().getServerProperties().isAllowChat()) {
 			PlayerChatEvent event = (PlayerChatEvent) Limbo.getInstance().getEventsManager().callEvent(new PlayerChatEvent(this, CHAT_DEFAULT_FORMAT, message, false));
-			if (!event.isCancelled() && this.hasPermission("limboserver.chat")) {
-				String chat = event.getFormat().replace("%name%", username).replace("%message%", event.getMessage());
-				Limbo.getInstance().getConsole().sendMessage(chat);
-				if (event.getFormat().equals(CHAT_DEFAULT_FORMAT)) {
-					TranslatableComponent translatable = new TranslatableComponent("chat.type.text", username, event.getMessage());
-					for (Player each : Limbo.getInstance().getPlayers()) {
-						each.sendMessage(translatable, uuid);
+			if (!event.isCancelled()) {
+				if (hasPermission("limboserver.chat")) {
+					String chat = event.getFormat().replace("%name%", username).replace("%message%", event.getMessage());
+					Limbo.getInstance().getConsole().sendMessage(chat);
+					if (event.getFormat().equals(CHAT_DEFAULT_FORMAT)) {
+						TranslatableComponent translatable = new TranslatableComponent("chat.type.text", username, event.getMessage());
+						for (Player each : Limbo.getInstance().getPlayers()) {
+							each.sendMessage(translatable, uuid);
+						}
+					} else {
+						for (Player each : Limbo.getInstance().getPlayers()) {
+							each.sendMessage(chat, uuid);
+						}
 					}
-				} else {
-					for (Player each : Limbo.getInstance().getPlayers()) {
-						each.sendMessage(chat, uuid);
-					}
+				} else if (verbose) {
+					sendMessage(ChatColor.RED + "You do not have permission to chat!");
 				}
 			}
 		}
+	}
+	
+	public void setResourcePack(String url, String hash, boolean forced) {
+		setResourcePack(url, hash, forced, (BaseComponent[]) null);
 	}
 	
 	public void setResourcePack(String url, String hash, boolean forced, BaseComponent promptmessage) {
@@ -277,7 +290,7 @@ public class Player extends LivingEntity implements CommandSender {
 
 	public void setResourcePack(String url, String hash, boolean forced, BaseComponent[] promptmessage) {
 		try {
-			PacketPlayOutResourcePackSend packsend = new PacketPlayOutResourcePackSend(url, hash, forced, promptmessage != null, promptmessage != null ? promptmessage : null);
+			PacketPlayOutResourcePackSend packsend = new PacketPlayOutResourcePackSend(url, hash, forced, promptmessage != null, promptmessage);
 			clientConnection.sendPacket(packsend);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -286,35 +299,19 @@ public class Player extends LivingEntity implements CommandSender {
 	
 	public void setPlayerListHeaderFooter(BaseComponent[] header, BaseComponent[] footer) {
 		try {
-			PacketPlayOutPlayerListHeaderFooter packsend = new PacketPlayOutPlayerListHeaderFooter(
-							ComponentSerializer.toString(header),
-							ComponentSerializer.toString(footer));
-			clientConnection.sendPacket(packsend);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void setPlayerListHeader(BaseComponent[] header) {
-		try {
-			PacketPlayOutPlayerListHeaderFooter packsend = new PacketPlayOutPlayerListHeaderFooter(
-							ComponentSerializer.toString(header),
-							null);
-			clientConnection.sendPacket(packsend);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void setPlayerListFooter(BaseComponent[] footer) {
-		try {
-			PacketPlayOutPlayerListHeaderFooter packsend = new PacketPlayOutPlayerListHeaderFooter(
-							null,
-							ComponentSerializer.toString(footer));
+			PacketPlayOutPlayerListHeaderFooter packsend = new PacketPlayOutPlayerListHeaderFooter(header == null ? EMPTY_CHAT_COMPONENT : header, footer == null ? EMPTY_CHAT_COMPONENT : footer);
 			clientConnection.sendPacket(packsend);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
+	public void setPlayerListHeaderFooter(BaseComponent header, BaseComponent footer) {
+		setPlayerListHeaderFooter(header == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {header}, footer == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {footer});
+	}
+	
+	public void setPlayerListHeaderFooter(String header, String footer) {
+		setPlayerListHeaderFooter(header == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {new TextComponent(header)}, footer == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {new TextComponent(footer)});
+	}
+	
 }

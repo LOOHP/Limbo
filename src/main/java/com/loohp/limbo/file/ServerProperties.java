@@ -23,10 +23,15 @@ import com.loohp.limbo.utils.GameMode;
 import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.world.World;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
+
 public class ServerProperties {
 	
 	public static final String COMMENT = "For explaination of what each of the options does, please visit:\nhttps://github.com/LOOHP/Limbo/blob/master/src/main/resources/server.properties";
-
+	public static final BaseComponent[] EMPTY_CHAT_COMPONENT = new BaseComponent[] {new TextComponent("")};
+	
 	private File file;
 	private int maxPlayers;
 	private int serverPort;
@@ -39,7 +44,7 @@ public class ServerProperties {
 	private boolean reducedDebugInfo;
 	private boolean allowFlight;
 	private boolean allowChat;
-	private String motdJson;
+	private BaseComponent[] motd;
 	private String versionString;
 	private int protocol;
 	private boolean bungeecord;
@@ -53,10 +58,10 @@ public class ServerProperties {
 	private String resourcePackSHA1;
 	private String resourcePackLink;
 	private boolean resourcePackRequired;
-	private String resourcePackPromptJson;
+	private BaseComponent[] resourcePackPrompt;
 	
-	private String tabHeader;
-	private String tabFooter;
+	private BaseComponent[] tabHeader;
+	private BaseComponent[] tabFooter;
 
 	Optional<BufferedImage> favicon;
 
@@ -103,7 +108,8 @@ public class ServerProperties {
 		reducedDebugInfo = Boolean.parseBoolean(prop.getProperty("reduced-debug-info"));
 		allowFlight = Boolean.parseBoolean(prop.getProperty("allow-flight"));
 		allowChat = Boolean.parseBoolean(prop.getProperty("allow-chat"));
-		motdJson = prop.getProperty("motd");
+		String motdJson = prop.getProperty("motd");
+		motd = motdJson.equals("") ? EMPTY_CHAT_COMPONENT : ComponentSerializer.parse(motdJson);
 		versionString = prop.getProperty("version");
 		bungeecord = Boolean.parseBoolean(prop.getProperty("bungeecord"));
 		velocityModern = Boolean.parseBoolean(prop.getProperty("velocity-modern"));
@@ -134,10 +140,13 @@ public class ServerProperties {
 		resourcePackLink = prop.getProperty("resource-pack");
 		resourcePackSHA1 = prop.getProperty("resource-pack-sha1");
 		resourcePackRequired = Boolean.parseBoolean(prop.getProperty("required-resource-pack"));
-		resourcePackPromptJson = prop.getProperty("resource-pack-prompt");
+		String resourcePackPromptJson = prop.getProperty("resource-pack-prompt");
+		resourcePackPrompt = resourcePackPromptJson.equals("") ? null : ComponentSerializer.parse(resourcePackPromptJson);
 		
-		tabHeader = prop.getProperty("tab-header");
-		tabFooter = prop.getProperty("tab-footer");
+		String tabHeaderJson = prop.getProperty("tab-header");
+		tabHeader = tabHeaderJson.equals("") ? EMPTY_CHAT_COMPONENT : ComponentSerializer.parse(tabHeaderJson);
+		String tabFooterJson = prop.getProperty("tab-footer");
+		tabFooter = tabFooterJson.equals("") ? EMPTY_CHAT_COMPONENT : ComponentSerializer.parse(tabFooterJson);
 		
 		File png = new File("server-icon.png");
 		if (png.exists()) {
@@ -235,8 +244,8 @@ public class ServerProperties {
 		return this.allowChat;
 	}
 
-	public String getMotdJson() {
-		return motdJson;
+	public BaseComponent[] getMotd() {
+		return motd;
 	}
 
 	public String getVersionString() {
@@ -271,15 +280,15 @@ public class ServerProperties {
 		return resourcePackRequired;
 	}
 	
-	public String getResourcePackPromptJson() {
-		return resourcePackPromptJson;
+	public BaseComponent[] getResourcePackPrompt() {
+		return resourcePackPrompt;
 	}
 	
-	public String getTabHeader() {
+	public BaseComponent[] getTabHeader() {
 		return tabHeader;
 	}
 	
-	public String getTabFooter() {
+	public BaseComponent[] getTabFooter() {
 		return tabFooter;
 	}
 

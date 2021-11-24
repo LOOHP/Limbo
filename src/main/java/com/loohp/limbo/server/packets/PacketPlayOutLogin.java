@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import com.loohp.limbo.utils.DataTypeIO;
 import com.loohp.limbo.utils.GameMode;
@@ -19,10 +20,10 @@ public class PacketPlayOutLogin extends PacketOut {
 	private int entityId;
 	private boolean isHardcore;
 	private GameMode gamemode;
-	private String[] worldsNames;
+	private List<World> worlds;
 	private CompoundTag dimensionCodec;
 	private Environment dimension;
-	private String worldName;
+	private World world;
 	private long hashedSeed;
 	private byte maxPlayers;
 	private int viewDistance;
@@ -31,14 +32,14 @@ public class PacketPlayOutLogin extends PacketOut {
 	private boolean isDebug;
 	private boolean isFlat;
 
-	public PacketPlayOutLogin(int entityId, boolean isHardcore, GameMode gamemode, String[] worldsNames, CompoundTag dimensionCodec, World world, long hashedSeed, byte maxPlayers, int viewDistance, boolean reducedDebugInfo, boolean enableRespawnScreen, boolean isDebug, boolean isFlat) {
+	public PacketPlayOutLogin(int entityId, boolean isHardcore, GameMode gamemode, List<World> worlds, CompoundTag dimensionCodec, World world, long hashedSeed, byte maxPlayers, int viewDistance, boolean reducedDebugInfo, boolean enableRespawnScreen, boolean isDebug, boolean isFlat) {
 		this.entityId = entityId;
 		this.isHardcore = isHardcore;
 		this.gamemode = gamemode;
-		this.worldsNames = worldsNames;
+		this.worlds = worlds;
 		this.dimensionCodec = dimensionCodec;
 		this.dimension = world.getEnvironment();
-		this.worldName = new NamespacedKey(world.getName()).toString();
+		this.world = world;
 		this.hashedSeed = hashedSeed;
 		this.maxPlayers = maxPlayers;
 		this.viewDistance = viewDistance;
@@ -60,8 +61,8 @@ public class PacketPlayOutLogin extends PacketOut {
 		return gamemode;
 	}
 
-	public String[] getWorldsNames() {
-		return worldsNames;
+	public List<World> getWorldsNames() {
+		return worlds;
 	}
 
 	public CompoundTag getDimensionCodec() {
@@ -72,8 +73,8 @@ public class PacketPlayOutLogin extends PacketOut {
 		return dimension;
 	}
 
-	public String getWorldName() {
-		return worldName;
+	public World getWorld() {
+		return world;
 	}
 
 	public long getHashedSeed() {
@@ -114,9 +115,9 @@ public class PacketPlayOutLogin extends PacketOut {
 		output.writeBoolean(isHardcore);
         output.writeByte((byte) gamemode.getId());
 		output.writeByte((byte) gamemode.getId());
-		DataTypeIO.writeVarInt(output, worldsNames.length);
-		for (int u = 0; u < worldsNames.length; u++) {
-			DataTypeIO.writeString(output, worldsNames[u], StandardCharsets.UTF_8);
+		DataTypeIO.writeVarInt(output, worlds.size());
+		for (int u = 0; u < worlds.size(); u++) {
+			DataTypeIO.writeString(output, new NamespacedKey(worlds.get(u).getName()).toString(), StandardCharsets.UTF_8);
 		}
 		DataTypeIO.writeCompoundTag(output, dimensionCodec);
 		CompoundTag tag = null;
@@ -128,7 +129,7 @@ public class PacketPlayOutLogin extends PacketOut {
 			}
 		}
 		DataTypeIO.writeCompoundTag(output, tag != null ? tag : list.get(0).getCompoundTag("element"));
-		DataTypeIO.writeString(output, worldName, StandardCharsets.UTF_8);
+		DataTypeIO.writeString(output, new NamespacedKey(world.getName()).toString(), StandardCharsets.UTF_8);
 		output.writeLong(hashedSeed);
 		DataTypeIO.writeVarInt(output, maxPlayers);
 		DataTypeIO.writeVarInt(output, viewDistance);

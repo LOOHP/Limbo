@@ -7,16 +7,19 @@ import java.nio.charset.StandardCharsets;
 
 import com.loohp.limbo.utils.DataTypeIO;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
+
 public class PacketLoginOutDisconnect extends PacketOut {
 	
-	private String jsonReason;
+	private BaseComponent[] reason;
 
-	public PacketLoginOutDisconnect(String jsonReason) {
-		this.jsonReason = jsonReason;
+	public PacketLoginOutDisconnect(BaseComponent[] reason) {
+		this.reason = reason;
 	}
 
-	public String getJsonReason() {
-		return jsonReason;
+	public BaseComponent[] getReason() {
+		return reason;
 	}
 
 	@Override
@@ -25,7 +28,7 @@ public class PacketLoginOutDisconnect extends PacketOut {
 		
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(Packet.getLoginOut().get(getClass()));
-		DataTypeIO.writeString(output, jsonReason, StandardCharsets.UTF_8);
+		DataTypeIO.writeString(output, ComponentSerializer.toString(reason), StandardCharsets.UTF_8);
 		
 		return buffer.toByteArray();
 	}

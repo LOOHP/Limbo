@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class PacketPlayOutKeepAlive extends PacketOut {
 	
-	long payload;
+	private long payload;
 	
 	public PacketPlayOutKeepAlive(long payload) {
 		this.payload = payload;

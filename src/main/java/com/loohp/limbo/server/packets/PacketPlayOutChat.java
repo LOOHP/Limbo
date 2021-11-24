@@ -8,20 +8,23 @@ import java.util.UUID;
 
 import com.loohp.limbo.utils.DataTypeIO;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
+
 public class PacketPlayOutChat extends PacketOut {
 	
-	private String json;
+	private BaseComponent[] message;
 	private int position;
 	private UUID sender;
 	
-	public PacketPlayOutChat(String json, int position, UUID sender) {
-		this.json = json;
+	public PacketPlayOutChat(BaseComponent[] message, int position, UUID sender) {
+		this.message = message;
 		this.position = position;
 		this.sender = sender;
 	}
 
-	public String getJson() {
-		return json;
+	public BaseComponent[] getMessage() {
+		return message;
 	}
 
 	public int getPosition() {
@@ -38,7 +41,7 @@ public class PacketPlayOutChat extends PacketOut {
 		
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(Packet.getPlayOut().get(getClass()));
-		DataTypeIO.writeString(output, json, StandardCharsets.UTF_8);
+		DataTypeIO.writeString(output, ComponentSerializer.toString(message), StandardCharsets.UTF_8);
 		output.writeByte(position);
 		DataTypeIO.writeUUID(output, sender);
 		

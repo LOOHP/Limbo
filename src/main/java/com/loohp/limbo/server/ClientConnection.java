@@ -79,7 +79,6 @@ import com.loohp.limbo.utils.ForwardingUtils;
 import com.loohp.limbo.utils.GameMode;
 import com.loohp.limbo.utils.MojangAPIUtils;
 import com.loohp.limbo.utils.MojangAPIUtils.SkinResponse;
-import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.world.BlockPosition;
 import com.loohp.limbo.world.World;
 
@@ -87,7 +86,6 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 
 public class ClientConnection extends Thread {
 	
@@ -165,7 +163,7 @@ public class ClientConnection extends Thread {
 	
 	public void disconnect(BaseComponent[] reason) {
 		try {
-			PacketPlayOutDisconnect packet = new PacketPlayOutDisconnect(ComponentSerializer.toString(reason));
+			PacketPlayOutDisconnect packet = new PacketPlayOutDisconnect(reason);
 			sendPacket(packet);
 		} catch (IOException e) {}
 		try {
@@ -175,7 +173,7 @@ public class ClientConnection extends Thread {
 	
 	private void disconnectDuringLogin(BaseComponent[] reason) {
 		try {
-			PacketLoginOutDisconnect packet = new PacketLoginOutDisconnect(ComponentSerializer.toString(reason));
+			PacketLoginOutDisconnect packet = new PacketLoginOutDisconnect(reason);
 			sendPacket(packet);
 		} catch (IOException e) {}
 		try {
@@ -201,7 +199,7 @@ public class ClientConnection extends Thread {
 		    	String str = inetAddress.getHostName() + ":" + client_socket.getPort();
 		    	Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Legacy Status has pinged");
 		    	ServerProperties p = Limbo.getInstance().getServerProperties();
-		    	StatusPingEvent event = Limbo.getInstance().getEventsManager().callEvent(new StatusPingEvent(this, p.getVersionString(), p.getProtocol(), ComponentSerializer.parse(p.getMotdJson()), p.getMaxPlayers(), Limbo.getInstance().getPlayers().size(), p.getFavicon().orElse(null)));
+		    	StatusPingEvent event = Limbo.getInstance().getEventsManager().callEvent(new StatusPingEvent(this, p.getVersionString(), p.getProtocol(), p.getMotd(), p.getMaxPlayers(), Limbo.getInstance().getPlayers().size(), p.getFavicon().orElse(null)));
 				String response = Limbo.getInstance().buildLegacyPingResponse(event.getVersion(), event.getMotd(), event.getMaxPlayers(), event.getPlayersOnline());
 				byte[] bytes = response.getBytes(StandardCharsets.UTF_16BE);
 				output.writeShort(response.length());
@@ -239,7 +237,7 @@ public class ClientConnection extends Thread {
 								Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Handshake Status has pinged");
 							}
 							ServerProperties p = Limbo.getInstance().getServerProperties();		
-							StatusPingEvent event = Limbo.getInstance().getEventsManager().callEvent(new StatusPingEvent(this, p.getVersionString(), p.getProtocol(), ComponentSerializer.parse(p.getMotdJson()), p.getMaxPlayers(), Limbo.getInstance().getPlayers().size(), p.getFavicon().orElse(null)));												
+							StatusPingEvent event = Limbo.getInstance().getEventsManager().callEvent(new StatusPingEvent(this, p.getVersionString(), p.getProtocol(), p.getMotd(), p.getMaxPlayers(), Limbo.getInstance().getPlayers().size(), p.getFavicon().orElse(null)));												
 							PacketStatusOutResponse packet = new PacketStatusOutResponse(Limbo.getInstance().buildServerListResponseJson(event.getVersion(), event.getProtocol(), event.getMotd(), event.getMaxPlayers(), event.getPlayersOnline(), event.getFavicon()));
 							sendPacket(packet);
 						} else if (packetType.equals(PacketStatusInPing.class)) {
@@ -376,7 +374,7 @@ public class ClientConnection extends Thread {
 				worldSpawn = joinEvent.getSpawnLocation();
 				World world = worldSpawn.getWorld();
 				
-    			PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, properties.getDefaultGamemode(), Limbo.getInstance().getWorlds().stream().map(each -> new NamespacedKey(each.getName()).toString()).collect(Collectors.toList()).toArray(new String[Limbo.getInstance().getWorlds().size()]), Limbo.getInstance().getDimensionRegistry().getCodec(), world, 0, (byte) properties.getMaxPlayers(), 8, properties.isReducedDebugInfo(), true, false, true);
+    			PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, properties.getDefaultGamemode(), Limbo.getInstance().getWorlds(), Limbo.getInstance().getDimensionRegistry().getCodec(), world, 0, (byte) properties.getMaxPlayers(), 8, properties.isReducedDebugInfo(), true, false, true);
     			sendPacket(join);
     			Limbo.getInstance().getUnsafe().setPlayerGameModeSilently(player, properties.getDefaultGamemode());
     			
@@ -421,14 +419,11 @@ public class ClientConnection extends Thread {
 					sendPacket(state);
 				}
 				
-				// RESOURCEPACK CODE ADDED BY GAMERDUCK123
-				
-				if (properties.getResourcePackLink() != null && !properties.getResourcePackLink().equalsIgnoreCase("")) {
-					if (properties.getResourcePackSHA1() != null && !properties.getResourcePackSHA1().equalsIgnoreCase("")) {
+				// RESOURCEPACK CODE CONRIBUTED BY GAMERDUCK123
+				if (!properties.getResourcePackLink().equalsIgnoreCase("")) {
+					if (!properties.getResourcePackSHA1().equalsIgnoreCase("")) {
 						//SEND RESOURCEPACK	
-						player.setResourcePack(properties.getResourcePackLink(),
-								properties.getResourcePackSHA1(), properties.getResourcePackRequired(), 
-								ComponentSerializer.parse(properties.getResourcePackPromptJson()));
+						player.setResourcePack(properties.getResourcePackLink(), properties.getResourcePackSHA1(), properties.getResourcePackRequired(), properties.getResourcePackPrompt());
 					} else {
 						//NO SHA
 						Limbo.getInstance().getConsole().sendMessage("ResourcePacks require SHA1s");
@@ -437,19 +432,8 @@ public class ClientConnection extends Thread {
 					//RESOURCEPACK NOT ENABLED
 				}
 
-				// PLAYER LIST HEADER AND FOOTER CODE ADDED BY GAMERDUCK123
-				// Sadly due to the limitations of minecraft (?) I cannot get the footer to work alone, it needs a header to have a footer, BUT
-				// You can have just a header with no footer (which is weird!)
-				String tabHeader = "";
-				String tabFooter = "";
-				if (properties.getTabHeader() != null && !properties.getTabHeader().equalsIgnoreCase("")) {
-					tabHeader = properties.getTabHeader();
-				} 
-				if (properties.getTabFooter() != null && !properties.getTabFooter().equalsIgnoreCase("")) {
-					tabFooter = properties.getTabFooter();
-				} 
-				player.setPlayerListHeaderFooter(ComponentSerializer.parse(tabHeader), 
-						ComponentSerializer.parse(tabFooter));
+				// PLAYER LIST HEADER AND FOOTER CODE CONRIBUTED BY GAMERDUCK123
+				player.setPlayerListHeaderFooter(properties.getTabHeader(), properties.getTabFooter());
 				
 				ready = true;
 
@@ -529,7 +513,7 @@ public class ClientConnection extends Thread {
 							if (chat.getMessage().startsWith("/")) {
 								Limbo.getInstance().dispatchCommand(player, chat.getMessage());
 							} else {
-								player.chat(chat.getMessage());
+								player.chat(chat.getMessage(), true);
 							}
 						} else if (packetType.equals(PacketPlayInHeldItemChange.class)) {
 							PacketPlayInHeldItemChange change = new PacketPlayInHeldItemChange(input);

@@ -7,21 +7,24 @@ import java.nio.charset.StandardCharsets;
 
 import com.loohp.limbo.utils.DataTypeIO;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
+
 public class PacketPlayOutPlayerListHeaderFooter extends PacketOut{
 	
-	private String header;
-	private String footer;
+	private BaseComponent[] header;
+	private BaseComponent[] footer;
 	
-	public PacketPlayOutPlayerListHeaderFooter(String header, String footer) {
+	public PacketPlayOutPlayerListHeaderFooter(BaseComponent[] header, BaseComponent[] footer) {
 		this.header = header;
 		this.footer = footer;
 	}
 
-	public String getHeader() {
+	public BaseComponent[] getHeader() {
 		return header;
 	}
 
-	public String getFooter() {
+	public BaseComponent[] getFooter() {
 		return footer;
 	}
 	
@@ -32,8 +35,8 @@ public class PacketPlayOutPlayerListHeaderFooter extends PacketOut{
 		
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(Packet.getPlayOut().get(getClass()));
-		DataTypeIO.writeString(output, header, StandardCharsets.UTF_8);
-		DataTypeIO.writeString(output, footer, StandardCharsets.UTF_8);
+		DataTypeIO.writeString(output, ComponentSerializer.toString(header), StandardCharsets.UTF_8);
+		DataTypeIO.writeString(output, ComponentSerializer.toString(footer), StandardCharsets.UTF_8);
 		return buffer.toByteArray();
 	}
 

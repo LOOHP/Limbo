@@ -37,7 +37,7 @@ import org.json.simple.parser.ParseException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.loohp.limbo.commands.CommandSender;
-import com.loohp.limbo.commands.Defaults;
+import com.loohp.limbo.commands.DefaultCommands;
 import com.loohp.limbo.consolegui.GUI;
 import com.loohp.limbo.events.EventsManager;
 import com.loohp.limbo.file.ServerProperties;
@@ -291,17 +291,8 @@ public class Limbo {
         
         pluginFolder = new File("plugins");
         pluginFolder.mkdirs();
-        
-//        File defaultCommandsJar = new File(pluginFolder, "LimboDefaultCmd.jar");
-//        defaultCommandsJar.delete();
-//        console.sendMessage("Loading limbo default commands module...");
-//        try (InputStream in = Limbo.class.getClassLoader().getResourceAsStream("LimboDefaultCmd.jar")) {
-//        	Files.copy(in, defaultCommandsJar.toPath());
-//        } catch (IOException e) {
-//        	e.printStackTrace();
-//        }
 		
-	    pluginManager = new PluginManager(pluginFolder);
+	    pluginManager = new PluginManager(new DefaultCommands(), pluginFolder);
 	    try {
 			Method loadPluginsMethod = PluginManager.class.getDeclaredMethod("loadPlugins");
 			loadPluginsMethod.setAccessible(true);
@@ -323,9 +314,7 @@ public class Limbo {
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			Limbo.getInstance().terminate();
 		}));
-		console.sendMessage("Enabling Commands");
-		registerDefaultCommands();
-		console.sendMessage("Default Commands Enabled");
+
 		console.run();
 	}
 
@@ -413,11 +402,6 @@ public class Limbo {
 			}
 			worlds.remove(world);
 		}
-	}
-	
-	public void registerDefaultCommands() {
-		LimboPlugin plug = new LimboPlugin();
-		getPluginManager().registerCommands(plug, new Defaults());
 	}
 	
 	public ServerProperties getServerProperties() {
