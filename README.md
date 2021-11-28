@@ -15,7 +15,7 @@ Put the world schem file in the same folder as the server jar file and configura
 IP: mc.loohpjames.com
 ```
 ***
-### Downloads (1.16-1.17.1)
+### Downloads (1.17.1)
 - [Jenkins](http://ci.loohpjames.com/job/Limbo/)
 ***
 ### Maven
