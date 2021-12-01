@@ -250,8 +250,6 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 			output.writeByte((x << 4) | z);
 			output.writeShort(y);
 			Integer id = Registry.BLOCK_ENTITY_TYPE.getId(new NamespacedKey(chunk.getBlockStateAt(x, y, z).getString("Name")));
-			System.out.println(chunk.getBlockStateAt(x, y, z).toString());
-			System.out.println(each.toString());
 			DataTypeIO.writeVarInt(output, id == null ? -1 : id);
 			DataTypeIO.writeCompoundTag(output, each);
 		}
