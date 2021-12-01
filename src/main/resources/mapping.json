@@ -28,9 +28,8 @@
     "PacketPlayOutSpawnPosition": "0x4B",
     "PacketPlayOutChat": "0x0F",
     "PacketPlayOutPlayerAbilities": "0x32",
-    "PacketPlayOutMapChunk": "0x22",
+    "ClientboundLevelChunkWithLightPacket": "0x22",
     "PacketPlayOutUnloadChunk": "0x1D",
-    "PacketPlayOutLightUpdate": "0x25",
     "PacketPlayOutKeepAlive": "0x21",
     "PacketPlayOutPlayerInfo": "0x36",
     "PacketPlayOutUpdateViewPosition": "0x49",
@@ -45,7 +44,7 @@
     "PacketPlayOutSpawnEntity": "0x00",
     "PacketPlayOutSpawnEntityLiving": "0x02",
     "PacketPlayOutHeldItemChange": "0x48",
-    "PacketPlayOutPlayerListHeaderFooter": "0x5E",
+    "PacketPlayOutPlayerListHeaderFooter": "0x5F",
     "PacketPlayOutResourcePackSend": "0x3C"
   },
   "StatusIn": {

@@ -15,8 +15,7 @@ import com.loohp.limbo.entity.Entity;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.server.packets.PacketPlayOutEntityDestroy;
 import com.loohp.limbo.server.packets.PacketPlayOutEntityMetadata;
-import com.loohp.limbo.server.packets.PacketPlayOutLightUpdate;
-import com.loohp.limbo.server.packets.PacketPlayOutMapChunk;
+import com.loohp.limbo.server.packets.ClientboundLevelChunkWithLightPacket;
 import com.loohp.limbo.server.packets.PacketPlayOutSpawnEntity;
 import com.loohp.limbo.server.packets.PacketPlayOutSpawnEntityLiving;
 import com.loohp.limbo.server.packets.PacketPlayOutUnloadChunk;
@@ -112,9 +111,6 @@ public class PlayerInteractManager {
 		for (Chunk chunk : chunksInRange) {
 			if (!chunks.containsKey(chunk)) {
 				int[] chunkPos = world.getChunkXZ(chunk);
-				PacketPlayOutMapChunk packet0 = new PacketPlayOutMapChunk(chunkPos[0], chunkPos[1], chunk, world.getEnvironment());
-				player.clientConnection.sendPacket(packet0);
-				
 				List<Byte[]> blockChunk = world.getLightEngineBlock().getBlockLightBitMask(chunkPos[0], chunkPos[1]);
 				if (blockChunk == null) {
 					blockChunk = new ArrayList<>();
@@ -126,7 +122,7 @@ public class PlayerInteractManager {
 				if (skyChunk == null) {
 					skyChunk = new ArrayList<>();
 				}
-				PacketPlayOutLightUpdate chunkdata = new PacketPlayOutLightUpdate(chunkPos[0], chunkPos[1], true, skyChunk, blockChunk);
+				ClientboundLevelChunkWithLightPacket chunkdata = new ClientboundLevelChunkWithLightPacket(chunkPos[0], chunkPos[1], chunk, world.getEnvironment(), true, skyChunk, blockChunk);
 				player.clientConnection.sendPacket(chunkdata);
 			}
 		}

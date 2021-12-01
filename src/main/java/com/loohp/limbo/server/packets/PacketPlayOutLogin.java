@@ -27,12 +27,13 @@ public class PacketPlayOutLogin extends PacketOut {
 	private long hashedSeed;
 	private byte maxPlayers;
 	private int viewDistance;
+	private int simulationDistance;
 	private boolean reducedDebugInfo;
 	private boolean enableRespawnScreen;
 	private boolean isDebug;
 	private boolean isFlat;
 
-	public PacketPlayOutLogin(int entityId, boolean isHardcore, GameMode gamemode, List<World> worlds, CompoundTag dimensionCodec, World world, long hashedSeed, byte maxPlayers, int viewDistance, boolean reducedDebugInfo, boolean enableRespawnScreen, boolean isDebug, boolean isFlat) {
+	public PacketPlayOutLogin(int entityId, boolean isHardcore, GameMode gamemode, List<World> worlds, CompoundTag dimensionCodec, World world, long hashedSeed, byte maxPlayers, int viewDistance, int simulationDistance, boolean reducedDebugInfo, boolean enableRespawnScreen, boolean isDebug, boolean isFlat) {
 		this.entityId = entityId;
 		this.isHardcore = isHardcore;
 		this.gamemode = gamemode;
@@ -43,6 +44,7 @@ public class PacketPlayOutLogin extends PacketOut {
 		this.hashedSeed = hashedSeed;
 		this.maxPlayers = maxPlayers;
 		this.viewDistance = viewDistance;
+		this.simulationDistance = simulationDistance;
 		this.reducedDebugInfo = reducedDebugInfo;
 		this.enableRespawnScreen = enableRespawnScreen;
 		this.isDebug = isDebug;
@@ -87,6 +89,10 @@ public class PacketPlayOutLogin extends PacketOut {
 
 	public int getViewDistance() {
 		return viewDistance;
+	}
+	
+	public int getSimulationDistance() {
+		return simulationDistance;
 	}
 
 	public boolean isReducedDebugInfo() {
@@ -133,6 +139,7 @@ public class PacketPlayOutLogin extends PacketOut {
 		output.writeLong(hashedSeed);
 		DataTypeIO.writeVarInt(output, maxPlayers);
 		DataTypeIO.writeVarInt(output, viewDistance);
+		DataTypeIO.writeVarInt(output, simulationDistance);
 		output.writeBoolean(reducedDebugInfo);
 		output.writeBoolean(enableRespawnScreen);
 		output.writeBoolean(isDebug);
