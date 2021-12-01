@@ -1,6 +1,6 @@
 # Limbo
 [![Build Status](http://ci.loohpjames.com/job/Limbo/badge/icon)](http://ci.loohpjames.com/job/Limbo/)
-## Standalone Limbo Minecraft Server (Currently 1.17.1)
+## Standalone Limbo Minecraft Server (Currently 1.18)
 
 ### Starting the server
 Use the following command lines to start the limbo server just like any other minecraft server
@@ -15,7 +15,7 @@ Put the world schem file in the same folder as the server jar file and configura
 IP: mc.loohpjames.com
 ```
 ***
-### Downloads (1.17.1)
+### Downloads (1.17.1-1.18)
 - [Jenkins](http://ci.loohpjames.com/job/Limbo/)
 ***
 ### Maven
