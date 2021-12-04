@@ -13,12 +13,13 @@ import java.util.stream.Collectors;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.entity.Entity;
 import com.loohp.limbo.location.Location;
+import com.loohp.limbo.server.packets.ClientboundLevelChunkWithLightPacket;
 import com.loohp.limbo.server.packets.PacketPlayOutEntityDestroy;
 import com.loohp.limbo.server.packets.PacketPlayOutEntityMetadata;
-import com.loohp.limbo.server.packets.ClientboundLevelChunkWithLightPacket;
 import com.loohp.limbo.server.packets.PacketPlayOutSpawnEntity;
 import com.loohp.limbo.server.packets.PacketPlayOutSpawnEntityLiving;
 import com.loohp.limbo.server.packets.PacketPlayOutUnloadChunk;
+import com.loohp.limbo.world.ChunkPosition;
 import com.loohp.limbo.world.World;
 
 import net.querz.mca.Chunk;
@@ -28,12 +29,12 @@ public class PlayerInteractManager {
 	private Player player;
 	
 	private Set<Entity> entities;
-	private Map<Chunk, World> chunks;
+	private Map<ChunkPosition, Chunk> currentViewing;
 	
 	public PlayerInteractManager() {
 		this.player = null;
 		this.entities = new HashSet<>();
-		this.chunks = new HashMap<>();
+		this.currentViewing = new HashMap<>();
 	}
 	
 	protected void setPlayer(Player player) {
@@ -87,47 +88,53 @@ public class PlayerInteractManager {
 		int playerChunkZ = (int) location.getZ() >> 4;
 		World world = location.getWorld();
 		
-		Set<Chunk> chunksInRange = new HashSet<>();
+		Map<ChunkPosition, Chunk> chunksInRange = new HashMap<>();
 		
 		for (int x = playerChunkX - viewDistanceChunks; x < playerChunkX + viewDistanceChunks; x++) {
 			for (int z = playerChunkZ - viewDistanceChunks; z < playerChunkZ + viewDistanceChunks; z++) {
 				Chunk chunk = world.getChunkAt(x, z);
 				if (chunk != null) {
-					chunksInRange.add(chunk);
+					chunksInRange.put(new ChunkPosition(world, x, z), chunk);
+				} else {
+					chunksInRange.put(new ChunkPosition(world, x, z), World.EMPTY_CHUNK);
 				}
 			}
 		}
 		
-		for (Entry<Chunk, World> entry : chunks.entrySet()) {
-			Chunk chunk = entry.getKey();
-			if (location.getWorld().getChunkXZ(chunk) == null) {
-				World world0 = entry.getValue();
-				int[] chunkPos = world0.getChunkXZ(chunk);
-				PacketPlayOutUnloadChunk packet0 = new PacketPlayOutUnloadChunk(chunkPos[0], chunkPos[1]);
-				player.clientConnection.sendPacket(packet0);
+		for (Entry<ChunkPosition, Chunk> entry : currentViewing.entrySet()) {
+			ChunkPosition chunkPos = entry.getKey();
+			if (!chunksInRange.containsKey(chunkPos)) {
+				PacketPlayOutUnloadChunk packet = new PacketPlayOutUnloadChunk(chunkPos.getChunkX(), chunkPos.getChunkZ());
+				player.clientConnection.sendPacket(packet);
 			}
 		}
 		
-		for (Chunk chunk : chunksInRange) {
-			if (!chunks.containsKey(chunk)) {
-				int[] chunkPos = world.getChunkXZ(chunk);
-				List<Byte[]> blockChunk = world.getLightEngineBlock().getBlockLightBitMask(chunkPos[0], chunkPos[1]);
-				if (blockChunk == null) {
-					blockChunk = new ArrayList<>();
+		for (Entry<ChunkPosition, Chunk> entry : chunksInRange.entrySet()) {
+			ChunkPosition chunkPos = entry.getKey();
+			if (!currentViewing.containsKey(chunkPos)) {
+				Chunk chunk = chunkPos.getWorld().getChunkAt(chunkPos.getChunkX(), chunkPos.getChunkZ());
+				if (chunk == null) {
+					ClientboundLevelChunkWithLightPacket chunkdata = new ClientboundLevelChunkWithLightPacket(chunkPos.getChunkX(), chunkPos.getChunkZ(), entry.getValue(), world.getEnvironment(), true, new ArrayList<>(), new ArrayList<>());
+					player.clientConnection.sendPacket(chunkdata);
+				} else {
+					List<Byte[]> blockChunk = world.getLightEngineBlock().getBlockLightBitMask(chunkPos.getChunkX(), chunkPos.getChunkZ());
+					if (blockChunk == null) {
+						blockChunk = new ArrayList<>();
+					}
+					List<Byte[]> skyChunk = null;
+					if (world.hasSkyLight()) {
+						skyChunk = world.getLightEngineSky().getSkyLightBitMask(chunkPos.getChunkX(), chunkPos.getChunkZ());
+					}
+					if (skyChunk == null) {
+						skyChunk = new ArrayList<>();
+					}
+					ClientboundLevelChunkWithLightPacket chunkdata = new ClientboundLevelChunkWithLightPacket(chunkPos.getChunkX(), chunkPos.getChunkZ(), chunk, world.getEnvironment(), true, skyChunk, blockChunk);
+					player.clientConnection.sendPacket(chunkdata);
 				}
-				List<Byte[]> skyChunk = null;
-				if (world.hasSkyLight()) {
-					skyChunk = world.getLightEngineSky().getSkyLightBitMask(chunkPos[0], chunkPos[1]);
-				}
-				if (skyChunk == null) {
-					skyChunk = new ArrayList<>();
-				}
-				ClientboundLevelChunkWithLightPacket chunkdata = new ClientboundLevelChunkWithLightPacket(chunkPos[0], chunkPos[1], chunk, world.getEnvironment(), true, skyChunk, blockChunk);
-				player.clientConnection.sendPacket(chunkdata);
 			}
 		}
 		
-		chunks = chunksInRange.stream().collect(Collectors.toMap(each -> each, each -> world));
+		currentViewing = chunksInRange;
 	}
 
 }
