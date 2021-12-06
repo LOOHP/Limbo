@@ -15,14 +15,12 @@ public class ServerConnection extends Thread {
 	private List<ClientConnection> clients;
 	private String ip;
 	private int port;
-	private KeepAliveSender keepAliveSender;
 
 	public ServerConnection(String ip, int port) {
 		clients = new ArrayList<ClientConnection>();
 		this.ip = ip;
 		this.port = port;
 		start();
-		keepAliveSender = new KeepAliveSender();
 	}
 	
 	@Override
@@ -32,8 +30,6 @@ public class ServerConnection extends Thread {
 			Limbo.getInstance().getConsole().sendMessage("Limbo server listening on /" + serverSocket.getInetAddress().getHostName() + ":" + serverSocket.getLocalPort());
 	        while (true) {
 	            Socket connection = serverSocket.accept();
-	            //String str = connection.getInetAddress().getHostName() + ":" + connection.getPort();
-				//Limbo.getInstance().getConsole().sendMessage("[/127.0.0.1:57310] <-> InitialHandler has pinged);
 	            ClientConnection sc = new ClientConnection(connection);
 	            clients.add(sc);
 	            sc.start();
@@ -41,10 +37,6 @@ public class ServerConnection extends Thread {
 	    } catch(IOException e) {
 	        e.printStackTrace();
 	    }
-	}
-	
-	public KeepAliveSender getKeepAliveSender() {
-		return keepAliveSender;
 	}
 
 	public ServerSocket getServerSocket() {

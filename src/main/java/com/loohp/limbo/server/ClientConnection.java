@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -55,6 +57,7 @@ import com.loohp.limbo.server.packets.PacketPlayOutDisconnect;
 import com.loohp.limbo.server.packets.PacketPlayOutEntityMetadata;
 import com.loohp.limbo.server.packets.PacketPlayOutGameState;
 import com.loohp.limbo.server.packets.PacketPlayOutHeldItemChange;
+import com.loohp.limbo.server.packets.PacketPlayOutKeepAlive;
 import com.loohp.limbo.server.packets.PacketPlayOutLogin;
 import com.loohp.limbo.server.packets.PacketPlayOutPlayerAbilities;
 import com.loohp.limbo.server.packets.PacketPlayOutPlayerAbilities.PlayerAbilityFlags;
@@ -104,7 +107,9 @@ public class ClientConnection extends Thread {
     private boolean running;
     private ClientState state;
     
-    private Player player;	
+    private Player player;
+    private TimerTask keepAliveTask;
+    private AtomicLong lastPacketTimestamp;
 	private AtomicLong lastKeepAlivePayLoad;
 	
 	private DataOutputStream output;
@@ -117,7 +122,8 @@ public class ClientConnection extends Thread {
     public ClientConnection(Socket client_socket) {
         this.client_socket = client_socket;
         this.inetAddress = client_socket.getInetAddress();
-        this.lastKeepAlivePayLoad = new AtomicLong();
+        this.lastPacketTimestamp = new AtomicLong(-1);
+        this.lastKeepAlivePayLoad = new AtomicLong(-1);
         this.running = false;
         this.ready = false;
     }
@@ -132,6 +138,18 @@ public class ClientConnection extends Thread {
 	
 	public void setLastKeepAlivePayLoad(long payLoad) {
 		this.lastKeepAlivePayLoad.set(payLoad);
+	}
+	
+	public long getLastPacketTimestamp() {
+		return lastPacketTimestamp.get();
+	}
+	
+	public void setLastPacketTimestamp(long payLoad) {
+		this.lastPacketTimestamp.set(payLoad);
+	}
+	
+	public TimerTask getKeepAliveTask() {
+		return this.keepAliveTask;
 	}
 
 	public Player getPlayer() {
@@ -159,6 +177,7 @@ public class ClientConnection extends Thread {
 		DataTypeIO.writeVarInt(output, packetByte.length);
 		output.write(packetByte);
 		output.flush();
+		setLastPacketTimestamp(System.currentTimeMillis());
 	}
 	
 	public void disconnect(BaseComponent[] reason) {
@@ -436,6 +455,25 @@ public class ClientConnection extends Thread {
 				player.setPlayerListHeaderFooter(properties.getTabHeader(), properties.getTabFooter());
 				
 				ready = true;
+				
+				keepAliveTask = new TimerTask() {
+					@Override
+					public void run() {
+						if (ready) {
+							long now = System.currentTimeMillis();
+							if (now - getLastPacketTimestamp() > 15000) {
+								PacketPlayOutKeepAlive keepAlivePacket = new PacketPlayOutKeepAlive(now);
+								try {
+									sendPacket(keepAlivePacket);
+									setLastKeepAlivePayLoad(now);
+								} catch (Exception e) {}
+							}
+						} else {
+							this.cancel();
+						}
+					}
+				};
+				new Timer().schedule(keepAliveTask, 5000, 10000);
 
 				while (client_socket.isConnected()) {
 					try {
