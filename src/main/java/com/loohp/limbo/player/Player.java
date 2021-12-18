@@ -3,6 +3,8 @@ package com.loohp.limbo.player;
 import java.io.IOException;
 import java.util.UUID;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.commands.CommandSender;
 import com.loohp.limbo.entity.DataWatcher;
@@ -18,10 +20,12 @@ import com.loohp.limbo.server.packets.PacketPlayOutChat;
 import com.loohp.limbo.server.packets.PacketPlayOutGameState;
 import com.loohp.limbo.server.packets.PacketPlayOutHeldItemChange;
 import com.loohp.limbo.server.packets.PacketPlayOutPlayerListHeaderFooter;
+import com.loohp.limbo.server.packets.PacketPlayOutPluginMessaging;
 import com.loohp.limbo.server.packets.PacketPlayOutPositionAndLook;
 import com.loohp.limbo.server.packets.PacketPlayOutResourcePackSend;
 import com.loohp.limbo.server.packets.PacketPlayOutRespawn;
 import com.loohp.limbo.utils.GameMode;
+import com.loohp.limbo.utils.NamespacedKey;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -307,5 +311,19 @@ public class Player extends LivingEntity implements CommandSender {
 	public void setPlayerListHeaderFooter(String header, String footer) {
 		setPlayerListHeaderFooter(header == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {new TextComponent(header)}, footer == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {new TextComponent(footer)});
 	}
+
+	
+	public void sendBungeeMessage(String subChannel, String argument) {
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeUTF(subChannel);
+            out.writeUTF(argument);
+            PacketPlayOutPluginMessaging packet = new PacketPlayOutPluginMessaging(new NamespacedKey("bungeecord", "main"), out.toByteArray());
+            try {clientConnection.sendPacket(packet);
+            } catch (IOException e) {e.printStackTrace();}
+    }
+	
+	public void sendToServer(String server) {
+            sendBungeeMessage("Connect", server);
+    }
 	
 }
