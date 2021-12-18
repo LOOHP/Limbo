@@ -7,3 +7,8 @@ target/
 
 # Mac OS
 .DS_Store
+
+# Eclipse
+.classpath
+.project
+.settings/
