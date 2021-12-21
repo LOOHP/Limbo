@@ -45,7 +45,10 @@
     "PacketPlayOutSpawnEntityLiving": "0x02",
     "PacketPlayOutHeldItemChange": "0x48",
     "PacketPlayOutPlayerListHeaderFooter": "0x5F",
-    "PacketPlayOutResourcePackSend": "0x3C"
+    "PacketPlayOutResourcePackSend": "0x3C",
+	"PacketPlayOutSetTitleTimes": "0x5B", 
+	"PacketPlayOutSetTitleText": "0x5A",
+	"PacketPlayOutSetTitleSubTitleText": "0x58"
   },
   "StatusIn": {
     "0x01": "PacketStatusInPing",

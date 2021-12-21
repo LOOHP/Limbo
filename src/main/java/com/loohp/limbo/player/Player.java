@@ -21,6 +21,9 @@ import com.loohp.limbo.server.packets.PacketPlayOutPlayerListHeaderFooter;
 import com.loohp.limbo.server.packets.PacketPlayOutPositionAndLook;
 import com.loohp.limbo.server.packets.PacketPlayOutResourcePackSend;
 import com.loohp.limbo.server.packets.PacketPlayOutRespawn;
+import com.loohp.limbo.server.packets.PacketPlayOutSetTitleSubTitleText;
+import com.loohp.limbo.server.packets.PacketPlayOutSetTitleText;
+import com.loohp.limbo.server.packets.PacketPlayOutSetTitleTimes;
 import com.loohp.limbo.utils.GameMode;
 
 import net.md_5.bungee.api.ChatColor;
@@ -306,6 +309,63 @@ public class Player extends LivingEntity implements CommandSender {
 	
 	public void setPlayerListHeaderFooter(String header, String footer) {
 		setPlayerListHeaderFooter(header == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {new TextComponent(header)}, footer == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {new TextComponent(footer)});
+	}
+	
+	public void setTitle(BaseComponent[] title) {
+		try {
+			PacketPlayOutSetTitleText setTitle = new PacketPlayOutSetTitleText(title == null ? EMPTY_CHAT_COMPONENT : title);
+			clientConnection.sendPacket(setTitle);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void setTitle(BaseComponent title) {
+		setTitle(title == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {title});
+	}
+	
+	public void setTitle(String title) {
+		setTitle(title == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {new TextComponent(title)});
+	}
+	
+	public void setSubTitle(BaseComponent[] subTitle) {
+		try {
+			PacketPlayOutSetTitleSubTitleText setSubTitle = new PacketPlayOutSetTitleSubTitleText(subTitle == null ? EMPTY_CHAT_COMPONENT : subTitle);
+			clientConnection.sendPacket(setSubTitle);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void setSubTitle(BaseComponent subTitle) {
+		setSubTitle(subTitle == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {subTitle});
+	}
+	
+	public void setSubTitle(String subTitle) {
+		setSubTitle(subTitle == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {new TextComponent(subTitle)});
+	}
+	
+	public void setTitleTimer(Integer fadeIn, Integer stay, Integer fadeOut) {
+		try {
+			PacketPlayOutSetTitleTimes setTitleTimes = new PacketPlayOutSetTitleTimes(fadeIn, stay, fadeOut);
+			clientConnection.sendPacket(setTitleTimes);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void setTitleSubTitle(BaseComponent[] title, BaseComponent[] subTitle, Integer fadeIn, Integer stay, Integer fadeOut) {
+		setTitleTimer(fadeIn, stay, fadeOut);
+		setTitle(title);
+		setSubTitle(subTitle);
+	}
+	
+	public void setTitleSubTitle(BaseComponent title, BaseComponent subTitle, Integer fadeIn, Integer stay, Integer fadeOut) {
+		setTitleSubTitle(new BaseComponent[] {title}, new BaseComponent[] {subTitle}, fadeIn, stay, fadeOut);
+	}
+	
+	public void setTitleSubTitle(String title, String subTitle, Integer fadeIn, Integer stay, Integer fadeOut) {
+		setTitleSubTitle(new BaseComponent[] {new TextComponent(title)}, new BaseComponent[] {new TextComponent(subTitle)}, fadeIn, stay, fadeOut);
 	}
 	
 }
