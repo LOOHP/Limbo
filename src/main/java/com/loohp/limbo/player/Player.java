@@ -43,7 +43,6 @@ import net.kyori.adventure.title.Title.Times;
 import net.kyori.adventure.title.TitlePart;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 
 public class Player extends LivingEntity implements CommandSender {
@@ -376,9 +375,10 @@ public class Player extends LivingEntity implements CommandSender {
 		setTitleSubTitle(new BaseComponent[] {title}, new BaseComponent[] {subTitle}, fadeIn, stay, fadeOut);
 	}
 	
-	@Deprecated
 	public void setTitleSubTitle(String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-		setTitleSubTitle(new BaseComponent[] {new TextComponent(title)}, new BaseComponent[] {new TextComponent(subTitle)}, fadeIn, stay, fadeOut);
+		sendTitlePart(TitlePart.TIMES, Title.Times.of(Duration.ofMillis(fadeIn * 50), Duration.ofMillis(stay * 50), Duration.ofMillis(fadeOut * 50)));
+		sendTitlePart(TitlePart.SUBTITLE, LegacyComponentSerializer.legacySection().deserialize(subTitle));
+		sendTitlePart(TitlePart.TITLE, LegacyComponentSerializer.legacySection().deserialize(title));
 	}
 
 	@Override
