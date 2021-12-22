@@ -9,10 +9,9 @@ import com.loohp.limbo.Limbo;
 import com.loohp.limbo.player.Player;
 import com.loohp.limbo.utils.GameMode;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.TranslatableComponent;
 
 public class DefaultCommands implements CommandExecutor, TabCompletor {
 	
@@ -55,7 +54,7 @@ public class DefaultCommands implements CommandExecutor, TabCompletor {
 		
 		if (args[0].equalsIgnoreCase("kick")) {
 			if (sender.hasPermission("limboserver.kick")) {
-				BaseComponent reason = new TranslatableComponent("multiplayer.disconnect.kicked");
+				Component reason = Component.translatable("multiplayer.disconnect.kicked");
 				boolean customReason = false;
 				if (args.length > 1) {
 					Player player = Limbo.getInstance().getPlayer(args[1]);
@@ -63,13 +62,13 @@ public class DefaultCommands implements CommandExecutor, TabCompletor {
 						if (args.length >= 2) {
 							String reasonRaw = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
 							if (reasonRaw.trim().length() > 0) {
-								reason = new TextComponent(reasonRaw);
+								reason = LegacyComponentSerializer.legacySection().deserialize(reasonRaw);
 								customReason = true;
 							}
 						}
 						player.disconnect(reason);
 						if (customReason) {
-							sender.sendMessage(ChatColor.RED + "Kicked the player " + player.getName() + " for the reason: " + reason.toLegacyText());
+							sender.sendMessage(ChatColor.RED + "Kicked the player " + player.getName() + " for the reason: " + LegacyComponentSerializer.legacySection().serialize(reason));
 						} else {
 							sender.sendMessage(ChatColor.RED + "Kicked the player " + player.getName());
 						}

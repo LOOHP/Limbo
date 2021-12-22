@@ -8,7 +8,7 @@ import java.util.List;
 
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.commands.CommandSender;
-import com.loohp.limbo.server.packets.PacketPlayOutDeclareCommands;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutDeclareCommands;
 
 public class DeclareCommands {
 	

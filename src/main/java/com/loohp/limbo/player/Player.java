@@ -1,6 +1,7 @@
 package com.loohp.limbo.player;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.UUID;
 
 import com.loohp.limbo.Limbo;
@@ -13,19 +14,33 @@ import com.loohp.limbo.entity.LivingEntity;
 import com.loohp.limbo.events.player.PlayerChatEvent;
 import com.loohp.limbo.events.player.PlayerTeleportEvent;
 import com.loohp.limbo.location.Location;
-import com.loohp.limbo.server.ClientConnection;
-import com.loohp.limbo.server.packets.PacketPlayOutChat;
-import com.loohp.limbo.server.packets.PacketPlayOutGameState;
-import com.loohp.limbo.server.packets.PacketPlayOutHeldItemChange;
-import com.loohp.limbo.server.packets.PacketPlayOutPlayerListHeaderFooter;
-import com.loohp.limbo.server.packets.PacketPlayOutPositionAndLook;
-import com.loohp.limbo.server.packets.PacketPlayOutResourcePackSend;
-import com.loohp.limbo.server.packets.PacketPlayOutRespawn;
-import com.loohp.limbo.server.packets.PacketPlayOutSetTitleSubTitleText;
-import com.loohp.limbo.server.packets.PacketPlayOutSetTitleText;
-import com.loohp.limbo.server.packets.PacketPlayOutSetTitleTimes;
+import com.loohp.limbo.network.ClientConnection;
+import com.loohp.limbo.network.protocol.packets.ClientboundClearTitlesPacket;
+import com.loohp.limbo.network.protocol.packets.ClientboundSetSubtitleTextPacket;
+import com.loohp.limbo.network.protocol.packets.ClientboundSetTitleTextPacket;
+import com.loohp.limbo.network.protocol.packets.ClientboundSetTitlesAnimationPacket;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutChat;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutGameState;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutHeldItemChange;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerListHeaderFooter;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutPositionAndLook;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutResourcePackSend;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutRespawn;
+import com.loohp.limbo.utils.BungeecordAdventureConversionUtils;
 import com.loohp.limbo.utils.GameMode;
 
+import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.inventory.Book;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.sound.Sound.Emitter;
+import net.kyori.adventure.sound.SoundStop;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.title.Title;
+import net.kyori.adventure.title.Title.Times;
+import net.kyori.adventure.title.TitlePart;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -34,7 +49,6 @@ import net.md_5.bungee.api.chat.TranslatableComponent;
 public class Player extends LivingEntity implements CommandSender {
 	
 	public static final String CHAT_DEFAULT_FORMAT = "<%name%> %message%";
-	public static final BaseComponent[] EMPTY_CHAT_COMPONENT = new BaseComponent[] {new TextComponent("")};
 
 	public final ClientConnection clientConnection;
 	public final PlayerInteractManager playerInteractManager;
@@ -202,51 +216,55 @@ public class Player extends LivingEntity implements CommandSender {
 	}
 	
 	public void sendMessage(String message, UUID uuid) {
-		sendMessage(new TextComponent(message), uuid);
+		sendMessage(Identity.identity(uuid), LegacyComponentSerializer.legacySection().deserialize(message));
 	}
 
+	@Deprecated
 	public void sendMessage(BaseComponent component, UUID uuid) {
 		sendMessage(new BaseComponent[] {component}, uuid);
 	}
 
+	@Deprecated
 	@Override
 	public void sendMessage(BaseComponent[] component, UUID uuid) {
-		try {
-			PacketPlayOutChat chat = new PacketPlayOutChat(component, 0, uuid);
-			clientConnection.sendPacket(chat);
-		} catch (IOException e) {}
+		sendMessage(Identity.identity(uuid), BungeecordAdventureConversionUtils.toComponent(component));
 	}
 	
 	public void sendMessage(String message) {
-		sendMessage(new TextComponent(message));
+		sendMessage(LegacyComponentSerializer.legacySection().deserialize(message));
 	}
 
+	@Deprecated
 	public void sendMessage(BaseComponent component) {
 		sendMessage(new BaseComponent[] {component});
 	}
 
+	@Deprecated
 	@Override
 	public void sendMessage(BaseComponent[] component) {
-		try {
-			PacketPlayOutChat chat = new PacketPlayOutChat(component, 0, new UUID(0, 0));
-			clientConnection.sendPacket(chat);
-		} catch (IOException e) {}
+		sendMessage(BungeecordAdventureConversionUtils.toComponent(component));
 	}
 	
 	public void disconnect() {
-		disconnect(new TranslatableComponent("multiplayer.disconnect.kicked"));
+		disconnect(Component.translatable("multiplayer.disconnect.kicked"));
 	}
 	
 	public void disconnect(String reason) {
-		disconnect(new TextComponent(reason));
+		disconnect(LegacyComponentSerializer.legacySection().deserialize(reason));
 	}
 	
+	public void disconnect(Component reason) {
+		clientConnection.disconnect(reason);
+	}
+	
+	@Deprecated
 	public void disconnect(BaseComponent reason) {
 		disconnect(new BaseComponent[] {reason});
 	}
 	
+	@Deprecated
 	public void disconnect(BaseComponent[] reason) {
-		clientConnection.disconnect(reason);
+		disconnect(BungeecordAdventureConversionUtils.toComponent(reason));
 	}
 	
 	public void chat(String message) {
@@ -281,11 +299,17 @@ public class Player extends LivingEntity implements CommandSender {
 		setResourcePack(url, hash, forced, (BaseComponent[]) null);
 	}
 	
+	@Deprecated
 	public void setResourcePack(String url, String hash, boolean forced, BaseComponent promptmessage) {
-		setResourcePack(url, hash, forced, new BaseComponent[] {promptmessage});
+		setResourcePack(url, hash, forced, promptmessage == null ? null : new BaseComponent[] {promptmessage});
 	}
 
+	@Deprecated
 	public void setResourcePack(String url, String hash, boolean forced, BaseComponent[] promptmessage) {
+		setResourcePack(url, hash, forced, promptmessage == null ? null : BungeecordAdventureConversionUtils.toComponent(promptmessage));
+	}
+	
+	public void setResourcePack(String url, String hash, boolean forced, Component promptmessage) {
 		try {
 			PacketPlayOutResourcePackSend packsend = new PacketPlayOutResourcePackSend(url, hash, forced, promptmessage != null, promptmessage);
 			clientConnection.sendPacket(packsend);
@@ -294,78 +318,175 @@ public class Player extends LivingEntity implements CommandSender {
 		}
 	}
 	
+	@Deprecated
 	public void setPlayerListHeaderFooter(BaseComponent[] header, BaseComponent[] footer) {
+		sendPlayerListHeaderAndFooter(header == null ? Component.empty() : BungeecordAdventureConversionUtils.toComponent(header), footer == null ? Component.empty() : BungeecordAdventureConversionUtils.toComponent(footer));
+	}
+
+	@Deprecated
+	public void setPlayerListHeaderFooter(BaseComponent header, BaseComponent footer) {
+		sendPlayerListHeaderAndFooter(header == null ? Component.empty() : BungeecordAdventureConversionUtils.toComponent(header), footer == null ? Component.empty() : BungeecordAdventureConversionUtils.toComponent(footer));
+	}
+	
+	public void setPlayerListHeaderFooter(String header, String footer) {
+		sendPlayerListHeaderAndFooter(header == null ? Component.empty() : LegacyComponentSerializer.legacySection().deserialize(header), footer == null ? Component.empty() : LegacyComponentSerializer.legacySection().deserialize(footer));
+	}
+	
+	@Deprecated
+	public void setTitle(BaseComponent[] title) {
+		sendTitlePart(TitlePart.TITLE, BungeecordAdventureConversionUtils.toComponent(title));
+	}
+	
+	@Deprecated
+	public void setTitle(BaseComponent title) {
+		sendTitlePart(TitlePart.TITLE, BungeecordAdventureConversionUtils.toComponent(title));
+	}
+	
+	public void setTitle(String title) {
+		sendTitlePart(TitlePart.TITLE, LegacyComponentSerializer.legacySection().deserialize(title));
+	}
+	
+	@Deprecated
+	public void setSubTitle(BaseComponent[] subTitle) {
+		sendTitlePart(TitlePart.SUBTITLE, BungeecordAdventureConversionUtils.toComponent(subTitle));
+	}
+	
+	@Deprecated
+	public void setSubTitle(BaseComponent subTitle) {
+		sendTitlePart(TitlePart.SUBTITLE, BungeecordAdventureConversionUtils.toComponent(subTitle));
+	}
+	
+	public void setSubTitle(String subTitle) {
+		sendTitlePart(TitlePart.SUBTITLE, LegacyComponentSerializer.legacySection().deserialize(subTitle));
+	}
+	
+	public void setTitleTimer(int fadeIn, int stay, int fadeOut) {
+		sendTitlePart(TitlePart.TIMES, Title.Times.of(Duration.ofMillis(fadeIn * 50), Duration.ofMillis(stay * 50), Duration.ofMillis(fadeOut * 50)));
+	}
+	
+	@Deprecated
+	public void setTitleSubTitle(BaseComponent[] title, BaseComponent[] subTitle, int fadeIn, int stay, int fadeOut) {
+		setTitleTimer(fadeIn, stay, fadeOut);
+		setTitle(title);
+		setSubTitle(subTitle);
+	}
+	
+	@Deprecated
+	public void setTitleSubTitle(BaseComponent title, BaseComponent subTitle, int fadeIn, int stay, int fadeOut) {
+		setTitleSubTitle(new BaseComponent[] {title}, new BaseComponent[] {subTitle}, fadeIn, stay, fadeOut);
+	}
+	
+	@Deprecated
+	public void setTitleSubTitle(String title, String subTitle, int fadeIn, int stay, int fadeOut) {
+		setTitleSubTitle(new BaseComponent[] {new TextComponent(title)}, new BaseComponent[] {new TextComponent(subTitle)}, fadeIn, stay, fadeOut);
+	}
+
+	@Override
+	public void sendMessage(Identity source, Component message, MessageType type) {
 		try {
-			PacketPlayOutPlayerListHeaderFooter packsend = new PacketPlayOutPlayerListHeaderFooter(header == null ? EMPTY_CHAT_COMPONENT : header, footer == null ? EMPTY_CHAT_COMPONENT : footer);
+			PacketPlayOutChat chat = new PacketPlayOutChat(message, 0, uuid);
+			clientConnection.sendPacket(chat);
+		} catch (IOException e) {}
+	}
+
+	@Override
+	public void openBook(Book book) {
+		throw new UnsupportedOperationException("This function has not been implemented yet.");
+	}
+
+	@Override
+	public void stopSound(SoundStop stop) {
+		throw new UnsupportedOperationException("This function has not been implemented yet.");
+	}
+
+	@Override
+	public void playSound(Sound sound, Emitter emitter) {
+		throw new UnsupportedOperationException("This function has not been implemented yet.");
+	}
+
+	@Override
+	public void playSound(Sound sound, double x, double y, double z) {
+		throw new UnsupportedOperationException("This function has not been implemented yet.");
+	}
+
+	@Override
+	public void playSound(Sound sound) {
+		throw new UnsupportedOperationException("This function has not been implemented yet.");
+	}
+
+	@Override
+	public void sendActionBar(Component message) {
+		try {
+			PacketPlayOutChat chat = new PacketPlayOutChat(message, 2, new UUID(0, 0));
+			clientConnection.sendPacket(chat);
+		} catch (IOException e) {}
+	}
+
+	@Override
+	public void sendPlayerListHeaderAndFooter(Component header, Component footer) {
+		try {
+			PacketPlayOutPlayerListHeaderFooter packsend = new PacketPlayOutPlayerListHeaderFooter(header, footer);
 			clientConnection.sendPacket(packsend);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void setPlayerListHeaderFooter(BaseComponent header, BaseComponent footer) {
-		setPlayerListHeaderFooter(header == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {header}, footer == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {footer});
+	@Override
+	public <T> void sendTitlePart(TitlePart<T> part, T value) {
+		if (part.equals(TitlePart.TITLE)) {
+			try {
+				ClientboundSetTitleTextPacket setTitle = new ClientboundSetTitleTextPacket((Component) value);
+				clientConnection.sendPacket(setTitle);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else if (part.equals(TitlePart.SUBTITLE)) {
+			try {
+				ClientboundSetSubtitleTextPacket setSubTitle = new ClientboundSetSubtitleTextPacket((Component) value);
+				clientConnection.sendPacket(setSubTitle);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else if (part.equals(TitlePart.TIMES)) {
+			try {
+				Title.Times times = (Times) value;
+				ClientboundSetTitlesAnimationPacket setSubTitle = new ClientboundSetTitlesAnimationPacket((int) (times.fadeIn().toMillis() / 50), (int) (times.stay().toMillis() / 50), (int) (times.fadeOut().toMillis() / 50));
+				clientConnection.sendPacket(setSubTitle);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
-	
-	public void setPlayerListHeaderFooter(String header, String footer) {
-		setPlayerListHeaderFooter(header == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {new TextComponent(header)}, footer == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {new TextComponent(footer)});
-	}
-	
-	public void setTitle(BaseComponent[] title) {
+
+	@Override
+	public void clearTitle() {
 		try {
-			PacketPlayOutSetTitleText setTitle = new PacketPlayOutSetTitleText(title == null ? EMPTY_CHAT_COMPONENT : title);
-			clientConnection.sendPacket(setTitle);
+			ClientboundClearTitlesPacket clearTitle = new ClientboundClearTitlesPacket(false);
+			clientConnection.sendPacket(clearTitle);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public void setTitle(BaseComponent title) {
-		setTitle(title == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {title});
-	}
-	
-	public void setTitle(String title) {
-		setTitle(title == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {new TextComponent(title)});
-	}
-	
-	public void setSubTitle(BaseComponent[] subTitle) {
+
+	@Override
+	public void resetTitle() {
 		try {
-			PacketPlayOutSetTitleSubTitleText setSubTitle = new PacketPlayOutSetTitleSubTitleText(subTitle == null ? EMPTY_CHAT_COMPONENT : subTitle);
-			clientConnection.sendPacket(setSubTitle);
+			ClientboundClearTitlesPacket clearTitle = new ClientboundClearTitlesPacket(true);
+			clientConnection.sendPacket(clearTitle);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public void setSubTitle(BaseComponent subTitle) {
-		setSubTitle(subTitle == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {subTitle});
+
+	@Override
+	public void showBossBar(BossBar bar) {
+		throw new UnsupportedOperationException("This function has not been implemented yet.");
 	}
-	
-	public void setSubTitle(String subTitle) {
-		setSubTitle(subTitle == null ? EMPTY_CHAT_COMPONENT : new BaseComponent[] {new TextComponent(subTitle)});
-	}
-	
-	public void setTitleTimer(Integer fadeIn, Integer stay, Integer fadeOut) {
-		try {
-			PacketPlayOutSetTitleTimes setTitleTimes = new PacketPlayOutSetTitleTimes(fadeIn, stay, fadeOut);
-			clientConnection.sendPacket(setTitleTimes);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void setTitleSubTitle(BaseComponent[] title, BaseComponent[] subTitle, Integer fadeIn, Integer stay, Integer fadeOut) {
-		setTitleTimer(fadeIn, stay, fadeOut);
-		setTitle(title);
-		setSubTitle(subTitle);
-	}
-	
-	public void setTitleSubTitle(BaseComponent title, BaseComponent subTitle, Integer fadeIn, Integer stay, Integer fadeOut) {
-		setTitleSubTitle(new BaseComponent[] {title}, new BaseComponent[] {subTitle}, fadeIn, stay, fadeOut);
-	}
-	
-	public void setTitleSubTitle(String title, String subTitle, Integer fadeIn, Integer stay, Integer fadeOut) {
-		setTitleSubTitle(new BaseComponent[] {new TextComponent(title)}, new BaseComponent[] {new TextComponent(subTitle)}, fadeIn, stay, fadeOut);
+
+	@Override
+	public void hideBossBar(BossBar bar) {
+		throw new UnsupportedOperationException("This function has not been implemented yet.");
 	}
 	
 }

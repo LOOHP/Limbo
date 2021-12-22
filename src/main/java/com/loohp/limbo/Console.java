@@ -34,6 +34,16 @@ import com.loohp.limbo.consolegui.ConsoleTextOutput;
 import com.loohp.limbo.utils.CustomStringUtils;
 
 import jline.console.ConsoleReader;
+import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.inventory.Book;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.sound.Sound.Emitter;
+import net.kyori.adventure.sound.SoundStop;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.title.TitlePart;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 
@@ -113,11 +123,13 @@ public class Console implements CommandSender {
 		return Limbo.getInstance().getPermissionsManager().hasPermission(this, permission);
 	}
 	
+	@Deprecated
 	@Override
 	public void sendMessage(BaseComponent component, UUID uuid) {
 		sendMessage(component);
 	}
 	
+	@Deprecated
 	@Override
 	public void sendMessage(BaseComponent[] component, UUID uuid) {
 		sendMessage(component);
@@ -128,14 +140,81 @@ public class Console implements CommandSender {
 		sendMessage(message);
 	}
 
+	@Deprecated
 	@Override
 	public void sendMessage(BaseComponent component) {
 		sendMessage(new BaseComponent[] {component});
 	}
 	
+	@Deprecated
 	@Override
 	public void sendMessage(BaseComponent[] component) {
 		sendMessage(String.join("", Arrays.asList(component).stream().map(each -> each.toLegacyText()).collect(Collectors.toList())));
+	}
+	
+	@Override
+	public void sendMessage(Identity source, Component message, MessageType type) {
+		sendMessage(PlainTextComponentSerializer.plainText().serialize(message));
+	}
+
+	@Override
+	public void openBook(Book book) {
+		//ignore
+	}
+
+	@Override
+	public void stopSound(SoundStop stop) {
+		//ignore
+	}
+
+	@Override
+	public void playSound(Sound sound, Emitter emitter) {
+		//ignore
+	}
+
+	@Override
+	public void playSound(Sound sound, double x, double y, double z) {
+		//ignore
+	}
+
+	@Override
+	public void playSound(Sound sound) {
+		//ignore
+	}
+
+	@Override
+	public void sendActionBar(Component message) {
+		//ignore
+	}
+
+	@Override
+	public void sendPlayerListHeaderAndFooter(Component header, Component footer) {
+		//ignore
+	}
+
+	@Override
+	public <T> void sendTitlePart(TitlePart<T> part, T value) {
+		//ignore
+	}
+
+	@Override
+	public void clearTitle() {
+		//ignore
+	}
+
+	@Override
+	public void resetTitle() {
+		//ignore
+	}
+
+	@Override
+	public void showBossBar(BossBar bar) {
+		//ignore
+	}
+
+	@Override
+	public void hideBossBar(BossBar bar) {
+		//ignore
 	}
 	
 	@Override

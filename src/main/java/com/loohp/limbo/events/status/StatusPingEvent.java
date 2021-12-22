@@ -3,21 +3,21 @@ package com.loohp.limbo.events.status;
 import java.awt.image.BufferedImage;
 
 import com.loohp.limbo.events.Event;
-import com.loohp.limbo.server.ClientConnection;
+import com.loohp.limbo.network.ClientConnection;
 
-import net.md_5.bungee.api.chat.BaseComponent;
+import net.kyori.adventure.text.Component;
 
 public class StatusPingEvent extends Event {
 
 	private ClientConnection connection;
 	private String version;
 	private int protocol;
-	private BaseComponent[] motd;
+	private Component motd;
 	private int maxPlayers;
 	private int playersOnline;
 	private BufferedImage favicon;
 
-	public StatusPingEvent(ClientConnection connection, String version, int protocol, BaseComponent[] motd, int maxPlayers, int playersOnline, BufferedImage favicon) {
+	public StatusPingEvent(ClientConnection connection, String version, int protocol, Component motd, int maxPlayers, int playersOnline, BufferedImage favicon) {
 		this.connection = connection;
 		this.version = version;
 		this.protocol = protocol;
@@ -47,11 +47,11 @@ public class StatusPingEvent extends Event {
 		this.protocol = protocol;
 	}
 
-	public BaseComponent[] getMotd() {
+	public Component getMotd() {
 		return motd;
 	}
 
-	public void setMotd(BaseComponent[] motd) {
+	public void setMotd(Component motd) {
 		this.motd = motd;
 	}
 

@@ -17,9 +17,9 @@ import com.loohp.limbo.entity.DataWatcher.WatchableObject;
 import com.loohp.limbo.entity.Entity;
 import com.loohp.limbo.entity.EntityType;
 import com.loohp.limbo.location.Location;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutEntityDestroy;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutEntityMetadata;
 import com.loohp.limbo.player.Player;
-import com.loohp.limbo.server.packets.PacketPlayOutEntityDestroy;
-import com.loohp.limbo.server.packets.PacketPlayOutEntityMetadata;
 import com.loohp.limbo.utils.SchematicConvertionUtils;
 
 import net.querz.mca.Chunk;

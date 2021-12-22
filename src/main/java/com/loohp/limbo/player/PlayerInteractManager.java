@@ -13,12 +13,12 @@ import java.util.stream.Collectors;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.entity.Entity;
 import com.loohp.limbo.location.Location;
-import com.loohp.limbo.server.packets.ClientboundLevelChunkWithLightPacket;
-import com.loohp.limbo.server.packets.PacketPlayOutEntityDestroy;
-import com.loohp.limbo.server.packets.PacketPlayOutEntityMetadata;
-import com.loohp.limbo.server.packets.PacketPlayOutSpawnEntity;
-import com.loohp.limbo.server.packets.PacketPlayOutSpawnEntityLiving;
-import com.loohp.limbo.server.packets.PacketPlayOutUnloadChunk;
+import com.loohp.limbo.network.protocol.packets.ClientboundLevelChunkWithLightPacket;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutEntityDestroy;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutEntityMetadata;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutSpawnEntity;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutSpawnEntityLiving;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutUnloadChunk;
 import com.loohp.limbo.world.ChunkPosition;
 import com.loohp.limbo.world.World;
 

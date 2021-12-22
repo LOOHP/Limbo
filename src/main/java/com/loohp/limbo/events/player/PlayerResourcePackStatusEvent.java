@@ -1,7 +1,7 @@
 package com.loohp.limbo.events.player;
 
+import com.loohp.limbo.network.protocol.packets.PacketPlayInResourcePackStatus.EnumResourcePackStatus;
 import com.loohp.limbo.player.Player;
-import com.loohp.limbo.server.packets.PacketPlayInResourcePackStatus.EnumResourcePackStatus;
 
 public class PlayerResourcePackStatusEvent extends PlayerEvent {
 	

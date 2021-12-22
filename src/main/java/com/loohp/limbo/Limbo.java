@@ -43,16 +43,16 @@ import com.loohp.limbo.events.EventsManager;
 import com.loohp.limbo.file.ServerProperties;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.metrics.Metrics;
+import com.loohp.limbo.network.ServerConnection;
+import com.loohp.limbo.network.protocol.packets.Packet;
+import com.loohp.limbo.network.protocol.packets.PacketIn;
+import com.loohp.limbo.network.protocol.packets.PacketOut;
 import com.loohp.limbo.permissions.PermissionsManager;
 import com.loohp.limbo.player.Player;
 import com.loohp.limbo.plugins.LimboPlugin;
 import com.loohp.limbo.plugins.PluginManager;
 import com.loohp.limbo.scheduler.LimboScheduler;
 import com.loohp.limbo.scheduler.Tick;
-import com.loohp.limbo.server.ServerConnection;
-import com.loohp.limbo.server.packets.Packet;
-import com.loohp.limbo.server.packets.PacketIn;
-import com.loohp.limbo.server.packets.PacketOut;
 import com.loohp.limbo.utils.CustomStringUtils;
 import com.loohp.limbo.utils.ImageUtils;
 import com.loohp.limbo.utils.NetworkUtils;
@@ -61,8 +61,9 @@ import com.loohp.limbo.world.Environment;
 import com.loohp.limbo.world.Schematic;
 import com.loohp.limbo.world.World;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.tag.CompoundTag;
 
@@ -106,7 +107,7 @@ public class Limbo {
 	
 	//===========================
 	
-	public final String serverImplementationVersion = "1.18";
+	public final String serverImplementationVersion = "1.18.1";
 	public final int serverImplmentationProtocol = 757;
 	public final String limboImplementationVersion;
 	
@@ -456,7 +457,7 @@ public class Limbo {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public String buildServerListResponseJson(String version, int protocol, BaseComponent[] motd, int maxPlayers, int playersOnline, BufferedImage favicon) throws IOException {
+	public String buildServerListResponseJson(String version, int protocol, Component motd, int maxPlayers, int playersOnline, BufferedImage favicon) throws IOException {
 		JSONObject json = new JSONObject();
 
 		JSONObject versionJson = new JSONObject();
@@ -491,12 +492,12 @@ public class Limbo {
     	
     	Gson g = new GsonBuilder().create();
 
-    	return g.toJson(treeMap).replace("\"%MOTD%\"", ComponentSerializer.toString(motd));
+    	return g.toJson(treeMap).replace("\"%MOTD%\"", GsonComponentSerializer.gson().serialize(motd));
 	}
 	
-	public String buildLegacyPingResponse(String version, BaseComponent[] motd, int maxPlayers, int playersOnline) {
+	public String buildLegacyPingResponse(String version, Component motd, int maxPlayers, int playersOnline) {
 		String begin = "§1";
-		return String.join("\00", begin, "127", version, String.join("", Arrays.asList(motd).stream().map(each -> each.toLegacyText()).collect(Collectors.toList())), String.valueOf(playersOnline), String.valueOf(maxPlayers));
+		return String.join("\00", begin, "127", version, String.join("", Arrays.asList(motd).stream().map(each -> LegacyComponentSerializer.legacySection().serialize(each)).collect(Collectors.toList())), String.valueOf(playersOnline), String.valueOf(maxPlayers));
 	}
 	
 	protected void terminate() {

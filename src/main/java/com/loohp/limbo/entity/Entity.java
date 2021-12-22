@@ -6,10 +6,12 @@ import com.loohp.limbo.Limbo;
 import com.loohp.limbo.entity.DataWatcher.WatchableField;
 import com.loohp.limbo.entity.DataWatcher.WatchableObjectType;
 import com.loohp.limbo.location.Location;
+import com.loohp.limbo.utils.BungeecordAdventureConversionUtils;
 import com.loohp.limbo.world.World;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 
 public abstract class Entity {
 	
@@ -32,7 +34,7 @@ public abstract class Entity {
 	@WatchableField(MetadataIndex = 1, WatchableObjectType = WatchableObjectType.VARINT) 
 	protected int air = 300;
 	@WatchableField(MetadataIndex = 2, WatchableObjectType = WatchableObjectType.CHAT, IsOptional = true) 
-	protected BaseComponent[] customName = null;
+	protected Component customName = null;
 	@WatchableField(MetadataIndex = 3, WatchableObjectType = WatchableObjectType.BOOLEAN) 
 	protected boolean customNameVisible = false;
 	@WatchableField(MetadataIndex = 4, WatchableObjectType = WatchableObjectType.BOOLEAN) 
@@ -100,20 +102,26 @@ public abstract class Entity {
 		this.pitch = location.getPitch();
 	}
 	
-	public BaseComponent[] getCustomName() {
+	public Component getCustomName() {
 		return customName;
 	}
 	
 	public void setCustomName(String name) {
-		this.customName = name == null ? null : new BaseComponent[] {new TextComponent(name)};
+		this.customName = name == null ? null : LegacyComponentSerializer.legacySection().deserialize(name);
 	}
 	
+	public void setCustomName(Component component) {
+		this.customName = component;
+	}
+	
+	@Deprecated
 	public void setCustomName(BaseComponent component) {
-		this.customName = component == null ? null : new BaseComponent[] {component};
+		setCustomName(component == null ? null : BungeecordAdventureConversionUtils.toComponent(component));
 	}
 	
+	@Deprecated
 	public void setCustomName(BaseComponent[] components) {
-		this.customName = components;
+		setCustomName(components == null ? null : BungeecordAdventureConversionUtils.toComponent(components));
 	}
 
 	public boolean isOnFire() {
