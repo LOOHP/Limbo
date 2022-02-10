@@ -10,6 +10,7 @@ import com.loohp.limbo.events.player.PlayerSelectedSlotChangeEvent;
 import com.loohp.limbo.events.status.StatusPingEvent;
 import com.loohp.limbo.file.ServerProperties;
 import com.loohp.limbo.location.Location;
+import com.loohp.limbo.network.protocol.packets.Packet;
 import com.loohp.limbo.network.protocol.packets.PacketHandshakingIn;
 import com.loohp.limbo.network.protocol.packets.PacketIn;
 import com.loohp.limbo.network.protocol.packets.PacketLoginInLoginStart;
@@ -60,6 +61,7 @@ import com.loohp.limbo.utils.ForwardingUtils;
 import com.loohp.limbo.utils.GameMode;
 import com.loohp.limbo.utils.MojangAPIUtils;
 import com.loohp.limbo.utils.MojangAPIUtils.SkinResponse;
+import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.world.BlockPosition;
 import com.loohp.limbo.world.World;
 import net.kyori.adventure.text.Component;
@@ -71,9 +73,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -89,11 +93,14 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ClientConnection extends Thread {
 
+    private static final NamespacedKey DEFAULT_HANDLER_NAMESPACE = new NamespacedKey("default");
+
     private final Random random = new Random();
-    private final Socket client_socket;
+    private final Socket clientSocket;
     protected Channel channel;
     private boolean running;
     private ClientState state;
@@ -105,12 +112,12 @@ public class ClientConnection extends Thread {
     private InetAddress inetAddress;
     private boolean ready;
 
-    public ClientConnection(Socket client_socket) {
-        this.client_socket = client_socket;
-        this.inetAddress = client_socket.getInetAddress();
+    public ClientConnection(Socket clientSocket) {
+        this.clientSocket = clientSocket;
+        this.inetAddress = clientSocket.getInetAddress();
         this.lastPacketTimestamp = new AtomicLong(-1);
         this.lastKeepAlivePayLoad = new AtomicLong(-1);
-        this.channel = new Channel(this, null, null);
+        this.channel = null;
         this.running = false;
         this.ready = false;
     }
@@ -148,7 +155,7 @@ public class ClientConnection extends Thread {
     }
 
     public Socket getSocket() {
-        return client_socket;
+        return clientSocket;
     }
 
     public Channel getChannel() {
@@ -180,7 +187,7 @@ public class ClientConnection extends Thread {
         } catch (IOException ignored) {
         }
         try {
-            client_socket.close();
+            clientSocket.close();
         } catch (IOException ignored) {
         }
     }
@@ -196,9 +203,62 @@ public class ClientConnection extends Thread {
         } catch (IOException ignored) {
         }
         try {
-            client_socket.close();
+            clientSocket.close();
         } catch (IOException ignored) {
         }
+    }
+
+    private void setChannel(DataInputStream input, DataOutputStream output) {
+        this.channel = new Channel(input, output);
+
+        this.channel.addHandlerBefore(DEFAULT_HANDLER_NAMESPACE, new ChannelPacketHandler() {
+            @Override
+            public ChannelPacketRead read(ChannelPacketRead read) {
+                if (read.hasReadPacket()) {
+                    return super.read(read);
+                }
+                try {
+                    DataInput input = read.getDataInput();
+                    int size = read.getSize();
+                    int packetId = read.getPacketId();
+                    Class<? extends PacketIn> packetType;
+                    switch (state) {
+                        case HANDSHAKE:
+                            packetType = Packet.getHandshakeIn().get(packetId);
+                            break;
+                        case STATUS:
+                            packetType = Packet.getStatusIn().get(packetId);
+                            break;
+                        case LOGIN:
+                            packetType = Packet.getLoginIn().get(packetId);
+                            break;
+                        case PLAY:
+                            packetType = Packet.getPlayIn().get(packetId);
+                            break;
+                        default:
+                            throw new IllegalStateException("Illegal ClientState!");
+                    }
+                    if (packetType == null) {
+                        input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
+                        return null;
+                    }
+                    Constructor<?>[] constructors = packetType.getConstructors();
+                    Constructor<?> constructor = Stream.of(constructors).filter(each -> each.getParameterCount() > 0 && each.getParameterTypes()[0].equals(DataInputStream.class)).findFirst().orElse(null);
+                    if (constructor == null) {
+                        throw new NoSuchMethodException(packetType + " has no valid constructors!");
+                    } else if (constructor.getParameterCount() == 1) {
+                        read.setPacket((PacketIn) constructor.newInstance(input));
+                    } else if (constructor.getParameterCount() == 3) {
+                        read.setPacket((PacketIn) constructor.newInstance(input, size, packetId));
+                    } else {
+                        throw new NoSuchMethodException(packetType + " has no valid constructors!");
+                    }
+                    return super.read(read);
+                } catch (Exception e) {
+                    throw new RuntimeException("Unable to read packet", e);
+                }
+            }
+        });
     }
 
     @SuppressWarnings("deprecation")
@@ -207,16 +267,15 @@ public class ClientConnection extends Thread {
         running = true;
         state = ClientState.HANDSHAKE;
         try {
-            client_socket.setKeepAlive(true);
-            channel.input = new DataInputStream(client_socket.getInputStream());
-            channel.output = new DataOutputStream(client_socket.getOutputStream());
+            clientSocket.setKeepAlive(true);
+            setChannel(new DataInputStream(clientSocket.getInputStream()), new DataOutputStream(clientSocket.getOutputStream()));
             int handShakeSize = DataTypeIO.readVarInt(channel.input);
 
             //legacy ping
             if (handShakeSize == 0xFE) {
                 state = ClientState.LEGACY;
                 channel.output.writeByte(255);
-                String str = inetAddress.getHostName() + ":" + client_socket.getPort();
+                String str = inetAddress.getHostName() + ":" + clientSocket.getPort();
                 Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Legacy Status has pinged");
                 ServerProperties p = Limbo.getInstance().getServerProperties();
                 StatusPingEvent event = Limbo.getInstance().getEventsManager().callEvent(new StatusPingEvent(this, p.getVersionString(), p.getProtocol(), p.getMotd(), p.getMaxPlayers(), Limbo.getInstance().getPlayers().size(), p.getFavicon().orElse(null)));
@@ -226,7 +285,7 @@ public class ClientConnection extends Thread {
                 channel.output.write(bytes);
 
                 channel.close();
-                client_socket.close();
+                clientSocket.close();
                 state = ClientState.DISCONNECTED;
             }
 
@@ -243,10 +302,10 @@ public class ClientConnection extends Thread {
                 switch (handshake.getHandshakeType()) {
                     case STATUS:
                         state = ClientState.STATUS;
-                        while (client_socket.isConnected()) {
+                        while (clientSocket.isConnected()) {
                             PacketIn packetIn = channel.readPacket();
                             if (packetIn instanceof PacketStatusInRequest) {
-                                String str = inetAddress.getHostName() + ":" + client_socket.getPort();
+                                String str = inetAddress.getHostName() + ":" + clientSocket.getPort();
                                 if (Limbo.getInstance().getServerProperties().handshakeVerboseEnabled()) {
                                     Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Handshake Status has pinged");
                                 }
@@ -302,7 +361,7 @@ public class ClientConnection extends Thread {
                         }
 
                         int messageId = this.random.nextInt();
-                        while (client_socket.isConnected()) {
+                        while (clientSocket.isConnected()) {
                             PacketIn packetIn = channel.readPacket();
                             if (packetIn instanceof PacketLoginInLoginStart) {
                                 PacketLoginInLoginStart start = (PacketLoginInLoginStart) packetIn;
@@ -367,7 +426,7 @@ public class ClientConnection extends Thread {
                 }
             } catch (Exception e) {
                 channel.close();
-                client_socket.close();
+                clientSocket.close();
                 state = ClientState.DISCONNECTED;
             }
 
@@ -401,7 +460,7 @@ public class ClientConnection extends Thread {
                 PacketPlayOutPlayerAbilities abilities = new PacketPlayOutPlayerAbilities(0.05F, 0.1F, flags.toArray(new PlayerAbilityFlags[flags.size()]));
                 sendPacket(abilities);
 
-                String str = inetAddress.getHostName() + ":" + client_socket.getPort() + "|" + player.getName() + "(" + player.getUniqueId() + ")";
+                String str = inetAddress.getHostName() + ":" + clientSocket.getPort() + "|" + player.getName() + "(" + player.getUniqueId() + ")";
                 Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had connected to the Limbo server!");
 
                 PacketPlayOutDeclareCommands declare = DeclareCommands.getDeclareCommandsPacket(player);
@@ -465,7 +524,7 @@ public class ClientConnection extends Thread {
                 };
                 new Timer().schedule(keepAliveTask, 5000, 10000);
 
-                while (client_socket.isConnected()) {
+                while (clientSocket.isConnected()) {
                     try {
                         CheckedBiConsumer<PlayerMoveEvent, Location, IOException> processMoveEvent = (event, originalTo) -> {
                             if (event.isCancelled()) {
@@ -565,7 +624,7 @@ public class ClientConnection extends Thread {
 
                 Limbo.getInstance().getEventsManager().callEvent(new PlayerQuitEvent(player));
 
-                str = inetAddress.getHostName() + ":" + client_socket.getPort() + "|" + player.getName();
+                str = inetAddress.getHostName() + ":" + clientSocket.getPort() + "|" + player.getName();
                 Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had disconnected!");
 
             }
@@ -575,7 +634,7 @@ public class ClientConnection extends Thread {
 
         try {
             channel.close();
-            client_socket.close();
+            clientSocket.close();
         } catch (Exception ignored) {
         }
         state = ClientState.DISCONNECTED;

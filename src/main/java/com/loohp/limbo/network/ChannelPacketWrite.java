@@ -6,7 +6,7 @@ public final class ChannelPacketWrite {
 
     private PacketOut packet;
 
-    protected ChannelPacketWrite(PacketOut packet) {
+    ChannelPacketWrite(PacketOut packet) {
         this.packet = packet;
     }
 
