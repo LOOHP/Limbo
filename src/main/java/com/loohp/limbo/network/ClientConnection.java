@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import com.loohp.limbo.network.protocol.packets.PacketIn;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -113,9 +114,8 @@ public class ClientConnection extends Thread {
     private TimerTask keepAliveTask;
     private AtomicLong lastPacketTimestamp;
 	private AtomicLong lastKeepAlivePayLoad;
-	
-	private DataOutputStream output;
-	private DataInputStream input;
+
+	protected Channel channel;
 	
 	private InetAddress inetAddress;
 	
@@ -126,6 +126,7 @@ public class ClientConnection extends Thread {
         this.inetAddress = client_socket.getInetAddress();
         this.lastPacketTimestamp = new AtomicLong(-1);
         this.lastKeepAlivePayLoad = new AtomicLong(-1);
+		this.channel = new Channel(this, null, null);
         this.running = false;
         this.ready = false;
     }
@@ -165,6 +166,10 @@ public class ClientConnection extends Thread {
     public Socket getSocket() {
     	return client_socket;
     }
+
+	public Channel getChannel() {
+		return channel;
+	}
     
 	public boolean isRunning() {
 		return running;
@@ -175,11 +180,9 @@ public class ClientConnection extends Thread {
 	}
 	
 	public synchronized void sendPacket(PacketOut packet) throws IOException {
-		byte[] packetByte = packet.serializePacket();
-		DataTypeIO.writeVarInt(output, packetByte.length);
-		output.write(packetByte);
-		output.flush();
-		setLastPacketTimestamp(System.currentTimeMillis());
+		if (channel.writePacket(packet)) {
+			setLastPacketTimestamp(System.currentTimeMillis());
+		}
 	}
 	
 	public void disconnect(BaseComponent[] reason) {
@@ -190,10 +193,10 @@ public class ClientConnection extends Thread {
 		try {
 			PacketPlayOutDisconnect packet = new PacketPlayOutDisconnect(reason);
 			sendPacket(packet);
-		} catch (IOException e) {}
+		} catch (IOException ignored) {}
 		try {
 			client_socket.close();
-		} catch (IOException e) {}
+		} catch (IOException ignored) {}
 	}
 	
 	private void disconnectDuringLogin(BaseComponent[] reason) {
@@ -204,10 +207,10 @@ public class ClientConnection extends Thread {
 		try {
 			PacketLoginOutDisconnect packet = new PacketLoginOutDisconnect(reason);
 			sendPacket(packet);
-		} catch (IOException e) {}
+		} catch (IOException ignored) {}
 		try {
 			client_socket.close();
-		} catch (IOException e) {}
+		} catch (IOException ignored) {}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -217,31 +220,29 @@ public class ClientConnection extends Thread {
         state = ClientState.HANDSHAKE;
     	try {
     		client_socket.setKeepAlive(true);
-    		input = new DataInputStream(client_socket.getInputStream());
-    		output = new DataOutputStream(client_socket.getOutputStream());
-		    int handShakeSize = DataTypeIO.readVarInt(input);
+    		channel.input = new DataInputStream(client_socket.getInputStream());
+			channel.output = new DataOutputStream(client_socket.getOutputStream());
+		    int handShakeSize = DataTypeIO.readVarInt(channel.input);
 
 		    //legacy ping
 		    if (handShakeSize == 0xFE) {
-		    	state = ClientState.LEGACY;			    
-		    	output.writeByte(255);
+		    	state = ClientState.LEGACY;
+				channel.output.writeByte(255);
 		    	String str = inetAddress.getHostName() + ":" + client_socket.getPort();
 		    	Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Legacy Status has pinged");
 		    	ServerProperties p = Limbo.getInstance().getServerProperties();
 		    	StatusPingEvent event = Limbo.getInstance().getEventsManager().callEvent(new StatusPingEvent(this, p.getVersionString(), p.getProtocol(), p.getMotd(), p.getMaxPlayers(), Limbo.getInstance().getPlayers().size(), p.getFavicon().orElse(null)));
 				String response = Limbo.getInstance().buildLegacyPingResponse(event.getVersion(), event.getMotd(), event.getMaxPlayers(), event.getPlayersOnline());
 				byte[] bytes = response.getBytes(StandardCharsets.UTF_16BE);
-				output.writeShort(response.length());
-				output.write(bytes);
-				
+				channel.output.writeShort(response.length());
+				channel.output.write(bytes);
+
+				channel.close();
 				client_socket.close();
 				state = ClientState.DISCONNECTED;
 		    }
-		    
-		    @SuppressWarnings("unused")
-			int handShakeId = DataTypeIO.readVarInt(input);
-		    
-		    PacketHandshakingIn handshake = new PacketHandshakingIn(input);
+
+		    PacketHandshakingIn handshake = (PacketHandshakingIn) channel.readPacket(handShakeSize);
 		    
 		    boolean isBungeecord = Limbo.getInstance().getServerProperties().isBungeecord();
 		    boolean isBungeeGuard = Limbo.getInstance().getServerProperties().isBungeeGuard();
@@ -255,24 +256,20 @@ public class ClientConnection extends Thread {
 			    case STATUS:
 					state = ClientState.STATUS;
 					while (client_socket.isConnected()) {
-						DataTypeIO.readVarInt(input);
-						int packetId = DataTypeIO.readVarInt(input);
-						Class<? extends Packet> packetType = Packet.getStatusIn().get(packetId);
-						if (packetType == null) {
-							//do nothing
-						} else if (packetType.equals(PacketStatusInRequest.class)) {
+						PacketIn packetIn = channel.readPacket();
+						if (packetIn instanceof PacketStatusInRequest) {
 							String str = inetAddress.getHostName() + ":" + client_socket.getPort();
 							if (Limbo.getInstance().getServerProperties().handshakeVerboseEnabled()) {
 								Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Handshake Status has pinged");
 							}
 							ServerProperties p = Limbo.getInstance().getServerProperties();		
 							StatusPingEvent event = Limbo.getInstance().getEventsManager().callEvent(new StatusPingEvent(this, p.getVersionString(), p.getProtocol(), p.getMotd(), p.getMaxPlayers(), Limbo.getInstance().getPlayers().size(), p.getFavicon().orElse(null)));												
-							PacketStatusOutResponse packet = new PacketStatusOutResponse(Limbo.getInstance().buildServerListResponseJson(event.getVersion(), event.getProtocol(), event.getMotd(), event.getMaxPlayers(), event.getPlayersOnline(), event.getFavicon()));
-							sendPacket(packet);
-						} else if (packetType.equals(PacketStatusInPing.class)) {
-							PacketStatusInPing ping = new PacketStatusInPing(input);
-							PacketStatusOutPong packet = new PacketStatusOutPong(ping.getPayload());
-							sendPacket(packet);
+							PacketStatusOutResponse response = new PacketStatusOutResponse(Limbo.getInstance().buildServerListResponseJson(event.getVersion(), event.getProtocol(), event.getMotd(), event.getMaxPlayers(), event.getPlayersOnline(), event.getFavicon()));
+							sendPacket(response);
+						} else if (packetIn instanceof PacketStatusInPing) {
+							PacketStatusInPing ping = (PacketStatusInPing) packetIn;
+							PacketStatusOutPong pong = new PacketStatusOutPong(ping.getPayload());
+							sendPacket(pong);
 							break;
 						}
 					}
@@ -318,14 +315,9 @@ public class ClientConnection extends Thread {
 
 					int messageId = this.random.nextInt();
 					while (client_socket.isConnected()) {
-						int size = DataTypeIO.readVarInt(input);
-						int packetId = DataTypeIO.readVarInt(input);
-						Class<? extends Packet> packetType = Packet.getLoginIn().get(packetId);
-						
-						if (packetType == null) {
-							input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
-						} else if (packetType.equals(PacketLoginInLoginStart.class)) {
-							PacketLoginInLoginStart start = new PacketLoginInLoginStart(input);
+						PacketIn packetIn = channel.readPacket();
+						if (packetIn instanceof PacketLoginInLoginStart) {
+							PacketLoginInLoginStart start = (PacketLoginInLoginStart) packetIn;
 							String username = start.getUsername();
 
 							if (Limbo.getInstance().getServerProperties().isVelocityModern()) {
@@ -346,8 +338,8 @@ public class ClientConnection extends Thread {
 							Limbo.getInstance().addPlayer(player);
 							
 							break;
-						} else if (packetType.equals(PacketLoginInPluginMessaging.class)) {
-							PacketLoginInPluginMessaging response = new PacketLoginInPluginMessaging(input, size, packetId);
+						} else if (packetIn instanceof PacketLoginInPluginMessaging) {
+							PacketLoginInPluginMessaging response = (PacketLoginInPluginMessaging) packetIn;
 							if (response.getMessageId() != messageId) {
 								disconnectDuringLogin(TextComponent.fromLegacyText("Internal error, messageId did not match"));
 								break;
@@ -375,8 +367,6 @@ public class ClientConnection extends Thread {
 							Limbo.getInstance().addPlayer(player);
 
 							break;
-						} else {
-							input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
 						}
 		    		}
 					
@@ -388,6 +378,7 @@ public class ClientConnection extends Thread {
 					break;
 			    }
 		    } catch (Exception e) {
+				channel.close();
 		    	client_socket.close();
 				state = ClientState.DISCONNECTED;
 		    }
@@ -487,10 +478,6 @@ public class ClientConnection extends Thread {
 
 				while (client_socket.isConnected()) {
 					try {
-						int size = DataTypeIO.readVarInt(input);
-						int packetId = DataTypeIO.readVarInt(input);
-						Class<? extends Packet> packetType = Packet.getPlayIn().get(packetId);
-						//Limbo.getInstance().getConsole().sendMessage(packetId + " -> " + packetType);
 						CheckedBiConsumer<PlayerMoveEvent, Location, IOException> processMoveEvent = (event, originalTo) -> {
 							if (event.isCancelled()) {
 								Location returnTo = event.getFrom();
@@ -508,10 +495,9 @@ public class ClientConnection extends Thread {
 								sendPacket(response);
 							}
 						};
-						if (packetType == null) {
-							input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
-						} else if (packetType.equals(PacketPlayInPositionAndLook.class)) {
-							PacketPlayInPositionAndLook pos = new PacketPlayInPositionAndLook(input);
+						PacketIn packetIn = channel.readPacket();
+						if (packetIn instanceof PacketPlayInPositionAndLook) {
+							PacketPlayInPositionAndLook pos = (PacketPlayInPositionAndLook) packetIn;
 							Location from = player.getLocation();
 							Location to = new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ(), pos.getYaw(), pos.getPitch());
 
@@ -519,8 +505,8 @@ public class ClientConnection extends Thread {
 								PlayerMoveEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerMoveEvent(player, from, to));
 								processMoveEvent.consume(event, to);
 							}
-						} else if (packetType.equals(PacketPlayInPosition.class)) {
-							PacketPlayInPosition pos = new PacketPlayInPosition(input);
+						} else if (packetIn instanceof PacketPlayInPosition) {
+							PacketPlayInPosition pos = (PacketPlayInPosition) packetIn;
 							Location from = player.getLocation();
 							Location to = new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ(), player.getLocation().getYaw(), player.getLocation().getPitch());
 
@@ -528,8 +514,8 @@ public class ClientConnection extends Thread {
 								PlayerMoveEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerMoveEvent(player, from, to));
 								processMoveEvent.consume(event, to);
 							}
-						} else if (packetType.equals(PacketPlayInRotation.class)) {
-							PacketPlayInRotation pos = new PacketPlayInRotation(input);
+						} else if (packetIn instanceof PacketPlayInRotation) {
+							PacketPlayInRotation pos = (PacketPlayInRotation) packetIn;
 							Location from = player.getLocation();
 							Location to = new Location(player.getWorld(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), pos.getYaw(), pos.getPitch());
 
@@ -537,34 +523,32 @@ public class ClientConnection extends Thread {
 								PlayerMoveEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerMoveEvent(player, from, to));
 								processMoveEvent.consume(event, to);
 							}
-						} else if (packetType.equals(PacketPlayInKeepAlive.class)) {
-							PacketPlayInKeepAlive alive = new PacketPlayInKeepAlive(input);
+						} else if (packetIn instanceof PacketPlayInKeepAlive) {
+							PacketPlayInKeepAlive alive = (PacketPlayInKeepAlive) packetIn;
 							if (alive.getPayload() != getLastKeepAlivePayLoad()) {
-								Limbo.getInstance().getConsole().sendMessage("Incorrect Payload recieved in KeepAlive packet for player " + player.getName());
+								Limbo.getInstance().getConsole().sendMessage("Incorrect Payload received in KeepAlive packet for player " + player.getName());
 								break;
 							}
-						} else if (packetType.equals(PacketPlayInTabComplete.class)) {
-							PacketPlayInTabComplete request = new PacketPlayInTabComplete(input);
+						} else if (packetIn instanceof PacketPlayInTabComplete) {
+							PacketPlayInTabComplete request = (PacketPlayInTabComplete) packetIn;
 							String[] command = CustomStringUtils.splitStringToArgs(request.getText().substring(1));
 
-							List<TabCompleteMatches> matches = new ArrayList<TabCompleteMatches>();
-							
-							matches.addAll(Limbo.getInstance().getPluginManager().getTabOptions(player, command).stream().map(each -> new TabCompleteMatches(each)).collect(Collectors.toList()));
-							
+							List<TabCompleteMatches> matches = new ArrayList<TabCompleteMatches>(Limbo.getInstance().getPluginManager().getTabOptions(player, command).stream().map(each -> new TabCompleteMatches(each)).collect(Collectors.toList()));
+
 							int start = CustomStringUtils.getIndexOfArg(request.getText(), command.length - 1) + 1;
 							int length = command[command.length - 1].length();
 							
 							PacketPlayOutTabComplete response = new PacketPlayOutTabComplete(request.getId(), start, length, matches.toArray(new TabCompleteMatches[matches.size()]));
 							sendPacket(response);
-						} else if (packetType.equals(PacketPlayInChat.class)) {
-							PacketPlayInChat chat = new PacketPlayInChat(input);
+						} else if (packetIn instanceof PacketPlayInChat) {
+							PacketPlayInChat chat = (PacketPlayInChat) packetIn;
 							if (chat.getMessage().startsWith("/")) {
 								Limbo.getInstance().dispatchCommand(player, chat.getMessage());
 							} else {
 								player.chat(chat.getMessage(), true);
 							}
-						} else if (packetType.equals(PacketPlayInHeldItemChange.class)) {
-							PacketPlayInHeldItemChange change = new PacketPlayInHeldItemChange(input);
+						} else if (packetIn instanceof PacketPlayInHeldItemChange) {
+							PacketPlayInHeldItemChange change = (PacketPlayInHeldItemChange) packetIn;
 							PlayerSelectedSlotChangeEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerSelectedSlotChangeEvent(player, (byte) change.getSlot()));
 							if (event.isCancelled()) {
 								PacketPlayOutHeldItemChange cancelPacket = new PacketPlayOutHeldItemChange(player.getSelectedSlot());
@@ -577,17 +561,14 @@ public class ClientConnection extends Thread {
 								Limbo.getInstance().getUnsafe().setSelectedSlotSilently(player, event.getSlot());
 							}
 							
-						}  else if (packetType.equals(PacketPlayInResourcePackStatus.class)) {
-							PacketPlayInResourcePackStatus rpcheck = new PacketPlayInResourcePackStatus(input);
+						} else if (packetIn instanceof PacketPlayInResourcePackStatus) {
+							PacketPlayInResourcePackStatus rpcheck = (PacketPlayInResourcePackStatus) packetIn;
 							// Pass on result to the events
 							Limbo.getInstance().getEventsManager().callEvent(new PlayerResourcePackStatusEvent(player, rpcheck.getLoadedValue()));
 							if (rpcheck.getLoadedValue().equals(EnumResourcePackStatus.DECLINED) && properties.getResourcePackRequired()) {
 								player.disconnect(new TranslatableComponent("multiplayer.requiredTexturePrompt.disconnect"));
 							}
-						} else {
-							input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
 						}
-
 					} catch (Exception e) {
 						break;
 					}
@@ -600,11 +581,12 @@ public class ClientConnection extends Thread {
 
 	    	}
 
-    	} catch (Exception e) {}
+    	} catch (Exception ignored) {}
 
     	try {
+			channel.close();
 			client_socket.close();
-		} catch (IOException e) {}
+		} catch (Exception ignored) {}
     	state = ClientState.DISCONNECTED;
 
     	if (player != null) {

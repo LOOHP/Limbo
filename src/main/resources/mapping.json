@@ -46,7 +46,7 @@
     "PacketPlayOutHeldItemChange": "0x48",
     "PacketPlayOutPlayerListHeaderFooter": "0x5F",
     "PacketPlayOutResourcePackSend": "0x3C",
-    "ClientboundSetTitlesAnimationPacket": "0x5B", 
+    "ClientboundSetTitlesAnimationPacket": "0x5B",
     "ClientboundSetTitleTextPacket": "0x5A",
     "ClientboundSetSubtitleTextPacket": "0x58",
     "ClientboundClearTitlesPacket": "0x10"

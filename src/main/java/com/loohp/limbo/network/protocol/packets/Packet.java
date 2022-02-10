@@ -4,71 +4,71 @@ import java.util.Map;
 
 public class Packet {
 
-	private static Map<Integer, Class<? extends PacketIn>> HandshakeIn;
+	private static Map<Integer, Class<? extends PacketIn>> handshakeIn;
 
-	private static Map<Integer, Class<? extends PacketIn>> StatusIn;
-	private static Map<Class<? extends PacketOut>, Integer> StatusOut;
+	private static Map<Integer, Class<? extends PacketIn>> statusIn;
+	private static Map<Class<? extends PacketOut>, Integer> statusOut;
 
-	private static Map<Integer, Class<? extends PacketIn>> LoginIn;
-	private static Map<Class<? extends PacketOut>, Integer> LoginOut;
+	private static Map<Integer, Class<? extends PacketIn>> loginIn;
+	private static Map<Class<? extends PacketOut>, Integer> loginOut;
 
-	private static Map<Integer, Class<? extends PacketIn>> PlayIn;
-	private static Map<Class<? extends PacketOut>, Integer> PlayOut;
+	private static Map<Integer, Class<? extends PacketIn>> playIn;
+	private static Map<Class<? extends PacketOut>, Integer> playOut;
 
 	public static Map<Integer, Class<? extends PacketIn>> getHandshakeIn() {
-		return HandshakeIn;
+		return handshakeIn;
 	}
 
 	public static void setHandshakeIn(Map<Integer, Class<? extends PacketIn>> handshakeIn) {
-		HandshakeIn = handshakeIn;
+		Packet.handshakeIn = handshakeIn;
 	}
 
 	public static Map<Integer, Class<? extends PacketIn>> getStatusIn() {
-		return StatusIn;
+		return statusIn;
 	}
 
 	public static void setStatusIn(Map<Integer, Class<? extends PacketIn>> statusIn) {
-		StatusIn = statusIn;
+		Packet.statusIn = statusIn;
 	}
 
 	public static Map<Class<? extends PacketOut>, Integer> getStatusOut() {
-		return StatusOut;
+		return statusOut;
 	}
 
 	public static void setStatusOut(Map<Class<? extends PacketOut>, Integer> statusOut) {
-		StatusOut = statusOut;
+		Packet.statusOut = statusOut;
 	}
 
 	public static Map<Integer, Class<? extends PacketIn>> getLoginIn() {
-		return LoginIn;
+		return loginIn;
 	}
 
 	public static void setLoginIn(Map<Integer, Class<? extends PacketIn>> loginIn) {
-		LoginIn = loginIn;
+		Packet.loginIn = loginIn;
 	}
 
 	public static Map<Class<? extends PacketOut>, Integer> getLoginOut() {
-		return LoginOut;
+		return loginOut;
 	}
 
 	public static void setLoginOut(Map<Class<? extends PacketOut>, Integer> loginOut) {
-		LoginOut = loginOut;
+		Packet.loginOut = loginOut;
 	}
 
 	public static Map<Integer, Class<? extends PacketIn>> getPlayIn() {
-		return PlayIn;
+		return playIn;
 	}
 
 	public static void setPlayIn(Map<Integer, Class<? extends PacketIn>> playIn) {
-		PlayIn = playIn;
+		Packet.playIn = playIn;
 	}
 
 	public static Map<Class<? extends PacketOut>, Integer> getPlayOut() {
-		return PlayOut;
+		return playOut;
 	}
 
 	public static void setPlayOut(Map<Class<? extends PacketOut>, Integer> playOut) {
-		PlayOut = playOut;
+		Packet.playOut = playOut;
 	}
 
 }

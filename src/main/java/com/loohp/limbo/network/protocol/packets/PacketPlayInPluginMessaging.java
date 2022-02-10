@@ -22,7 +22,7 @@ public class PacketPlayInPluginMessaging extends PacketIn {
 		channel = new NamespacedKey(rawChannel);
 		int dataLength = packetLength - DataTypeIO.getVarIntLength(packetId) - DataTypeIO.getStringLength(rawChannel, StandardCharsets.UTF_8);
 		data = new byte[dataLength];
-		in.read(data);
+		in.readFully(data);
 	}
 
 	public NamespacedKey getChannel() {
