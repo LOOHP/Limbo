@@ -38,15 +38,15 @@ public class Channel implements AutoCloseable {
         }
     }
 
-    public void addBefore(NamespacedKey key, ChannelPacketHandler handler) {
+    public void addHandlerBefore(NamespacedKey key, ChannelPacketHandler handler) {
         handlers.add(0, new Pair<>(key, handler));
     }
 
-    public void addAfter(NamespacedKey key, ChannelPacketHandler handler) {
+    public void addHandlerAfter(NamespacedKey key, ChannelPacketHandler handler) {
         handlers.add(new Pair<>(key, handler));
     }
 
-    public void remove(NamespacedKey key) {
+    public void removeHandler(NamespacedKey key) {
         handlers.removeIf(each -> each.getFirst().equals(key));
     }
 
