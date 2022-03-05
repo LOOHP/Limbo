@@ -482,12 +482,12 @@ public class ClientConnection extends Thread {
                 String str = inetAddress.getHostName() + ":" + clientSocket.getPort() + "|" + player.getName() + "(" + player.getUniqueId() + ")";
                 Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had connected to the Limbo server!");
 
+                player.playerInteractManager.update();
+
                 PacketPlayOutDeclareCommands declare = DeclareCommands.getDeclareCommandsPacket(player);
                 if (declare != null) {
                     sendPacket(declare);
                 }
-
-                player.playerInteractManager.update();
 
                 PacketPlayOutSpawnPosition spawnPos = new PacketPlayOutSpawnPosition(BlockPosition.from(worldSpawn), worldSpawn.getPitch());
                 sendPacket(spawnPos);
@@ -665,7 +665,7 @@ public class ClientConnection extends Thread {
         running = false;
     }
 
-    public static enum ClientState {
+    public enum ClientState {
         LEGACY,
         HANDSHAKE,
         STATUS,

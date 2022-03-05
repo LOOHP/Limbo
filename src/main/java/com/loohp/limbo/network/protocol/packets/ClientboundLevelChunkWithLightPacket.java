@@ -53,18 +53,16 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 	private long[] blockLightBitMasksEmpty;
 	private List<Byte[]> skylightArrays;
 	private List<Byte[]> blocklightArrays;
-	
+
 	public ClientboundLevelChunkWithLightPacket(int chunkX, int chunkZ, Chunk chunk, Environment environment, boolean trustEdges, List<Byte[]> skylightArrays, List<Byte[]> blocklightArrays) {
 		this.chunkX = chunkX;
 		this.chunkZ = chunkZ;
 		this.chunk = chunk;
 		this.environment = environment;
-		this.chunkX = chunkX;
-		this.chunkZ = chunkZ;
 		this.trustEdges = trustEdges;
 		this.skylightArrays = skylightArrays;
 		this.blocklightArrays = blocklightArrays;
-		
+
 		BitSet skyLightBitSet = new BitSet();
 		BitSet skyLightBitSetInverse = new BitSet();
 		for (int i = Math.min(17, skylightArrays.size() - 1); i >= 0; i--) {
@@ -73,7 +71,7 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 		}
 		skyLightBitMasks = skyLightBitSet.toLongArray();
 		skyLightBitMasksEmpty = skyLightBitSetInverse.toLongArray();
-		
+
 		BitSet blockLightBitSet = new BitSet();
 		BitSet blockLightBitSetInverse = new BitSet();
 		for (int i = Math.min(17, blocklightArrays.size() - 1); i >= 0; i--) {
@@ -87,7 +85,7 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 	public Chunk getChunk() {
 		return chunk;
 	}
-	
+
 	public int getChunkX() {
 		return chunkX;
 	}
@@ -95,11 +93,11 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 	public int getChunkZ() {
 		return chunkZ;
 	}
-	
+
 	public Environment getEnvironment() {
 		return environment;
 	}
-	
+
 	public boolean isTrustEdges() {
 		return trustEdges;
 	}
@@ -123,20 +121,20 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 	@Override
 	public byte[] serializePacket() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-		
+
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(Packet.getPlayOut().get(getClass()));
-		
+
 		output.writeInt(chunkX);
 		output.writeInt(chunkZ);
 		DataTypeIO.writeCompoundTag(output, chunk.getHeightMaps());
-		
+
 		ByteArrayOutputStream dataBuffer = new ByteArrayOutputStream();
 		DataOutputStream dataOut = new DataOutputStream(dataBuffer);
 		for (int i = 0; i < 16; i++) {
 			Section section = chunk.getSection(i);
 			if (section != null) {
-				int counter = 0;
+				short counter = 0;
 				for (int x = 0; x < 16; x++) {
 					for (int z = 0; z < 16; z++) {
 						for (int y = 0; y < 16; y++) {
@@ -146,44 +144,33 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 							}
 						}
 					}
-				}				
+				}
 				dataOut.writeShort(counter);
 
 				int newBits = 32 - Integer.numberOfLeadingZeros(section.getPalette().size() - 1);
 				newBits = Math.max(newBits, 4);
 				//Limbo.getInstance().getConsole().sendMessage(i + " " + newBits);
 				if (newBits <= 8) {
-					/*
-					if (newBits == 4) {
-						dataOut.writeByte(4);
-					} else {
-						newBits = 8;
-						ChunkDataUtils.adjustBlockStateBits(newBits, section, chunk.getDataVersion());
-						dataOut.writeByte(8);
-					}
-					*/
 					dataOut.writeByte(newBits);
-					
+
 					DataTypeIO.writeVarInt(dataOut, section.getPalette().size());
 					//Limbo.getInstance().getConsole().sendMessage(section.getPalette().size());
-					Iterator<CompoundTag> itr1 = section.getPalette().iterator();
 					//Limbo.getInstance().getConsole().sendMessage("Nonnull -> " + i + " " + newBits);
-					while (itr1.hasNext()) {
-						CompoundTag tag = itr1.next();
+					for (CompoundTag tag : section.getPalette()) {
 						DataTypeIO.writeVarInt(dataOut, GeneratedBlockDataMappings.getGlobalPaletteIDFromState(tag));
 						//Limbo.getInstance().getConsole().sendMessage(tag + " -> " + GeneratedDataUtils.getGlobalPaletteIDFromState(tag));
 					}
-					
+
 					BitSet bits = BitSet.valueOf(section.getBlockStates());
 					int shift = 64 % newBits;
 					int longsNeeded = (int) Math.ceil(4096 / (double) (64 / newBits));
 					for (int u = 64; u <= bits.length(); u += 64) {
 						bits = BitsUtils.shiftAfter(bits, u - shift, shift);
 					}
-					
-					long[] formattedLongs = bits.toLongArray(); 
+
+					long[] formattedLongs = bits.toLongArray();
 					//Limbo.getInstance().getConsole().sendMessage(longsNeeded + "");
-					
+
 					DataTypeIO.writeVarInt(dataOut, longsNeeded);
 					for (int u = 0; u < longsNeeded; u++) {
 						if (u < formattedLongs.length) {
@@ -221,7 +208,7 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 							}
 							int id = list.isEmpty() ? 0 : list.remove(0);
 							currentLong = currentLong << 15;
-							currentLong |= (long) id;
+							currentLong |= id;
 						}
 						DataTypeIO.writeVarInt(dataOut, longsNeeded);
 						for (int j = 0; j < longsNeeded; j++) {
@@ -255,24 +242,24 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 			DataTypeIO.writeVarInt(dataOut, biome);
 			DataTypeIO.writeVarInt(dataOut, 0);
 		}
-		
+
 		byte[] data = dataBuffer.toByteArray();
 		DataTypeIO.writeVarInt(output, data.length);
 		output.write(data);
-		
+
 		ListTag<CompoundTag> tileEntities = chunk.getTileEntities();
 		DataTypeIO.writeVarInt(output, tileEntities.size());
 		for (CompoundTag each : tileEntities) {
 			int x = each.getInt("x") % 16;
 			int y = each.getInt("y");
 			int z = each.getInt("z") % 16;
-			output.writeByte((x << 4) | z);
+			output.writeByte(((x & 15) << 4) | (z & 15));
 			output.writeShort(y);
 			Integer id = Registry.BLOCK_ENTITY_TYPE.getId(new NamespacedKey(chunk.getBlockStateAt(x, y, z).getString("Name")));
 			DataTypeIO.writeVarInt(output, id == null ? -1 : id);
 			DataTypeIO.writeCompoundTag(output, each);
 		}
-		
+
 		output.writeBoolean(trustEdges);
 		DataTypeIO.writeVarInt(output, skyLightBitMasks.length);
 		for (long l : skyLightBitMasks) {
@@ -290,7 +277,7 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 		for (long l : blockLightBitMasksEmpty) {
 			output.writeLong(l);
 		}
-		
+
 		DataTypeIO.writeVarInt(output, skylightArrays.stream().mapToInt(each -> each == null ? 0 : 1).sum());
 		for (int i = skylightArrays.size() - 1; i >= 0; i--) {
 			Byte[] array = skylightArrays.get(i);
@@ -302,7 +289,7 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 				}
 			}
 		}
-		
+
 		DataTypeIO.writeVarInt(output, blocklightArrays.stream().mapToInt(each -> each == null ? 0 : 1).sum());
 		for (int i = blocklightArrays.size() - 1; i >= 0; i--) {
 			Byte[] array = blocklightArrays.get(i);
@@ -314,7 +301,7 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 				}
 			}
 		}
-		
+
 		return buffer.toByteArray();
 	}
 
