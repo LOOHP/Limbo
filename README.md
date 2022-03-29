@@ -14,6 +14,7 @@ Put the world schem file in the same folder as the server jar file and configura
 ```
 IP: mc.loohpjames.com
 ```
+![Server Banner](https://api.loohpjames.com/serverbanner.png?ip=mc.loohpjames.com&width=918&name=IP:%20mc.loohpjames.com)
 ***
 ### Downloads (1.17.1-1.18.2)
 - [Jenkins](http://ci.loohpjames.com/job/Limbo/)
