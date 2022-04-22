@@ -32,7 +32,7 @@ public class NamespacedKey {
 			this.namespace = namespacedKey.substring(0, index);
 			this.key = namespacedKey.substring(index + 1);
 		} else {
-			this.namespace = "minecraft";
+			this.namespace = MINECRAFT_KEY;
 			this.key = namespacedKey;
 		}
 	}

@@ -87,7 +87,9 @@ import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.tag.CompoundTag;
 
 public class Limbo {
-	
+
+	public static final String LIMBO_BRAND = "Limbo";
+
 	private static Limbo instance;
 	public static boolean noGui = false;
 	

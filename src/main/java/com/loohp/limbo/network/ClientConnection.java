@@ -60,6 +60,7 @@ import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerInfo;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerInfo.PlayerInfoAction;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerInfo.PlayerInfoData.PlayerInfoDataAddPlayer.PlayerSkinProperty;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutPluginMessaging;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutPositionAndLook;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutSpawnPosition;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutTabComplete;
@@ -92,6 +93,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -117,6 +119,7 @@ import java.util.stream.Stream;
 public class ClientConnection extends Thread {
 
     private static final NamespacedKey DEFAULT_HANDLER_NAMESPACE = new NamespacedKey("default");
+    private static final NamespacedKey BRAND_ANNOUNCE_CHANNEL = new NamespacedKey("brand");
 
     private final Random random = new Random();
     private final Socket clientSocket;
@@ -463,6 +466,11 @@ public class ClientConnection extends Thread {
                 PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, properties.getDefaultGamemode(), Limbo.getInstance().getWorlds(), Limbo.getInstance().getDimensionRegistry().getCodec(), world, 0, (byte) properties.getMaxPlayers(), 8, 8, properties.isReducedDebugInfo(), true, false, true);
                 sendPacket(join);
                 Limbo.getInstance().getUnsafe().setPlayerGameModeSilently(player, properties.getDefaultGamemode());
+
+                ByteArrayOutputStream brandOut = new ByteArrayOutputStream();
+                DataTypeIO.writeString(new DataOutputStream(brandOut), properties.getServerModName(), StandardCharsets.UTF_8);
+                PacketPlayOutPluginMessaging brand = new PacketPlayOutPluginMessaging(BRAND_ANNOUNCE_CHANNEL, brandOut.toByteArray());
+                sendPacket(brand);
 
                 SkinResponse skinresponce = (isVelocityModern || isBungeeGuard || isBungeecord) && forwardedSkin != null ? forwardedSkin : MojangAPIUtils.getSkinFromMojangServer(player.getName());
                 PlayerSkinProperty skin = skinresponce != null ? new PlayerSkinProperty(skinresponce.getSkin(), skinresponce.getSignature()) : null;

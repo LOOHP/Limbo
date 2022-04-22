@@ -80,7 +80,7 @@ public class ServerProperties {
 	private Component tabHeader;
 	private Component tabFooter;
 
-	Optional<BufferedImage> favicon;
+	private Optional<BufferedImage> favicon;
 
 	public ServerProperties(File file) throws IOException {
 		this.file = file;
@@ -187,6 +187,10 @@ public class ServerProperties {
 	
 	public String getServerImplementationVersion() {
 		return Limbo.getInstance().serverImplementationVersion;
+	}
+
+	public String getServerModName() {
+		return Limbo.LIMBO_BRAND;
 	}
 
 	public boolean isBungeecord() {
