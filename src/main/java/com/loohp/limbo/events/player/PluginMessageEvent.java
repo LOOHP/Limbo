@@ -20,11 +20,27 @@
 package com.loohp.limbo.events.player;
 
 import com.loohp.limbo.player.Player;
+import com.loohp.limbo.utils.NamespacedKey;
 
-public class PlayerJoinEvent extends PlayerEvent {
+import java.util.Arrays;
 
-	public PlayerJoinEvent(Player player) {
-		super(player);
-	}
+public class PluginMessageEvent extends PlayerEvent {
+
+    private String channel;
+    private byte[] data;
+
+    public PluginMessageEvent(Player player, String channel, byte[] data) {
+        super(player);
+        this.channel = channel;
+        this.data = data;
+    }
+
+    public String getChannel() {
+        return channel;
+    }
+
+    public byte[] getData() {
+        return Arrays.copyOf(data, data.length);
+    }
 
 }

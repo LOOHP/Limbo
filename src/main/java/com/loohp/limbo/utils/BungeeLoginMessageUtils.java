@@ -32,11 +32,13 @@ import com.loohp.limbo.network.protocol.packets.PacketPlayOutPluginMessaging;
 
 public class BungeeLoginMessageUtils {
 
+	public static final String BUNGEECORD_MAIN = new NamespacedKey("bungeecord", "main").toString();
+
 	public static void sendUUIDRequest(DataOutputStream output) throws IOException {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("UUID");
 		
-		PacketPlayOutPluginMessaging packet = new PacketPlayOutPluginMessaging(new NamespacedKey("bungeecord", "main"), out.toByteArray());
+		PacketPlayOutPluginMessaging packet = new PacketPlayOutPluginMessaging(BUNGEECORD_MAIN, out.toByteArray());
 		byte[] packetByte = packet.serializePacket();
 		DataTypeIO.writeVarInt(output, packetByte.length);
 		output.write(packetByte);
@@ -48,7 +50,7 @@ public class BungeeLoginMessageUtils {
 	    if (subchannel.equals("UUID")) {
 	    	return UUID.fromString(in.readUTF());
 	    } else {
-	    	throw new RuntimeException("Bungeecord Message receieved is not an IP");
+	    	throw new RuntimeException("Bungeecord Message received is not an IP");
 	    }
 	}
 	
@@ -56,7 +58,7 @@ public class BungeeLoginMessageUtils {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("IP");
 		
-		PacketPlayOutPluginMessaging packet = new PacketPlayOutPluginMessaging(new NamespacedKey("bungeecord", "main"), out.toByteArray());
+		PacketPlayOutPluginMessaging packet = new PacketPlayOutPluginMessaging(BUNGEECORD_MAIN, out.toByteArray());
 		byte[] packetByte = packet.serializePacket();
 		DataTypeIO.writeVarInt(output, packetByte.length);
 		output.write(packetByte);
@@ -70,7 +72,7 @@ public class BungeeLoginMessageUtils {
 	    	in.readInt();
 	    	return InetAddress.getByName(ip);
 	    } else {
-	    	throw new RuntimeException("Bungeecord Message receieved is not an IP");
+	    	throw new RuntimeException("Bungeecord Message received is not an IP");
 	    }
 	}
 

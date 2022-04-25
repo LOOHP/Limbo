@@ -21,11 +21,13 @@ package com.loohp.limbo.network;
 
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.events.player.PlayerJoinEvent;
+import com.loohp.limbo.events.player.PlayerSpawnEvent;
 import com.loohp.limbo.events.player.PlayerLoginEvent;
 import com.loohp.limbo.events.player.PlayerMoveEvent;
 import com.loohp.limbo.events.player.PlayerQuitEvent;
 import com.loohp.limbo.events.player.PlayerResourcePackStatusEvent;
 import com.loohp.limbo.events.player.PlayerSelectedSlotChangeEvent;
+import com.loohp.limbo.events.player.PluginMessageEvent;
 import com.loohp.limbo.events.status.StatusPingEvent;
 import com.loohp.limbo.file.ServerProperties;
 import com.loohp.limbo.location.Location;
@@ -41,6 +43,7 @@ import com.loohp.limbo.network.protocol.packets.PacketOut;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInChat;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInHeldItemChange;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInKeepAlive;
+import com.loohp.limbo.network.protocol.packets.PacketPlayInPluginMessaging;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInPosition;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInPositionAndLook;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInResourcePackStatus;
@@ -119,7 +122,7 @@ import java.util.stream.Stream;
 public class ClientConnection extends Thread {
 
     private static final NamespacedKey DEFAULT_HANDLER_NAMESPACE = new NamespacedKey("default");
-    private static final NamespacedKey BRAND_ANNOUNCE_CHANNEL = new NamespacedKey("brand");
+    private static final String BRAND_ANNOUNCE_CHANNEL = new NamespacedKey("brand").toString();
 
     private final Random random = new Random();
     private final Socket clientSocket;
@@ -190,6 +193,11 @@ public class ClientConnection extends Thread {
 
     public boolean isReady() {
         return ready;
+    }
+
+    public void sendPluginMessage(String channel, byte[] data) throws IOException {
+        PacketPlayOutPluginMessaging packet = new PacketPlayOutPluginMessaging(channel, data);
+        sendPacket(packet);
     }
 
     public synchronized void sendPacket(PacketOut packet) throws IOException {
@@ -459,8 +467,8 @@ public class ClientConnection extends Thread {
                 ServerProperties properties = Limbo.getInstance().getServerProperties();
                 Location worldSpawn = properties.getWorldSpawn();
 
-                PlayerJoinEvent joinEvent = Limbo.getInstance().getEventsManager().callEvent(new PlayerJoinEvent(player, worldSpawn));
-                worldSpawn = joinEvent.getSpawnLocation();
+                PlayerSpawnEvent spawnEvent = Limbo.getInstance().getEventsManager().callEvent(new PlayerSpawnEvent(player, worldSpawn));
+                worldSpawn = spawnEvent.getSpawnLocation();
                 World world = worldSpawn.getWorld();
 
                 PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, properties.getDefaultGamemode(), Limbo.getInstance().getWorlds(), Limbo.getInstance().getDimensionRegistry().getCodec(), world, 0, (byte) properties.getMaxPlayers(), 8, 8, properties.isReducedDebugInfo(), true, false, true);
@@ -469,8 +477,7 @@ public class ClientConnection extends Thread {
 
                 ByteArrayOutputStream brandOut = new ByteArrayOutputStream();
                 DataTypeIO.writeString(new DataOutputStream(brandOut), properties.getServerModName(), StandardCharsets.UTF_8);
-                PacketPlayOutPluginMessaging brand = new PacketPlayOutPluginMessaging(BRAND_ANNOUNCE_CHANNEL, brandOut.toByteArray());
-                sendPacket(brand);
+                sendPluginMessage(BRAND_ANNOUNCE_CHANNEL, brandOut.toByteArray());
 
                 SkinResponse skinresponce = (isVelocityModern || isBungeeGuard || isBungeecord) && forwardedSkin != null ? forwardedSkin : MojangAPIUtils.getSkinFromMojangServer(player.getName());
                 PlayerSkinProperty skin = skinresponce != null ? new PlayerSkinProperty(skinresponce.getSkin(), skinresponce.getSignature()) : null;
@@ -507,6 +514,8 @@ public class ClientConnection extends Thread {
                 player.getDataWatcher().update();
                 PacketPlayOutEntityMetadata show = new PacketPlayOutEntityMetadata(player, false, Player.class.getDeclaredField("skinLayers"));
                 sendPacket(show);
+
+                Limbo.getInstance().getEventsManager().callEvent(new PlayerJoinEvent(player));
 
                 if (properties.isAllowFlight()) {
                     PacketPlayOutGameState state = new PacketPlayOutGameState(3, player.getGamemode().getId());
@@ -643,6 +652,9 @@ public class ClientConnection extends Thread {
                             if (rpcheck.getLoadedValue().equals(EnumResourcePackStatus.DECLINED) && properties.getResourcePackRequired()) {
                                 player.disconnect(new TranslatableComponent("multiplayer.requiredTexturePrompt.disconnect"));
                             }
+                        } else if (packetIn instanceof PacketPlayInPluginMessaging) {
+                            PacketPlayInPluginMessaging inPluginMessaging = (PacketPlayInPluginMessaging) packetIn;
+                            Limbo.getInstance().getEventsManager().callEvent(new PluginMessageEvent(player, inPluginMessaging.getChannel(), inPluginMessaging.getData()));
                         }
                     } catch (Exception e) {
                         break;

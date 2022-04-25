@@ -48,6 +48,7 @@ import com.loohp.limbo.network.protocol.packets.PacketPlayOutRespawn;
 import com.loohp.limbo.utils.BungeecordAdventureConversionUtils;
 import com.loohp.limbo.utils.GameMode;
 
+import com.loohp.limbo.utils.NamespacedKey;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.identity.Identity;
@@ -231,6 +232,15 @@ public class Player extends LivingEntity implements CommandSender {
 	
 	protected void setLocation(Location location) {
 		super.teleport(location);
+	}
+
+	public void sendPluginMessage(NamespacedKey channel, byte[] data) throws IOException {
+		sendPluginMessage(channel.toString(), data);
+	}
+
+	@Deprecated
+	public void sendPluginMessage(String channel, byte[] data) throws IOException {
+		clientConnection.sendPluginMessage(channel, data);
 	}
 	
 	public void sendMessage(String message, UUID uuid) {
