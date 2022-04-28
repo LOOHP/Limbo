@@ -29,6 +29,8 @@ public class PlayerResourcePackStatusEvent extends PlayerEvent {
 	
 	public PlayerResourcePackStatusEvent(Player player, EnumResourcePackStatus status) {
 		super(player);	
+		this.player = player;
+		this.status = status;
 	}
 	
 	@Override
