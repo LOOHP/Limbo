@@ -19,11 +19,11 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
-import com.loohp.limbo.utils.DataTypeIO;
-
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+
+import com.loohp.limbo.utils.DataTypeIO;
 
 public class PacketPlayInPluginMessaging extends PacketIn {
 
@@ -36,7 +36,7 @@ public class PacketPlayInPluginMessaging extends PacketIn {
 	}
 	
 	public PacketPlayInPluginMessaging(DataInputStream in, int packetLength, int packetId) throws IOException {
-		String channel = DataTypeIO.readString(in, StandardCharsets.UTF_8);
+		channel = DataTypeIO.readString(in, StandardCharsets.UTF_8);
 		int dataLength = packetLength - DataTypeIO.getVarIntLength(packetId) - DataTypeIO.getStringLength(channel, StandardCharsets.UTF_8);
 		data = new byte[dataLength];
 		in.readFully(data);
