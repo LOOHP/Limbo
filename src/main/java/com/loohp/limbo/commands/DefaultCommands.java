@@ -42,7 +42,7 @@ public class DefaultCommands implements CommandExecutor, TabCompletor {
 
 		if (args[0].equalsIgnoreCase("version")) {
 			if (sender.hasPermission("limboserver.version")) {
-				sender.sendMessage(ChatColor.DARK_GRAY + "This server is running Limbo version " + Limbo.getInstance().LIMBO_IMPLEMENTATION_VERSION + " (MC: " + Limbo.getInstance().SERVER_IMPLEMENTATION_VERSION + ")");
+				sender.sendMessage(ChatColor.GRAY + "This server is running Limbo version " + Limbo.getInstance().LIMBO_IMPLEMENTATION_VERSION + " (MC: " + Limbo.getInstance().SERVER_IMPLEMENTATION_VERSION + ")");
 			} else {
 				sender.sendMessage(ChatColor.RED + "You do not have permission to use that command!");
 			}
