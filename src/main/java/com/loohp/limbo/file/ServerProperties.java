@@ -104,7 +104,7 @@ public class ServerProperties {
 		prop.store(pw, COMMENT);
 		pw.close();
 
-		protocol = Limbo.getInstance().serverImplementationProtocol;
+		protocol = Limbo.getInstance().SERVER_IMPLEMENTATION_PROTOCOL;
 
 		maxPlayers = Integer.parseInt(prop.getProperty("max-players"));
 		serverPort = Integer.parseInt(prop.getProperty("server-port"));
@@ -186,7 +186,7 @@ public class ServerProperties {
 	}
 	
 	public String getServerImplementationVersion() {
-		return Limbo.getInstance().serverImplementationVersion;
+		return Limbo.getInstance().SERVER_IMPLEMENTATION_VERSION;
 	}
 
 	public String getServerModName() {

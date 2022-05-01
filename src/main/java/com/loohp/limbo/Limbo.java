@@ -86,6 +86,8 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.tag.CompoundTag;
 
+import javax.swing.UnsupportedLookAndFeelException;
+
 public class Limbo {
 
 	public static final String LIMBO_BRAND = "Limbo";
@@ -110,12 +112,13 @@ public class Limbo {
 		}
 		if (!noGui) {
 			System.out.println("Launching Server GUI.. Add \"--nogui\" in launch arguments to disable");
-			Thread t1 = new Thread(new Runnable() {
-			    @Override
-			    public void run() {
-			    	GUI.main();
-			    }
-			});  
+			Thread t1 = new Thread(() -> {
+				try {
+					GUI.main();
+				} catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+					e.printStackTrace();
+				}
+			});
 			t1.start();
 		}
 		
@@ -128,9 +131,9 @@ public class Limbo {
 	
 	//===========================
 	
-	public final String serverImplementationVersion = "1.18.2";
-	public final int serverImplementationProtocol = 758;
-	public final String limboImplementationVersion;
+	public final String SERVER_IMPLEMENTATION_VERSION = "1.18.2";
+	public final int SERVER_IMPLEMENTATION_PROTOCOL = 758;
+	public final String LIMBO_IMPLEMENTATION_VERSION;
 	
 	private AtomicBoolean isRunning;
 	
@@ -176,8 +179,8 @@ public class Limbo {
 			console = new Console(System.in, System.out, System.err);
 		}
 				
-		limboImplementationVersion = getLimboVersion();
-		console.sendMessage("Loading Limbo Version " + limboImplementationVersion + " on Minecraft " + serverImplementationVersion);
+		LIMBO_IMPLEMENTATION_VERSION = getLimboVersion();
+		console.sendMessage("Loading Limbo Version " + LIMBO_IMPLEMENTATION_VERSION + " on Minecraft " + SERVER_IMPLEMENTATION_VERSION);
 		
 		String spName = "server.properties";
         File sp = new File(spName);

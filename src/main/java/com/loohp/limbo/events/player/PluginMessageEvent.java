@@ -20,7 +20,6 @@
 package com.loohp.limbo.events.player;
 
 import com.loohp.limbo.player.Player;
-import com.loohp.limbo.utils.NamespacedKey;
 
 import java.util.Arrays;
 

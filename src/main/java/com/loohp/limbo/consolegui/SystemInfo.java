@@ -39,10 +39,10 @@ public class SystemInfo {
 				long allocatedMemory = runtime.totalMemory();
 				long freeMemory = runtime.freeMemory();
 
-				sb.append("Free Memory: " + format.format(freeMemory / 1024 / 1024) + " MB\n");
-				sb.append("Allocated Memory: " + format.format(allocatedMemory / 1024 / 1024) + " MB\n");
-				sb.append("Max Memory: " + format.format(maxMemory / 1024 / 1024) + " MB\n");
-				sb.append("Memory Usage: " + format.format((allocatedMemory - freeMemory) / 1024 / 1024) + "/" + format.format(maxMemory / 1024 / 1024) + " MB (" + Math.round((double) (allocatedMemory - freeMemory) / (double) (maxMemory) * 100) + "%)\n");
+				sb.append("Free Memory: ").append(format.format(freeMemory / 1024 / 1024)).append(" MB\n");
+				sb.append("Allocated Memory: ").append(format.format(allocatedMemory / 1024 / 1024)).append(" MB\n");
+				sb.append("Max Memory: ").append(format.format(maxMemory / 1024 / 1024)).append(" MB\n");
+				sb.append("Memory Usage: ").append(format.format((allocatedMemory - freeMemory) / 1024 / 1024)).append("/").append(format.format(maxMemory / 1024 / 1024)).append(" MB (").append(Math.round((double) (allocatedMemory - freeMemory) / (double) (maxMemory) * 100)).append("%)\n");
 				sb.append("\n");
 
 				try {
@@ -54,13 +54,16 @@ public class SystemInfo {
 					double systemLoad = operatingSystemMXBean.getSystemCpuLoad();				
 					int processors = runtime.availableProcessors();
 					
-					sb.append("Available Processors: " + processors + "\n");
-					sb.append("Process CPU Load: " + Math.round(processLoad * 100) + "%\n");
-					sb.append("System CPU Load: " + Math.round(systemLoad * 100) + "%\n");
+					sb.append("Available Processors: ").append(processors).append("\n");
+					sb.append("Process CPU Load: ").append(Math.round(processLoad * 100)).append("%\n");
+					sb.append("System CPU Load: ").append(Math.round(systemLoad * 100)).append("%\n");
 					GUI.sysText.setText(sb.toString());
 				} catch (Exception ignore) {}
 				
-				try {TimeUnit.MILLISECONDS.sleep(1000);} catch (InterruptedException e) {}
+				try {
+					TimeUnit.MILLISECONDS.sleep(1000);
+				} catch (InterruptedException ignored) {
+				}
 			}
 		}
 	}

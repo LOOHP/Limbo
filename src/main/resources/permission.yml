@@ -7,6 +7,7 @@ groups:
   default:
     - limboserver.spawn
     - limboserver.chat
+    - limboserver.version
 
 players:
   LOOHP: 

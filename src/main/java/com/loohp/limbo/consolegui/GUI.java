@@ -39,6 +39,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
 import com.loohp.limbo.Limbo;
@@ -67,7 +69,8 @@ public class GUI extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	public static void main() {
+	public static void main() throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		GUI frame = new GUI();
 		frame.setVisible(true);
 		

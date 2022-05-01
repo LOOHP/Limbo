@@ -36,10 +36,10 @@ public class PacketPlayInPluginMessaging extends PacketIn {
 	}
 	
 	public PacketPlayInPluginMessaging(DataInputStream in, int packetLength, int packetId) throws IOException {
-		String channel = DataTypeIO.readString(in, StandardCharsets.UTF_8);
+		this.channel = DataTypeIO.readString(in, StandardCharsets.UTF_8);
 		int dataLength = packetLength - DataTypeIO.getVarIntLength(packetId) - DataTypeIO.getStringLength(channel, StandardCharsets.UTF_8);
-		data = new byte[dataLength];
-		in.readFully(data);
+		this.data = new byte[dataLength];
+		in.readFully(this.data);
 	}
 
 	public String getChannel() {

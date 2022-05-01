@@ -39,6 +39,16 @@ public class DefaultCommands implements CommandExecutor, TabCompletor {
 		if (args.length == 0) {
 			return;
 		}
+
+		if (args[0].equalsIgnoreCase("version")) {
+			if (sender.hasPermission("limboserver.version")) {
+				sender.sendMessage(ChatColor.DARK_GRAY + "This server is running Limbo version " + Limbo.getInstance().LIMBO_IMPLEMENTATION_VERSION + " (MC: " + Limbo.getInstance().SERVER_IMPLEMENTATION_VERSION + ")");
+			} else {
+				sender.sendMessage(ChatColor.RED + "You do not have permission to use that command!");
+			}
+			return;
+		}
+
 		if (args[0].equalsIgnoreCase("spawn")) {
 			if (sender.hasPermission("limboserver.spawn")) {
 				if (args.length == 1 && sender instanceof Player) {
@@ -78,12 +88,10 @@ public class DefaultCommands implements CommandExecutor, TabCompletor {
 				if (args.length > 1) {
 					Player player = Limbo.getInstance().getPlayer(args[1]);
 					if (player != null) {
-						if (args.length >= 2) {
-							String reasonRaw = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
-							if (reasonRaw.trim().length() > 0) {
-								reason = LegacyComponentSerializer.legacySection().deserialize(reasonRaw);
-								customReason = true;
-							}
+						String reasonRaw = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
+						if (reasonRaw.trim().length() > 0) {
+							reason = LegacyComponentSerializer.legacySection().deserialize(reasonRaw);
+							customReason = true;
 						}
 						player.disconnect(reason);
 						if (customReason) {

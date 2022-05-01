@@ -111,7 +111,7 @@ public class Metrics {
             }
         }
         
-        limboVersion = Limbo.getInstance().limboImplementationVersion;
+        limboVersion = Limbo.getInstance().LIMBO_IMPLEMENTATION_VERSION;
 
         // Load the data
         serverUUID = config.get("serverUuid", String.class);
@@ -137,7 +137,7 @@ public class Metrics {
 		addCustomChart(new Metrics.SimplePie("minecraftVersion", new Callable<String>() {
 	        @Override
 	        public String call() throws Exception {
-	            return Limbo.getInstance().serverImplementationVersion;
+	            return Limbo.getInstance().SERVER_IMPLEMENTATION_VERSION;
 	        }
 	    }));
     }
