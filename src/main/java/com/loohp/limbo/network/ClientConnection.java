@@ -202,7 +202,6 @@ public class ClientConnection extends Thread {
     }
 
     public synchronized void sendPacket(PacketOut packet) throws IOException {
-        System.out.println(packet.getClass());
         if (channel.writePacket(packet)) {
             setLastPacketTimestamp(System.currentTimeMillis());
         }
