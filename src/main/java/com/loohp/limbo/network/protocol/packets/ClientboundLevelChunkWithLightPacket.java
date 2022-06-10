@@ -19,26 +19,24 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.loohp.limbo.registry.Registry;
 import com.loohp.limbo.utils.BitsUtils;
 import com.loohp.limbo.utils.DataTypeIO;
 import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.world.Environment;
 import com.loohp.limbo.world.GeneratedBlockDataMappings;
-
 import net.querz.mca.Chunk;
 import net.querz.mca.Section;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 
@@ -165,7 +163,7 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 					int shift = 64 % newBits;
 					int longsNeeded = (int) Math.ceil(4096 / (double) (64 / newBits));
 					for (int u = 64; u <= bits.length(); u += 64) {
-						bits = BitsUtils.shiftAfter(bits, u - shift, shift);
+						BitsUtils.shiftAfter(bits, u - shift, shift);
 					}
 
 					long[] formattedLongs = bits.toLongArray();
@@ -182,7 +180,7 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 					}
 				} else {
 					try {
-						dataOut.writeByte(15);
+						dataOut.writeByte(16);
 						section.getBlockStates();
 						int longsNeeded = 1024;
 						List<Integer> list = new LinkedList<>();
@@ -207,7 +205,7 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 								u++;
 							}
 							int id = list.isEmpty() ? 0 : list.remove(0);
-							currentLong = currentLong << 15;
+							currentLong = currentLong << 16;
 							currentLong |= id;
 						}
 						DataTypeIO.writeVarInt(dataOut, longsNeeded);

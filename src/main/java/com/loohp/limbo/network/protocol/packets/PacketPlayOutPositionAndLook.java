@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,7 +38,7 @@ public class PacketPlayOutPositionAndLook extends PacketOut {
 		Y_ROT((byte) 0x08),
 		X_ROT((byte) 0x10);
 		
-		byte bit;
+		private final byte bit;
 		
 		PlayerTeleportFlags(byte bit) {
 			this.bit = bit;
@@ -64,7 +65,7 @@ public class PacketPlayOutPositionAndLook extends PacketOut {
 		this.yaw = yaw;
 		this.pitch = pitch;
 		this.teleportId = teleportId;
-		this.flags = Arrays.asList(flags).stream().collect(Collectors.toSet());
+		this.flags = new HashSet<>(Arrays.asList(flags));
 		this.dismountVehicle = dismountVehicle;
 	}
 

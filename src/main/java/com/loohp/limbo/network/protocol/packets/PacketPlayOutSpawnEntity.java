@@ -37,12 +37,13 @@ public class PacketPlayOutSpawnEntity extends PacketOut {
     private double z;
     private float pitch;
     private float yaw;
+	private float headYaw;
     private int data;
     private short velocityX;
     private short velocityY;
     private short velocityZ;
 	
-	public PacketPlayOutSpawnEntity(int entityId, UUID uuid, EntityType type, double x, double y, double z, float pitch, float yaw, short velocityX, short velocityY, short velocityZ) {
+	public PacketPlayOutSpawnEntity(int entityId, UUID uuid, EntityType type, double x, double y, double z, float pitch, float yaw, float headYaw, int data, short velocityX, short velocityY, short velocityZ) {
 		this.entityId = entityId;
 		this.uuid = uuid;
 		this.type = type;
@@ -51,7 +52,8 @@ public class PacketPlayOutSpawnEntity extends PacketOut {
 		this.z = z;
 		this.pitch = pitch;
 		this.yaw = yaw;
-		this.data = 0; //TO-DO
+		this.headYaw = headYaw;
+		this.data = data;
 		this.velocityX = velocityX;
 		this.velocityY = velocityY;
 		this.velocityZ = velocityZ;
@@ -89,6 +91,10 @@ public class PacketPlayOutSpawnEntity extends PacketOut {
 		return yaw;
 	}
 
+	public float getHeadYaw() {
+		return headYaw;
+	}
+
 	public int getData() {
 		return data;
 	}
@@ -119,10 +125,11 @@ public class PacketPlayOutSpawnEntity extends PacketOut {
 		output.writeDouble(z);
 		output.writeByte((byte) (int) (pitch * 256.0F / 360.0F));
 		output.writeByte((byte) (int) (yaw * 256.0F / 360.0F));
-		output.writeInt(data);
-		output.writeShort((int) (velocityX * 8000));
-		output.writeShort((int) (velocityY * 8000));
-		output.writeShort((int) (velocityZ * 8000));
+		output.writeByte((byte) (int) (headYaw * 256.0F / 360.0F));
+		DataTypeIO.writeVarInt(output, data);
+		output.writeShort(velocityX * 8000);
+		output.writeShort(velocityY * 8000);
+		output.writeShort(velocityZ * 8000);
 		
 		return buffer.toByteArray();
 	}

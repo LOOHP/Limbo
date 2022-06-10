@@ -19,10 +19,6 @@
 
 package com.loohp.limbo.player;
 
-import java.io.IOException;
-import java.time.Duration;
-import java.util.UUID;
-
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.commands.CommandSender;
 import com.loohp.limbo.entity.DataWatcher;
@@ -38,7 +34,8 @@ import com.loohp.limbo.network.protocol.packets.ClientboundClearTitlesPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundSetSubtitleTextPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundSetTitleTextPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundSetTitlesAnimationPacket;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutChat;
+import com.loohp.limbo.network.protocol.packets.ClientboundSystemChatPacket;
+import com.loohp.limbo.network.protocol.packets.PacketOut;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutGameState;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutHeldItemChange;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerListHeaderFooter;
@@ -47,8 +44,8 @@ import com.loohp.limbo.network.protocol.packets.PacketPlayOutResourcePackSend;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutRespawn;
 import com.loohp.limbo.utils.BungeecordAdventureConversionUtils;
 import com.loohp.limbo.utils.GameMode;
-
 import com.loohp.limbo.utils.NamespacedKey;
+import com.loohp.limbo.utils.NetworkEncryptionUtils;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.identity.Identity;
@@ -63,7 +60,11 @@ import net.kyori.adventure.title.Title.Times;
 import net.kyori.adventure.title.TitlePart;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TranslatableComponent;
+
+import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.UUID;
 
 public class Player extends LivingEntity implements CommandSender {
 	
@@ -298,22 +299,25 @@ public class Player extends LivingEntity implements CommandSender {
 	public void chat(String message) {
 		chat(message, false);
 	}
-	
+
 	public void chat(String message, boolean verbose) {
+		chat(message, verbose, null, Instant.now());
+	}
+	
+	public void chat(String message, boolean verbose, NetworkEncryptionUtils.SignatureData saltSignature, Instant time) {
 		if (Limbo.getInstance().getServerProperties().isAllowChat()) {
-			PlayerChatEvent event = (PlayerChatEvent) Limbo.getInstance().getEventsManager().callEvent(new PlayerChatEvent(this, CHAT_DEFAULT_FORMAT, message, false));
+			PlayerChatEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerChatEvent(this, CHAT_DEFAULT_FORMAT, message, false));
 			if (!event.isCancelled()) {
 				if (hasPermission("limboserver.chat")) {
 					String chat = event.getFormat().replace("%name%", username).replace("%message%", event.getMessage());
 					Limbo.getInstance().getConsole().sendMessage(chat);
 					if (event.getFormat().equals(CHAT_DEFAULT_FORMAT)) {
-						TranslatableComponent translatable = new TranslatableComponent("chat.type.text", username, event.getMessage());
 						for (Player each : Limbo.getInstance().getPlayers()) {
-							each.sendMessage(translatable, uuid);
+							each.sendMessage(Identity.identity(uuid), Component.translatable("chat.type.text").args(Component.text(this.getName()), Component.text(event.getMessage())), MessageType.CHAT, saltSignature, time);
 						}
 					} else {
 						for (Player each : Limbo.getInstance().getPlayers()) {
-							each.sendMessage(chat, uuid);
+							each.sendMessage(Identity.identity(uuid), Component.text(chat), MessageType.SYSTEM, saltSignature, time);
 						}
 					}
 				} else if (verbose) {
@@ -412,10 +416,29 @@ public class Player extends LivingEntity implements CommandSender {
 
 	@Override
 	public void sendMessage(Identity source, Component message, MessageType type) {
+		sendMessage(source, message, type, null, Instant.now());
+	}
+
+	public void sendMessage(Identity source, Component message, MessageType type, NetworkEncryptionUtils.SignatureData signature, Instant time) {
 		try {
-			PacketPlayOutChat chat = new PacketPlayOutChat(message, 0, uuid);
+			PacketOut chat;
+			switch (type) {
+				case CHAT:
+					/*
+					if (signature == null) {
+						chat = new ClientboundPlayerChatPacket(Component.empty(), Optional.of(message), 0, uuid, time, SignatureData.NONE);
+					} else {
+						chat = new ClientboundPlayerChatPacket(message, Optional.of(message), 0, uuid, time, signature);
+					}
+					break;
+					*/
+				case SYSTEM:
+				default:
+					chat = new ClientboundSystemChatPacket(message, 1);
+					break;
+			}
 			clientConnection.sendPacket(chat);
-		} catch (IOException e) {}
+		} catch (IOException ignored) {}
 	}
 
 	@Override
@@ -446,9 +469,9 @@ public class Player extends LivingEntity implements CommandSender {
 	@Override
 	public void sendActionBar(Component message) {
 		try {
-			PacketPlayOutChat chat = new PacketPlayOutChat(message, 2, new UUID(0, 0));
+			ClientboundSystemChatPacket chat = new ClientboundSystemChatPacket(message, 2);
 			clientConnection.sendPacket(chat);
-		} catch (IOException e) {}
+		} catch (IOException ignored) {}
 	}
 
 	@Override

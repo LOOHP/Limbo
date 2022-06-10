@@ -35,7 +35,7 @@ public class PacketPlayOutPlayerInfo extends PacketOut {
 	public enum PlayerInfoAction {
 		ADD_PLAYER(0), UPDATE_GAMEMODE(1), UPDATE_LATENCY(2), UPDATE_DISPLAY_NAME(3), REMOVE_PLAYER(4);
 
-		int id;
+		private final int id;
 
 		PlayerInfoAction(int id) {
 			this.id = id;
@@ -98,7 +98,8 @@ public class PacketPlayOutPlayerInfo extends PacketOut {
 				DataTypeIO.writeString(output, data.getDisplayNameJson().get(), StandardCharsets.UTF_8);				
 			} else {
 				output.writeBoolean(false);
-			}			
+			}
+			output.writeBoolean(false);
 			break;
 		case REMOVE_PLAYER:
 			break;

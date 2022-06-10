@@ -19,20 +19,18 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-
 import com.loohp.limbo.utils.DataTypeIO;
 import com.loohp.limbo.utils.GameMode;
 import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.world.Environment;
 import com.loohp.limbo.world.World;
-
 import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class PacketPlayOutLogin extends PacketOut {
 	
@@ -145,15 +143,7 @@ public class PacketPlayOutLogin extends PacketOut {
 			DataTypeIO.writeString(output, new NamespacedKey(worlds.get(u).getName()).toString(), StandardCharsets.UTF_8);
 		}
 		DataTypeIO.writeCompoundTag(output, dimensionCodec);
-		CompoundTag tag = null;
-		ListTag<CompoundTag> list = dimensionCodec.getCompoundTag("minecraft:dimension_type").getListTag("value").asCompoundTagList();
-		for (CompoundTag each : list) {
-			if (each.getString("name").equals(dimension.getNamespacedKey().toString())) {
-				tag = each.getCompoundTag("element");
-				break;
-			}
-		}
-		DataTypeIO.writeCompoundTag(output, tag != null ? tag : list.get(0).getCompoundTag("element"));
+		DataTypeIO.writeString(output, world.getEnvironment().getNamespacedKey().toString(), StandardCharsets.UTF_8);
 		DataTypeIO.writeString(output, new NamespacedKey(world.getName()).toString(), StandardCharsets.UTF_8);
 		output.writeLong(hashedSeed);
 		DataTypeIO.writeVarInt(output, maxPlayers);
@@ -163,6 +153,7 @@ public class PacketPlayOutLogin extends PacketOut {
 		output.writeBoolean(enableRespawnScreen);
 		output.writeBoolean(isDebug);
 		output.writeBoolean(isFlat);
+		output.writeBoolean(false);
 		
 		return buffer.toByteArray();
 	}

@@ -58,11 +58,10 @@ public class DeclareCommands {
 			i++;
 			
 			output.writeByte(2 | 0x04 | 0x10);
-			DataTypeIO.writeVarInt(output, 1);
-			DataTypeIO.writeVarInt(output, i);
-			DataTypeIO.writeString(output, "arg", StandardCharsets.UTF_8);
-			DataTypeIO.writeString(output, "brigadier:string", StandardCharsets.UTF_8);
 			DataTypeIO.writeVarInt(output, 0);
+			DataTypeIO.writeString(output, "arg", StandardCharsets.UTF_8);
+			DataTypeIO.writeVarInt(output, 5); //brigadier:string
+			DataTypeIO.writeVarInt(output, 2);
 			DataTypeIO.writeString(output, "minecraft:ask_server", StandardCharsets.UTF_8);
 			i++;
 		}

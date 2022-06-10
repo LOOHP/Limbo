@@ -73,6 +73,7 @@ import com.loohp.limbo.network.protocol.packets.PacketStatusInPing;
 import com.loohp.limbo.network.protocol.packets.PacketStatusInRequest;
 import com.loohp.limbo.network.protocol.packets.PacketStatusOutPong;
 import com.loohp.limbo.network.protocol.packets.PacketStatusOutResponse;
+import com.loohp.limbo.network.protocol.packets.ServerboundChatCommandPacket;
 import com.loohp.limbo.player.Player;
 import com.loohp.limbo.player.PlayerInteractManager;
 import com.loohp.limbo.utils.BungeecordAdventureConversionUtils;
@@ -201,6 +202,7 @@ public class ClientConnection extends Thread {
     }
 
     public synchronized void sendPacket(PacketOut packet) throws IOException {
+        System.out.println(packet.getClass());
         if (channel.writePacket(packet)) {
             setLastPacketTimestamp(System.currentTimeMillis());
         }
@@ -626,11 +628,10 @@ public class ClientConnection extends Thread {
                             sendPacket(response);
                         } else if (packetIn instanceof PacketPlayInChat) {
                             PacketPlayInChat chat = (PacketPlayInChat) packetIn;
-                            if (chat.getMessage().startsWith("/")) {
-                                Limbo.getInstance().dispatchCommand(player, chat.getMessage());
-                            } else {
-                                player.chat(chat.getMessage(), true);
-                            }
+                            player.chat(chat.getMessage(), true, chat.getSignature(), chat.getTime());
+                        } else if (packetIn instanceof ServerboundChatCommandPacket) {
+                            ServerboundChatCommandPacket command = (ServerboundChatCommandPacket) packetIn;
+                            Limbo.getInstance().dispatchCommand(player, "/" + command.getCommand());
                         } else if (packetIn instanceof PacketPlayInHeldItemChange) {
                             PacketPlayInHeldItemChange change = (PacketPlayInHeldItemChange) packetIn;
                             PlayerSelectedSlotChangeEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerSelectedSlotChangeEvent(player, (byte) change.getSlot()));

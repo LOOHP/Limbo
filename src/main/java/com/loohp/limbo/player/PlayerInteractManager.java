@@ -19,6 +19,18 @@
 
 package com.loohp.limbo.player;
 
+import com.loohp.limbo.Limbo;
+import com.loohp.limbo.entity.Entity;
+import com.loohp.limbo.location.Location;
+import com.loohp.limbo.network.protocol.packets.ClientboundLevelChunkWithLightPacket;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutEntityDestroy;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutEntityMetadata;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutSpawnEntity;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutUnloadChunk;
+import com.loohp.limbo.world.ChunkPosition;
+import com.loohp.limbo.world.World;
+import net.querz.mca.Chunk;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,20 +40,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.loohp.limbo.Limbo;
-import com.loohp.limbo.entity.Entity;
-import com.loohp.limbo.location.Location;
-import com.loohp.limbo.network.protocol.packets.ClientboundLevelChunkWithLightPacket;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutEntityDestroy;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutEntityMetadata;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutSpawnEntity;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutSpawnEntityLiving;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutUnloadChunk;
-import com.loohp.limbo.world.ChunkPosition;
-import com.loohp.limbo.world.World;
-
-import net.querz.mca.Chunk;
 
 public class PlayerInteractManager {
 	
@@ -75,19 +73,11 @@ public class PlayerInteractManager {
 		Set<Entity> entitiesInRange = player.getWorld().getEntities().stream().filter(each -> each.getLocation().distanceSquared(location) < viewDistanceBlocks * viewDistanceBlocks).collect(Collectors.toSet());
 		for (Entity entity : entitiesInRange) {
 			if (!entities.contains(entity)) {
-				if (entity.getType().isAlive()) {
-					PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(entity.getEntityId(), entity.getUniqueId(), entity.getType(), entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch(), entity.getPitch(), (short) 0, (short) 0, (short) 0);
-					player.clientConnection.sendPacket(packet);
-					
-					PacketPlayOutEntityMetadata meta = new PacketPlayOutEntityMetadata(entity);
-					player.clientConnection.sendPacket(meta);
-				} else {
-					PacketPlayOutSpawnEntity packet = new PacketPlayOutSpawnEntity(entity.getEntityId(), entity.getUniqueId(), entity.getType(), entity.getX(), entity.getY(), entity.getZ(), entity.getPitch(), entity.getYaw(), (short) 0, (short) 0, (short) 0);
-					player.clientConnection.sendPacket(packet);
-					
-					PacketPlayOutEntityMetadata meta = new PacketPlayOutEntityMetadata(entity);
-					player.clientConnection.sendPacket(meta);
-				}
+				PacketPlayOutSpawnEntity packet = new PacketPlayOutSpawnEntity(entity.getEntityId(), entity.getUniqueId(), entity.getType(), entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch(), entity.getPitch(), 0, (short) 0, (short) 0, (short) 0);
+				player.clientConnection.sendPacket(packet);
+
+				PacketPlayOutEntityMetadata meta = new PacketPlayOutEntityMetadata(entity);
+				player.clientConnection.sendPacket(meta);
 			}
 		}
 		List<Integer> ids = new ArrayList<>();
@@ -127,7 +117,7 @@ public class PlayerInteractManager {
 				player.clientConnection.sendPacket(packet);
 			}
 		}
-		
+
 		for (Entry<ChunkPosition, Chunk> entry : chunksInRange.entrySet()) {
 			ChunkPosition chunkPos = entry.getKey();
 			if (!currentViewing.containsKey(chunkPos)) {
@@ -152,7 +142,7 @@ public class PlayerInteractManager {
 				}
 			}
 		}
-		
+
 		currentViewing = chunksInRange;
 	}
 

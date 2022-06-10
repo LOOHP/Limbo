@@ -131,8 +131,8 @@ public class Limbo {
 	
 	//===========================
 	
-	public final String SERVER_IMPLEMENTATION_VERSION = "1.18.2";
-	public final int SERVER_IMPLEMENTATION_PROTOCOL = 758;
+	public final String SERVER_IMPLEMENTATION_VERSION = "1.19";
+	public final int SERVER_IMPLEMENTATION_PROTOCOL = 759;
 	public final String LIMBO_IMPLEMENTATION_VERSION;
 	
 	private AtomicBoolean isRunning;
@@ -216,7 +216,7 @@ public class Limbo {
         
         console.sendMessage("Loading packet id mappings from mapping.json ...");
         
-        InputStreamReader reader = new InputStreamReader(new FileInputStream(mappingFile), StandardCharsets.UTF_8);
+        InputStreamReader reader = new InputStreamReader(Files.newInputStream(mappingFile.toPath()), StandardCharsets.UTF_8);
         JSONObject json = (JSONObject) new JSONParser().parse(reader);
         reader.close();
         

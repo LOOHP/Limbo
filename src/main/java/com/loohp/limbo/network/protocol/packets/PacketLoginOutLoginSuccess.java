@@ -53,6 +53,7 @@ public class PacketLoginOutLoginSuccess extends PacketOut {
 		output.writeByte(Packet.getLoginOut().get(getClass()));
 		DataTypeIO.writeUUID(output, uuid);
 		DataTypeIO.writeString(output, username, StandardCharsets.UTF_8);
+		DataTypeIO.writeVarInt(output, 0);
 		
 		return buffer.toByteArray();
 	}

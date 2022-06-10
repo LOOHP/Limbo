@@ -34,7 +34,15 @@ public class PacketLoginInLoginStart extends PacketIn {
 	}
 	
 	public PacketLoginInLoginStart(DataInputStream in) throws IOException {
-		this(DataTypeIO.readString(in, StandardCharsets.UTF_8));
+		this.username = DataTypeIO.readString(in, StandardCharsets.UTF_8);
+		boolean hasSigData = in.readBoolean();
+		if (hasSigData) {
+			in.readLong();
+			int publicKeyLength = DataTypeIO.readVarInt(in);
+			in.readFully(new byte[publicKeyLength]);
+			int signatureLength = DataTypeIO.readVarInt(in);
+			in.readFully(new byte[signatureLength]);
+		}
 	}
 
 	public String getUsername() {

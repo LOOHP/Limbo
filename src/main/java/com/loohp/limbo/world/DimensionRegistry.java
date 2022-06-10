@@ -57,7 +57,7 @@ public class DimensionRegistry {
         
         this.reg = file;
         
-        try (InputStreamReader reader = new InputStreamReader(new FileInputStream(reg), StandardCharsets.UTF_8)) {
+        try (InputStreamReader reader = new InputStreamReader(Files.newInputStream(reg.toPath()), StandardCharsets.UTF_8)) {
 			JSONObject json = (JSONObject) new JSONParser().parse(reader);
 			CompoundTag tag = CustomNBTUtils.getCompoundTagFromJson((JSONObject) json.get("value"));
 			defaultTag = tag;

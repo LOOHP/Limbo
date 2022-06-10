@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -79,7 +80,7 @@ public class GeneratedBlockDataMappings {
 			
 			for (Object entry : (JSONArray) data.get("states")) {
 				JSONObject jsonobj = (JSONObject) entry;
-				if (((JSONObject) jsonobj.get("properties")).keySet().stream().allMatch(key -> blockstate.get(key).equals((String) (((JSONObject) jsonobj.get("properties")).get(key))))) {
+				if (((JSONObject) jsonobj.get("properties")).keySet().stream().allMatch(key -> Objects.equals(blockstate.get(key), ((JSONObject) jsonobj.get("properties")).get(key)))) {
 					return (int) (long) jsonobj.get("id");
 				}
 			}

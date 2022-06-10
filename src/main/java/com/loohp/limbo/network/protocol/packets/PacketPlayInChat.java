@@ -22,23 +22,44 @@ package com.loohp.limbo.network.protocol.packets;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 
 import com.loohp.limbo.utils.DataTypeIO;
+import com.loohp.limbo.utils.NetworkEncryptionUtils;
+import com.loohp.limbo.utils.NetworkEncryptionUtils.SignatureData;
 
 public class PacketPlayInChat extends PacketIn {
 	
 	private String message;
-	
-	public PacketPlayInChat(String message) {
+	private Instant time;
+	private NetworkEncryptionUtils.SignatureData signature;
+	private boolean previewed;
+
+	public PacketPlayInChat(String message, Instant time, SignatureData signature, boolean previewed) {
 		this.message = message;
+		this.time = time;
+		this.signature = signature;
+		this.previewed = previewed;
 	}
-	
+
 	public PacketPlayInChat(DataInputStream in) throws IOException {
-		this(DataTypeIO.readString(in, StandardCharsets.UTF_8));
+		this(DataTypeIO.readString(in, StandardCharsets.UTF_8), Instant.ofEpochMilli(in.readLong()), new NetworkEncryptionUtils.SignatureData(in), in.readBoolean());
 	}
 
 	public String getMessage() {
 		return message;
+	}
+
+	public Instant getTime() {
+		return time;
+	}
+
+	public SignatureData getSignature() {
+		return signature;
+	}
+
+	public boolean isPreviewed() {
+		return previewed;
 	}
 
 }
