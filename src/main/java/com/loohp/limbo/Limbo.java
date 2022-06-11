@@ -206,13 +206,19 @@ public class Limbo {
 		
         String mappingName = "mapping.json";
         File mappingFile = new File(internalDataFolder, mappingName);
-        if (!mappingFile.exists()) {
-        	try (InputStream in = getClass().getClassLoader().getResourceAsStream(mappingName)) {
-                Files.copy(in, mappingFile.toPath());
-            } catch (IOException e) {
-            	e.printStackTrace();
-            }
-        }
+	InputStream mappingStreamIn = getClass().getClassLoader().getResourceAsStream(mappingName);
+	try {
+		if (!mappingFile.exists()) {
+			Files.copy(mappingStreamIn, mappingFile.toPath());
+		} else {
+			if (Files.newInputStream(mappingFile.toPath()) != mappingStreamIn) {
+				mappingFile.delete();
+				Files.copy(mappingStreamIn, mappingFile.toPath());
+			}
+		}
+	} catch (IOException e){
+		e.printStackTrace();
+	}
         
         console.sendMessage("Loading packet id mappings from mapping.json ...");
         
