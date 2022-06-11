@@ -46,18 +46,24 @@ public class DimensionRegistry {
 		this.defaultTag = new CompoundTag();
 		
 		String name = "dimension_registry.json";
-        File file = new File(Limbo.getInstance().getInternalDataFolder(), name);
-        if (!file.exists()) {
-        	try (InputStream in = Limbo.class.getClassLoader().getResourceAsStream(name)) {
-                Files.copy(in, file.toPath());
-            } catch (IOException e) {
-            	e.printStackTrace();
-            }
-        }
-        
-        this.reg = file;
-        
-        try (InputStreamReader reader = new InputStreamReader(Files.newInputStream(reg.toPath()), StandardCharsets.UTF_8)) {
+        File dimensionRegistryFile = new File(Limbo.getInstance().getInternalDataFolder(), name);
+		InputStream dimensionRegistryIn = Limbo.class.getClassLoader().getResourceAsStream(name);
+		try {
+			if (!dimensionRegistryFile.exists()) {
+				Files.copy(dimensionRegistryIn, dimensionRegistryFile.toPath());
+			} else {
+				if(Files.newInputStream(dimensionRegistryFile.toPath()) != dimensionRegistryIn) {
+					dimensionRegistryFile.delete();
+					Files.copy(dimensionRegistryIn, dimensionRegistryFile.toPath());
+				}
+			}
+		} catch (IOException e){
+			e.printStackTrace();
+		}
+
+        this.reg = dimensionRegistryFile;
+
+		try (InputStreamReader reader = new InputStreamReader(Files.newInputStream(reg.toPath()), StandardCharsets.UTF_8)) {
 			JSONObject json = (JSONObject) new JSONParser().parse(reader);
 			CompoundTag tag = CustomNBTUtils.getCompoundTagFromJson((JSONObject) json.get("value"));
 			defaultTag = tag;
