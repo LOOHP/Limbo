@@ -59,6 +59,7 @@ public class ServerProperties {
 	private GameMode defaultGamemode;
 	private Location worldSpawn;
 	private boolean reducedDebugInfo;
+	private boolean logPlayerIPAddresses;
 	private boolean allowFlight;
 	private boolean allowChat;
 	private Component motd;
@@ -123,6 +124,7 @@ public class ServerProperties {
 		float pitch = Float.parseFloat(locStr[5]);
 		worldSpawn = new Location(world, x, y, z, yaw, pitch);
 		reducedDebugInfo = Boolean.parseBoolean(prop.getProperty("reduced-debug-info"));
+		logPlayerIPAddresses = Boolean.parseBoolean(prop.getProperty("log-player-ip-addresses"));
 		allowFlight = Boolean.parseBoolean(prop.getProperty("allow-flight"));
 		allowChat = Boolean.parseBoolean(prop.getProperty("allow-chat"));
 		String motdJson = prop.getProperty("motd");
@@ -255,6 +257,10 @@ public class ServerProperties {
 
 	public boolean isReducedDebugInfo() {
 		return reducedDebugInfo;
+	}
+
+	public boolean isLogPlayerIPAddresses() {
+		return logPlayerIPAddresses;
 	}
 
 	public boolean isAllowFlight() {
