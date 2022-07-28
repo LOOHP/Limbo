@@ -31,21 +31,21 @@ import java.nio.charset.StandardCharsets;
 public class ClientboundSystemChatPacket extends PacketOut {
 
 	private Component message;
-	private int position;
+	private boolean overlay;
 
-	public ClientboundSystemChatPacket(Component message, int position) {
+	public ClientboundSystemChatPacket(Component message, boolean overlay) {
 		this.message = message;
-		this.position = position;
+		this.overlay = overlay;
 	}
 
 	public Component getMessage() {
 		return message;
 	}
 
-	public int getPosition() {
-		return position;
+	public boolean isOverlay() {
+		return overlay;
 	}
-	
+
 	@Override
 	public byte[] serializePacket() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -53,7 +53,7 @@ public class ClientboundSystemChatPacket extends PacketOut {
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(Packet.getPlayOut().get(getClass()));
 		DataTypeIO.writeString(output, GsonComponentSerializer.gson().serialize(message), StandardCharsets.UTF_8);
-		DataTypeIO.writeVarInt(output, position);
+		output.writeBoolean(overlay);
 		
 		return buffer.toByteArray();
 	}

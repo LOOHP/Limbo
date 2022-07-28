@@ -4302,47 +4302,53 @@
       "minecraft:item_interact_start": {
         "protocol_id": 29
       },
-      "minecraft:lightning_strike": {
+      "minecraft:jukebox_play": {
         "protocol_id": 30
       },
-      "minecraft:note_block_play": {
+      "minecraft:jukebox_stop_play": {
         "protocol_id": 31
       },
-      "minecraft:piston_contract": {
+      "minecraft:lightning_strike": {
         "protocol_id": 32
       },
-      "minecraft:piston_extend": {
+      "minecraft:note_block_play": {
         "protocol_id": 33
       },
-      "minecraft:prime_fuse": {
+      "minecraft:piston_contract": {
         "protocol_id": 34
       },
-      "minecraft:projectile_land": {
+      "minecraft:piston_extend": {
         "protocol_id": 35
       },
-      "minecraft:projectile_shoot": {
+      "minecraft:prime_fuse": {
         "protocol_id": 36
       },
-      "minecraft:sculk_sensor_tendrils_clicking": {
+      "minecraft:projectile_land": {
         "protocol_id": 37
       },
-      "minecraft:shear": {
+      "minecraft:projectile_shoot": {
         "protocol_id": 38
       },
-      "minecraft:shriek": {
+      "minecraft:sculk_sensor_tendrils_clicking": {
         "protocol_id": 39
       },
-      "minecraft:splash": {
+      "minecraft:shear": {
         "protocol_id": 40
       },
-      "minecraft:step": {
+      "minecraft:shriek": {
         "protocol_id": 41
       },
-      "minecraft:swim": {
+      "minecraft:splash": {
         "protocol_id": 42
       },
-      "minecraft:teleport": {
+      "minecraft:step": {
         "protocol_id": 43
+      },
+      "minecraft:swim": {
+        "protocol_id": 44
+      },
+      "minecraft:teleport": {
+        "protocol_id": 45
       }
     },
     "protocol_id": 0

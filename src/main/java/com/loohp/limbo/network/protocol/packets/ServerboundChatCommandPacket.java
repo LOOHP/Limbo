@@ -19,45 +19,40 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.utils.ArgumentSignatures;
 import com.loohp.limbo.utils.DataTypeIO;
-import com.loohp.limbo.utils.NetworkEncryptionUtils.ArgumentSignatures;
+import com.loohp.limbo.utils.LastSeenMessages;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ServerboundChatCommandPacket extends PacketIn {
 
     private String command;
     private Instant time;
+    private long salt;
     private ArgumentSignatures argumentSignatures;
     private boolean commandPreview;
+    private LastSeenMessages.b lastSeenMessages;
 
-    public ServerboundChatCommandPacket(String command, Instant time, ArgumentSignatures argumentSignatures, boolean commandPreview) {
+    public ServerboundChatCommandPacket(String command, Instant time, long salt, ArgumentSignatures argumentSignatures, boolean commandPreview, LastSeenMessages.b lastSeenMessages) {
         this.command = command;
         this.time = time;
+        this.salt = salt;
         this.argumentSignatures = argumentSignatures;
         this.commandPreview = commandPreview;
+        this.lastSeenMessages = lastSeenMessages;
     }
 
     public ServerboundChatCommandPacket(DataInputStream in) throws IOException {
         this.command = DataTypeIO.readString(in, StandardCharsets.UTF_8);
         this.time = Instant.ofEpochMilli(in.readLong());
-        long salt = in.readLong();
-        int size = DataTypeIO.readVarInt(in);
-        Map<String, byte[]> signatures = new HashMap<>(size);
-        for (int i = 0; i < size; i++) {
-            String key = DataTypeIO.readString(in, StandardCharsets.UTF_8);
-            int arraySize = DataTypeIO.readVarInt(in);
-            byte[] value = new byte[arraySize];
-            in.readFully(value);
-            signatures.put(key, value);
-        }
-        this.argumentSignatures = new ArgumentSignatures(salt, signatures);
+        this.salt = in.readLong();
+        this.argumentSignatures = new ArgumentSignatures(in);
         this.commandPreview = in.readBoolean();
+        this.lastSeenMessages = new LastSeenMessages.b(in);
     }
 
     public String getCommand() {
@@ -68,6 +63,10 @@ public class ServerboundChatCommandPacket extends PacketIn {
         return time;
     }
 
+    public long getSalt() {
+        return salt;
+    }
+
     public ArgumentSignatures getArgumentSignatures() {
         return argumentSignatures;
     }
@@ -76,4 +75,7 @@ public class ServerboundChatCommandPacket extends PacketIn {
         return commandPreview;
     }
 
+    public LastSeenMessages.b getLastSeenMessages() {
+        return lastSeenMessages;
+    }
 }

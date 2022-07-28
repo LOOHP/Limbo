@@ -25,25 +25,29 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
 import com.loohp.limbo.utils.DataTypeIO;
-import com.loohp.limbo.utils.NetworkEncryptionUtils;
-import com.loohp.limbo.utils.NetworkEncryptionUtils.SignatureData;
+import com.loohp.limbo.utils.LastSeenMessages;
+import com.loohp.limbo.utils.MessageSignature;
 
 public class PacketPlayInChat extends PacketIn {
 	
 	private String message;
 	private Instant time;
-	private NetworkEncryptionUtils.SignatureData signature;
-	private boolean previewed;
+	private long salt;
+	private MessageSignature signature;
+	private boolean signedPreview;
+	private LastSeenMessages.b lastSeenMessages;
 
-	public PacketPlayInChat(String message, Instant time, SignatureData signature, boolean previewed) {
+	public PacketPlayInChat(String message, Instant time, long salt, MessageSignature signature, boolean signedPreview, LastSeenMessages.b lastSeenMessages) {
 		this.message = message;
 		this.time = time;
+		this.salt = salt;
 		this.signature = signature;
-		this.previewed = previewed;
+		this.signedPreview = signedPreview;
+		this.lastSeenMessages = lastSeenMessages;
 	}
 
 	public PacketPlayInChat(DataInputStream in) throws IOException {
-		this(DataTypeIO.readString(in, StandardCharsets.UTF_8), Instant.ofEpochMilli(in.readLong()), new NetworkEncryptionUtils.SignatureData(in), in.readBoolean());
+		this(DataTypeIO.readString(in, StandardCharsets.UTF_8), Instant.ofEpochMilli(in.readLong()), in.readLong(), new MessageSignature(in), in.readBoolean(), new LastSeenMessages.b(in));
 	}
 
 	public String getMessage() {
@@ -54,12 +58,19 @@ public class PacketPlayInChat extends PacketIn {
 		return time;
 	}
 
-	public SignatureData getSignature() {
+	public MessageSignature getSignature() {
 		return signature;
 	}
 
-	public boolean isPreviewed() {
-		return previewed;
+	public boolean isSignedPreview() {
+		return signedPreview;
 	}
 
+	public long getSalt() {
+		return salt;
+	}
+
+	public LastSeenMessages.b getLastSeenMessages() {
+		return lastSeenMessages;
+	}
 }

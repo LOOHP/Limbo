@@ -618,7 +618,7 @@ public class ClientConnection extends Thread {
                             PacketPlayInTabComplete request = (PacketPlayInTabComplete) packetIn;
                             String[] command = CustomStringUtils.splitStringToArgs(request.getText().substring(1));
 
-                            List<TabCompleteMatches> matches = new ArrayList<TabCompleteMatches>(Limbo.getInstance().getPluginManager().getTabOptions(player, command).stream().map(each -> new TabCompleteMatches(each)).collect(Collectors.toList()));
+                            List<TabCompleteMatches> matches = new ArrayList<>(Limbo.getInstance().getPluginManager().getTabOptions(player, command).stream().map(each -> new TabCompleteMatches(each)).collect(Collectors.toList()));
 
                             int start = CustomStringUtils.getIndexOfArg(request.getText(), command.length - 1) + 1;
                             int length = command[command.length - 1].length();

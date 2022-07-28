@@ -44,8 +44,8 @@ import com.loohp.limbo.network.protocol.packets.PacketPlayOutResourcePackSend;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutRespawn;
 import com.loohp.limbo.utils.BungeecordAdventureConversionUtils;
 import com.loohp.limbo.utils.GameMode;
+import com.loohp.limbo.utils.MessageSignature;
 import com.loohp.limbo.utils.NamespacedKey;
-import com.loohp.limbo.utils.NetworkEncryptionUtils;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.identity.Identity;
@@ -304,7 +304,7 @@ public class Player extends LivingEntity implements CommandSender {
 		chat(message, verbose, null, Instant.now());
 	}
 	
-	public void chat(String message, boolean verbose, NetworkEncryptionUtils.SignatureData saltSignature, Instant time) {
+	public void chat(String message, boolean verbose, MessageSignature saltSignature, Instant time) {
 		if (Limbo.getInstance().getServerProperties().isAllowChat()) {
 			PlayerChatEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerChatEvent(this, CHAT_DEFAULT_FORMAT, message, false));
 			if (!event.isCancelled()) {
@@ -393,7 +393,7 @@ public class Player extends LivingEntity implements CommandSender {
 	}
 	
 	public void setTitleTimer(int fadeIn, int stay, int fadeOut) {
-		sendTitlePart(TitlePart.TIMES, Title.Times.of(Duration.ofMillis(fadeIn * 50), Duration.ofMillis(stay * 50), Duration.ofMillis(fadeOut * 50)));
+		sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ofMillis(fadeIn * 50), Duration.ofMillis(stay * 50), Duration.ofMillis(fadeOut * 50)));
 	}
 	
 	@Deprecated
@@ -409,7 +409,7 @@ public class Player extends LivingEntity implements CommandSender {
 	}
 	
 	public void setTitleSubTitle(String title, String subTitle, int fadeIn, int stay, int fadeOut) {
-		sendTitlePart(TitlePart.TIMES, Title.Times.of(Duration.ofMillis(fadeIn * 50), Duration.ofMillis(stay * 50), Duration.ofMillis(fadeOut * 50)));
+		sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ofMillis(fadeIn * 50), Duration.ofMillis(stay * 50), Duration.ofMillis(fadeOut * 50)));
 		sendTitlePart(TitlePart.SUBTITLE, LegacyComponentSerializer.legacySection().deserialize(subTitle));
 		sendTitlePart(TitlePart.TITLE, LegacyComponentSerializer.legacySection().deserialize(title));
 	}
@@ -419,7 +419,7 @@ public class Player extends LivingEntity implements CommandSender {
 		sendMessage(source, message, type, null, Instant.now());
 	}
 
-	public void sendMessage(Identity source, Component message, MessageType type, NetworkEncryptionUtils.SignatureData signature, Instant time) {
+	public void sendMessage(Identity source, Component message, MessageType type, MessageSignature signature, Instant time) {
 		try {
 			PacketOut chat;
 			switch (type) {
@@ -434,7 +434,7 @@ public class Player extends LivingEntity implements CommandSender {
 					*/
 				case SYSTEM:
 				default:
-					chat = new ClientboundSystemChatPacket(message, 1);
+					chat = new ClientboundSystemChatPacket(message, false);
 					break;
 			}
 			clientConnection.sendPacket(chat);
@@ -469,7 +469,7 @@ public class Player extends LivingEntity implements CommandSender {
 	@Override
 	public void sendActionBar(Component message) {
 		try {
-			ClientboundSystemChatPacket chat = new ClientboundSystemChatPacket(message, 2);
+			ClientboundSystemChatPacket chat = new ClientboundSystemChatPacket(message, true);
 			clientConnection.sendPacket(chat);
 		} catch (IOException ignored) {}
 	}
