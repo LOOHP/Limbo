@@ -310,7 +310,7 @@ public class ClientConnection extends Thread {
                 channel.output.writeByte(255);
                 String str = inetAddress.getHostName() + ":" + clientSocket.getPort();
                 if(!properties.isLogPlayerIPAddresses())
-                    str = "<ip address withheld>" + ":" + clientSocket.getPort();;
+                    str = "<ip address withheld>" + ":" + clientSocket.getPort();
                 Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Legacy Status has pinged");
                 ServerProperties p = Limbo.getInstance().getServerProperties();
                 StatusPingEvent event = Limbo.getInstance().getEventsManager().callEvent(new StatusPingEvent(this, p.getVersionString(), p.getProtocol(), p.getMotd(), p.getMaxPlayers(), Limbo.getInstance().getPlayers().size(), p.getFavicon().orElse(null)));
@@ -344,7 +344,7 @@ public class ClientConnection extends Thread {
 
                                 String str = inetAddress.getHostName() + ":" + clientSocket.getPort();
                                 if(!properties.isLogPlayerIPAddresses())
-                                    str = "<ip address withheld>" + ":" + clientSocket.getPort();;
+                                    str = "<ip address withheld>" + ":" + clientSocket.getPort();
                                 if (Limbo.getInstance().getServerProperties().handshakeVerboseEnabled()) {
                                     Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Handshake Status has pinged");
                                 }
