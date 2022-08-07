@@ -309,8 +309,9 @@ public class ClientConnection extends Thread {
                 state = ClientState.LEGACY;
                 channel.output.writeByte(255);
                 String str = inetAddress.getHostName() + ":" + clientSocket.getPort();
-                if(!properties.isLogPlayerIPAddresses())
+                if(!properties.isLogPlayerIPAddresses()) {
                     str = "<ip address withheld>" + ":" + clientSocket.getPort();
+                }
                 Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Legacy Status has pinged");
                 ServerProperties p = Limbo.getInstance().getServerProperties();
                 StatusPingEvent event = Limbo.getInstance().getEventsManager().callEvent(new StatusPingEvent(this, p.getVersionString(), p.getProtocol(), p.getMotd(), p.getMaxPlayers(), Limbo.getInstance().getPlayers().size(), p.getFavicon().orElse(null)));
@@ -343,8 +344,9 @@ public class ClientConnection extends Thread {
                                 ServerProperties properties = Limbo.getInstance().getServerProperties();
 
                                 String str = inetAddress.getHostName() + ":" + clientSocket.getPort();
-                                if(!properties.isLogPlayerIPAddresses())
+                                if(!properties.isLogPlayerIPAddresses()) {
                                     str = "<ip address withheld>" + ":" + clientSocket.getPort();
+                                }
                                 if (Limbo.getInstance().getServerProperties().handshakeVerboseEnabled()) {
                                     Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Handshake Status has pinged");
                                 }
@@ -504,9 +506,9 @@ public class ClientConnection extends Thread {
                 sendPacket(abilities);
 
                 String str = inetAddress.getHostName() + ":" + clientSocket.getPort() + "|" + player.getName() + "(" + player.getUniqueId() + ")";
-                if(!properties.isLogPlayerIPAddresses())
+                if(!properties.isLogPlayerIPAddresses()) {
                     str = "<ip address withheld>" + ":" + clientSocket.getPort() + "|" + player.getName() + "(" + player.getUniqueId() + ")";
-
+                }
                 Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had connected to the Limbo server!");
 
                 player.playerInteractManager.update();
@@ -675,8 +677,9 @@ public class ClientConnection extends Thread {
                 Limbo.getInstance().getEventsManager().callEvent(new PlayerQuitEvent(player));
 
                 str = inetAddress.getHostName() + ":" + clientSocket.getPort() + "|" + player.getName();
-                if(!properties.isLogPlayerIPAddresses())
+                if(!properties.isLogPlayerIPAddresses()) {
                     str = "<ip address withheld>" + ":" + clientSocket.getPort() + clientSocket.getPort() + "|" + player.getName();
+                }
 
                 Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had disconnected!");
 
