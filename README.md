@@ -35,3 +35,15 @@ IP: mc.loohpjames.com
 </dependency>
 ```
 Replace `VERSION` with the version.
+
+## Partnerships
+
+### Server Hosting
+**Use the link or click the banner** below to **get a 25% discount off** your first month when buying any of their gaming servers!<br>
+It also **supports my development**, take it as an alternative way to donate while getting your very own Minecraft server as well!
+
+*P.S. Using the link or clicking the banner rather than the code supports me more! (Costs you no extra!)*
+
+**https://www.bisecthosting.com/loohp**
+
+![https://www.bisecthosting.com/loohp](https://www.bisecthosting.com/partners/custom-banners/c5357014-3610-418b-9600-88baaa75431e.png)
