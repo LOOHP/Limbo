@@ -616,7 +616,7 @@ public class ClientConnection extends Thread {
                             long lastPayload = getLastKeepAlivePayLoad();
                             PacketPlayInKeepAlive alive = (PacketPlayInKeepAlive) packetIn;
                             if (lastPayload == -1) {
-                                Limbo.getInstance().getConsole().sendMessage("Unsolicited KeepAlive packet for player " + player.getName() + " (payload " + String.valueOf(alive.getPayload()) + ")");
+                                Limbo.getInstance().getConsole().sendMessage("Unsolicited KeepAlive packet for player " + player.getName());
                             } else if (alive.getPayload() != lastPayload) {
                                 Limbo.getInstance().getConsole().sendMessage("Incorrect Payload received in KeepAlive packet for player " + player.getName());
                                 break;
