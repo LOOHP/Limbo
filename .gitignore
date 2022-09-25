@@ -12,3 +12,12 @@ target/
 .classpath
 .project
 .settings/ 
+
+Loohp-Limbo.jar
+Loohp-Limbo-*.jar
+internal_data/
+logs/
+permission.yml
+plugins/
+server.properties
+
