@@ -613,8 +613,11 @@ public class ClientConnection extends Thread {
                                 processMoveEvent.consume(event, to);
                             }
                         } else if (packetIn instanceof PacketPlayInKeepAlive) {
+                            long lastPayload = getLastKeepAlivePayLoad();
                             PacketPlayInKeepAlive alive = (PacketPlayInKeepAlive) packetIn;
-                            if (alive.getPayload() != getLastKeepAlivePayLoad()) {
+                            if (lastPayload == -1) {
+                                Limbo.getInstance().getConsole().sendMessage("Unsolicited KeepAlive packet for player " + player.getName());
+                            } else if (alive.getPayload() != lastPayload) {
                                 Limbo.getInstance().getConsole().sendMessage("Incorrect Payload received in KeepAlive packet for player " + player.getName());
                                 break;
                             }
