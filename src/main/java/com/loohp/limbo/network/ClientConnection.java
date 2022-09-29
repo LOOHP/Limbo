@@ -362,6 +362,7 @@ public class ClientConnection extends Thread {
                         state = ClientState.LOGIN;
 
                         if (isBungeecord || isBungeeGuard) {
+                            ServerProperties properties = Limbo.getInstance().getServerProperties();
                             try {
                                 String[] data = bungeeForwarding.split("\\x00");
                                 String host = "";
@@ -370,8 +371,11 @@ public class ClientConnection extends Thread {
                                 String bungee = "";
                                 String skinData = "";
                                 int state = 0;
-                                for(int i = 0; i < data.length; i++) {
-                                    Limbo.getInstance().getConsole().sendMessage(String.valueOf(i) + ": " + data[i]);
+                                for (int i = 0; i < data.length; i++) {
+                                    if (!properties.isReducedDebugInfo()) {
+                                        Limbo.getInstance().getConsole().sendMessage(String.valueOf(i) + ": " + data[i]);
+                                    }
+
                                     switch(state) {
                                     default:
                                         Limbo.getInstance().getConsole().sendMessage(String.valueOf(i) + ": ignore data: State: " + String.valueOf(state));
@@ -401,12 +405,17 @@ public class ClientConnection extends Thread {
                                         break;
                                     }
                                 }
+                                if (state != 6) {
+                                    throw new IllegalStateException("Illegal bungee state: " + String.valueOf(state));
+                                }
 
-                                Limbo.getInstance().getConsole().sendMessage("Host: " + host);
-                                Limbo.getInstance().getConsole().sendMessage("Floodgate: " + floodgate);
-                                Limbo.getInstance().getConsole().sendMessage("clientIp: " + clientIp);
-                                Limbo.getInstance().getConsole().sendMessage("bungee: " + bungee);
-                                Limbo.getInstance().getConsole().sendMessage("skinData: " + skinData);
+                                if (!properties.isReducedDebugInfo()) {
+                                    Limbo.getInstance().getConsole().sendMessage("Host: " + host);
+                                    Limbo.getInstance().getConsole().sendMessage("Floodgate: " + floodgate);
+                                    Limbo.getInstance().getConsole().sendMessage("clientIp: " + clientIp);
+                                    Limbo.getInstance().getConsole().sendMessage("bungee: " + bungee);
+                                    Limbo.getInstance().getConsole().sendMessage("skinData: " + skinData);
+                                }
 
                                 bungeeUUID = UUID.fromString(bungee.replaceFirst("([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)", "$1-$2-$3-$4-$5"));
                                 inetAddress = InetAddress.getByName(clientIp);
@@ -434,10 +443,12 @@ public class ClientConnection extends Thread {
                                     break;
                                 }
                             } catch (Exception e) {
-                                StringWriter sw = new StringWriter();
-                                PrintWriter pw = new PrintWriter(sw);
-                                e.printStackTrace(pw);
-                                Limbo.getInstance().getConsole().sendMessage(sw.toString());
+                                if (!properties.isReducedDebugInfo()) {
+                                    StringWriter sw = new StringWriter();
+                                    PrintWriter pw = new PrintWriter(sw);
+                                    e.printStackTrace(pw);
+                                    Limbo.getInstance().getConsole().sendMessage(sw.toString());
+                                }
                                 Limbo.getInstance().getConsole().sendMessage("If you wish to use bungeecord's IP forwarding, please enable that in your bungeecord config.yml as well!");
                                 disconnectDuringLogin(new BaseComponent[] {new TextComponent(ChatColor.RED + "Please connect from the proxy!")});
                             }
