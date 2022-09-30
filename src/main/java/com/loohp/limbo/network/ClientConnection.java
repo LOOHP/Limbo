@@ -119,6 +119,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 
 public class ClientConnection extends Thread {
 
@@ -360,17 +362,68 @@ public class ClientConnection extends Thread {
                         state = ClientState.LOGIN;
 
                         if (isBungeecord || isBungeeGuard) {
+                            ServerProperties properties = Limbo.getInstance().getServerProperties();
                             try {
                                 String[] data = bungeeForwarding.split("\\x00");
-                                //String host = data[0];
-                                String ip = data[1];
+                                String host = "";
+                                String floodgate = "";
+                                String clientIp = "";
+                                String bungee = "";
+                                String skinData = "";
+                                int state = 0;
+                                for (int i = 0; i < data.length; i++) {
+                                    if (!properties.isReducedDebugInfo()) {
+                                        Limbo.getInstance().getConsole().sendMessage(String.valueOf(i) + ": " + data[i]);
+                                    }
 
-                                bungeeUUID = UUID.fromString(data[2].replaceFirst("([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)", "$1-$2-$3-$4-$5"));
-                                inetAddress = InetAddress.getByName(ip);
+                                    switch (state) {
+                                    default:
+                                        Limbo.getInstance().getConsole().sendMessage(String.valueOf(i) + ": ignore data: State: " + String.valueOf(state));
+                                        break;
+                                    case 0:
+                                        host = data[i];
+                                        state = 1;
+                                        break;
+                                    case 1:
+                                        if (data[i].startsWith("^Floodgate^")) {
+                                            floodgate = data[i];
+                                            state = 2;
+                                            break;
+                                        }
+                                        /* fallthrough */
+                                    case 2:
+                                        clientIp = data[i];
+                                        state = 3;
+                                        break;
+                                    case 3:
+                                        bungee = data[i];
+                                        state = 4;
+                                        break;
+                                    case 4:
+                                        skinData = data[i];
+                                        state = 6;
+                                        break;
+                                    }
+                                }
+                                if (state != 6) {
+                                    throw new IllegalStateException("Illegal bungee state: " + String.valueOf(state));
+                                }
+
+                                if (!properties.isReducedDebugInfo()) {
+                                    Limbo.getInstance().getConsole().sendMessage("Host: " + host);
+                                    Limbo.getInstance().getConsole().sendMessage("Floodgate: " + floodgate);
+                                    Limbo.getInstance().getConsole().sendMessage("clientIp: " + clientIp);
+                                    Limbo.getInstance().getConsole().sendMessage("bungee: " + bungee);
+                                    Limbo.getInstance().getConsole().sendMessage("skinData: " + skinData);
+                                }
+
+                                bungeeUUID = UUID.fromString(bungee.replaceFirst("([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)", "$1-$2-$3-$4-$5"));
+                                inetAddress = InetAddress.getByName(clientIp);
 
                                 boolean bungeeGuardFound = false;
-                                if (data.length > 3) {
-                                    JSONArray skinJson = (JSONArray) new JSONParser().parse(data[3]);
+
+                                if (skinData != "") {
+                                    JSONArray skinJson = (JSONArray) new JSONParser().parse(skinData);
 
                                     for (Object obj : skinJson) {
                                         JSONObject property = (JSONObject) obj;
@@ -390,6 +443,12 @@ public class ClientConnection extends Thread {
                                     break;
                                 }
                             } catch (Exception e) {
+                                if (!properties.isReducedDebugInfo()) {
+                                    StringWriter sw = new StringWriter();
+                                    PrintWriter pw = new PrintWriter(sw);
+                                    e.printStackTrace(pw);
+                                    Limbo.getInstance().getConsole().sendMessage(sw.toString());
+                                }
                                 Limbo.getInstance().getConsole().sendMessage("If you wish to use bungeecord's IP forwarding, please enable that in your bungeecord config.yml as well!");
                                 disconnectDuringLogin(new BaseComponent[] {new TextComponent(ChatColor.RED + "Please connect from the proxy!")});
                             }
