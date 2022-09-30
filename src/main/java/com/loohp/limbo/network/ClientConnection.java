@@ -376,7 +376,7 @@ public class ClientConnection extends Thread {
                                         Limbo.getInstance().getConsole().sendMessage(String.valueOf(i) + ": " + data[i]);
                                     }
 
-                                    switch(state) {
+                                    switch (state) {
                                     default:
                                         Limbo.getInstance().getConsole().sendMessage(String.valueOf(i) + ": ignore data: State: " + String.valueOf(state));
                                         break;
@@ -385,7 +385,7 @@ public class ClientConnection extends Thread {
                                         state = 1;
                                         break;
                                     case 1:
-                                        if(data[i].startsWith("^Floodgate^")) {
+                                        if (data[i].startsWith("^Floodgate^")) {
                                             floodgate = data[i];
                                             state = 2;
                                             break;
