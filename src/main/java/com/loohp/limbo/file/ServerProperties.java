@@ -22,20 +22,31 @@ package com.loohp.limbo.file;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import com.google.common.collect.Lists;
+import com.loohp.limbo.Console;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.utils.GameMode;
@@ -72,6 +83,8 @@ public class ServerProperties {
 	private int viewDistance;
 	private double ticksPerSecond;
 	private boolean handshakeVerbose;
+	private boolean enforceAllowlist;
+	private ArrayList<UUID> allowlist;
 	
 	private String resourcePackSHA1;
 	private String resourcePackLink;
@@ -184,9 +197,65 @@ public class ServerProperties {
 			favicon = Optional.empty();
 		}
 
+		enforceAllowlist = Boolean.parseBoolean(prop.getProperty("enforce-allowlist"));
+		if (enforceAllowlist) {
+			reloadAllowlist();
+		}
+
 		Limbo.getInstance().getConsole().sendMessage("Loaded server.properties");
 	}
-	
+
+	public void reloadAllowlist() {
+        Console console = Limbo.getInstance().getConsole();
+
+		allowlist = new ArrayList<UUID>();
+        try {
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(new FileReader("allowlist.json"));
+
+            if (!(obj instanceof JSONArray)) {
+                console.sendMessage("allowlist: expected [] got {}");
+                return;
+            }
+
+            JSONArray array = (JSONArray) obj;
+
+            Iterator<?> iter = array.iterator();
+            while (iter.hasNext()) {
+                Object o = iter.next();
+                if (!(o instanceof JSONObject)) {
+                    console.sendMessage("allowlist: array element is not an object");
+                    continue;
+                }
+
+                JSONObject element = (JSONObject) o;
+                o = element.get("uuid");
+                if (o == null) {
+                    console.sendMessage("allowlist: missing uuid attribute");
+                    continue;
+                }
+                if (!(o instanceof String)) {
+                    console.sendMessage("allowlist: uuid is not a string");
+                    continue;
+                }
+
+				String uuidStr = (String) o;
+                UUID allowedUuid = UUID.fromString(uuidStr);
+				allowlist.add(allowedUuid);
+            }
+        } catch (IllegalArgumentException e) {
+                console.sendMessage(e.toString());
+        } catch (FileNotFoundException e) {
+                console.sendMessage(String.format("allowlist: %s", e.toString()));
+        } catch (IOException e) {
+                console.sendMessage(String.format("allowlist: %s", e.toString()));
+        } catch (ParseException e) {
+                console.sendMessage(String.format(" allowlist: parse: %s", e.toString()));
+        }
+
+		console.sendMessage("allowlist: reloaded");
+	}
+
 	public String getServerImplementationVersion() {
 		return Limbo.getInstance().SERVER_IMPLEMENTATION_VERSION;
 	}
@@ -293,6 +362,14 @@ public class ServerProperties {
 
 	public boolean handshakeVerboseEnabled() {
 		return handshakeVerbose;
+	}
+
+	public boolean isEnforceAllowlist() {
+		return enforceAllowlist;
+	}
+
+	public ArrayList<UUID> getAllowlist() {
+		return allowlist;
 	}
 	
 	public String getResourcePackLink() {

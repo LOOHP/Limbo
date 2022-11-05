@@ -432,6 +432,31 @@ public class Limbo {
 	public ServerProperties getServerProperties() {
 		return properties;
 	}
+
+	public void reloadAllowlist() {
+		properties.reloadAllowlist();
+	}
+
+	public boolean uuidIsAllowed(UUID requestedUuid) {
+		if (!properties.isEnforceAllowlist()) {
+			return true;
+		}
+
+		for (UUID allowedUuid : properties.getAllowlist()) {
+			if (requestedUuid.equals(allowedUuid)) {
+				if(!properties.isReducedDebugInfo()) {
+					Limbo.getInstance().getConsole().sendMessage(String.format("allowlist: %s allowed", requestedUuid.toString()));
+				}
+				return true;
+			}
+		}
+
+		if(!properties.isReducedDebugInfo()) {
+			Limbo.getInstance().getConsole().sendMessage(String.format("allowlist: %s not allowed", requestedUuid.toString()));
+		}
+
+		return false;
+	}
 	
 	public ServerConnection getServerConnection() {
 		return server;

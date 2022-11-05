@@ -19,7 +19,6 @@
 
 package com.loohp.limbo.network;
 
-import com.loohp.limbo.Console;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.events.player.PlayerJoinEvent;
 import com.loohp.limbo.events.player.PlayerSpawnEvent;
@@ -98,14 +97,11 @@ import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
@@ -113,7 +109,6 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -300,84 +295,6 @@ public class ClientConnection extends Thread {
         });
     }
 
-    public boolean uuidAllowed(UUID uuid, boolean verbose) {
-        Console console = Limbo.getInstance().getConsole();
-
-        try {
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(new FileReader("allowlist.json"));
-
-            if (!(obj instanceof JSONArray)) {
-                if (verbose) {
-                    console.sendMessage("allowlist: expected [] got {}");
-                }
-                return false;
-            }
-
-            JSONArray array = (JSONArray) obj;
-
-            Iterator<?> iter = array.iterator();
-            while (iter.hasNext()) {
-                Object o = iter.next();
-                if (!(o instanceof JSONObject)) {
-                    if (verbose) {
-                        console.sendMessage("allowlist: array element is not an object");
-                    }
-                    continue;
-                }
-
-                JSONObject element = (JSONObject) o;
-                o = element.get("uuid");
-                if (o == null) {
-                    if (verbose) {
-                        console.sendMessage("allowlist: missing uuid attribute");
-                    }
-                    continue;
-                }
-                if (!(o instanceof String)) {
-                    if (verbose) {
-                        console.sendMessage("allowlist: uuid is not a string");
-                    }
-                    continue;
-                }
-                String uuidStr = (String) o;
-
-                UUID allowedUuid = UUID.fromString(uuidStr);
-                if (uuid.equals(allowedUuid)) {
-                    if(verbose) {
-                        console.sendMessage(String.format("allowlist: %s allowed", uuid.toString()));
-                    }
-                    return true;
-                }
-            }
-        } catch (IllegalArgumentException e) {
-            if (verbose) {
-                console.sendMessage(e.toString());
-            }
-            return false;
-        } catch (FileNotFoundException e) {
-            if (verbose) {
-                console.sendMessage(String.format("allowlist: no allowlist: %s allowed", uuid.toString()));
-            }
-            return true;
-        } catch (IOException e) {
-            if (verbose) {
-                console.sendMessage(String.format("allowlist: %s", e.toString()));
-            }
-            return false;
-        } catch (ParseException e) {
-            if (verbose) {
-                console.sendMessage(String.format(" allowlist: parse: %s", e.toString()));
-            }
-            return false;
-        }
-
-        if (verbose) {
-            console.sendMessage(String.format("allowlist: %s is not allowed", uuid.toString()));
-        }
-        return false;
-    }
-
     @SuppressWarnings("deprecation")
     @Override
     public void run() {
@@ -553,7 +470,7 @@ public class ClientConnection extends Thread {
 
                                 UUID uuid = isBungeecord || isBungeeGuard ? bungeeUUID : UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
 
-                                if (!uuidAllowed(uuid, !properties.isReducedDebugInfo())) {
+                                if (!Limbo.getInstance().uuidIsAllowed(uuid)) {
                                     disconnectDuringLogin(TextComponent.fromLegacyText("You are not invited to this server"));
                                     break;
                                 }
