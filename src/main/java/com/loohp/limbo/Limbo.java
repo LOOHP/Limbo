@@ -442,13 +442,11 @@ public class Limbo {
 			return true;
 		}
 
-		for (UUID allowedUuid : properties.getAllowlist()) {
-			if (requestedUuid.equals(allowedUuid)) {
-				if(!properties.isReducedDebugInfo()) {
-					Limbo.getInstance().getConsole().sendMessage(String.format("allowlist: %s allowed", requestedUuid.toString()));
-				}
-				return true;
+		if (properties.uuidIsAllowed(requestedUuid)) {
+			if(!properties.isReducedDebugInfo()) {
+				Limbo.getInstance().getConsole().sendMessage(String.format("allowlist: %s allowed", requestedUuid.toString()));
 			}
+			return true;
 		}
 
 		if(!properties.isReducedDebugInfo()) {

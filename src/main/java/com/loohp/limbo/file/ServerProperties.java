@@ -31,6 +31,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -84,7 +85,7 @@ public class ServerProperties {
 	private double ticksPerSecond;
 	private boolean handshakeVerbose;
 	private boolean enforceAllowlist;
-	private ArrayList<UUID> allowlist;
+	private HashMap<UUID, Boolean> allowlist;
 	
 	private String resourcePackSHA1;
 	private String resourcePackLink;
@@ -208,7 +209,7 @@ public class ServerProperties {
 	public void reloadAllowlist() {
         Console console = Limbo.getInstance().getConsole();
 
-		allowlist = new ArrayList<UUID>();
+		allowlist = new HashMap<UUID, Boolean>();
         try {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(new FileReader("allowlist.json"));
@@ -241,7 +242,7 @@ public class ServerProperties {
 
 				String uuidStr = (String) o;
                 UUID allowedUuid = UUID.fromString(uuidStr);
-				allowlist.add(allowedUuid);
+				allowlist.put(allowedUuid, true);
             }
         } catch (IllegalArgumentException e) {
                 console.sendMessage(e.toString());
@@ -368,8 +369,11 @@ public class ServerProperties {
 		return enforceAllowlist;
 	}
 
-	public ArrayList<UUID> getAllowlist() {
-		return allowlist;
+	public boolean uuidIsAllowed(UUID requestedUuid)  {
+		if (allowlist.containsKey(requestedUuid)) {
+			return true;
+		}
+		return false;
 	}
 	
 	public String getResourcePackLink() {
