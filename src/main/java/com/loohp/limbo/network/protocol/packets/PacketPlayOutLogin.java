@@ -137,10 +137,10 @@ public class PacketPlayOutLogin extends PacketOut {
 		output.writeInt(entityId);
 		output.writeBoolean(isHardcore);
         output.writeByte((byte) gamemode.getId());
-		output.writeByte((byte) gamemode.getId());
+		output.writeByte(-1);
 		DataTypeIO.writeVarInt(output, worlds.size());
-		for (int u = 0; u < worlds.size(); u++) {
-			DataTypeIO.writeString(output, new NamespacedKey(worlds.get(u).getName()).toString(), StandardCharsets.UTF_8);
+		for (World world : worlds) {
+			DataTypeIO.writeString(output, new NamespacedKey(world.getName()).toString(), StandardCharsets.UTF_8);
 		}
 		DataTypeIO.writeCompoundTag(output, dimensionCodec);
 		DataTypeIO.writeString(output, world.getEnvironment().getNamespacedKey().toString(), StandardCharsets.UTF_8);
@@ -154,7 +154,7 @@ public class PacketPlayOutLogin extends PacketOut {
 		output.writeBoolean(isDebug);
 		output.writeBoolean(isFlat);
 		output.writeBoolean(false);
-		
+
 		return buffer.toByteArray();
 	}
 

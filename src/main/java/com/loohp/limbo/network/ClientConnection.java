@@ -21,12 +21,12 @@ package com.loohp.limbo.network;
 
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.events.player.PlayerJoinEvent;
-import com.loohp.limbo.events.player.PlayerSpawnEvent;
 import com.loohp.limbo.events.player.PlayerLoginEvent;
 import com.loohp.limbo.events.player.PlayerMoveEvent;
 import com.loohp.limbo.events.player.PlayerQuitEvent;
 import com.loohp.limbo.events.player.PlayerResourcePackStatusEvent;
 import com.loohp.limbo.events.player.PlayerSelectedSlotChangeEvent;
+import com.loohp.limbo.events.player.PlayerSpawnEvent;
 import com.loohp.limbo.events.player.PluginMessageEvent;
 import com.loohp.limbo.events.status.StatusPingEvent;
 import com.loohp.limbo.file.ServerProperties;
@@ -88,7 +88,6 @@ import com.loohp.limbo.utils.MojangAPIUtils.SkinResponse;
 import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.world.BlockPosition;
 import com.loohp.limbo.world.World;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
@@ -104,11 +103,14 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -121,8 +123,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.io.StringWriter;
-import java.io.PrintWriter;
 
 public class ClientConnection extends Thread {
 
@@ -429,7 +429,7 @@ public class ClientConnection extends Thread {
 
                                 boolean bungeeGuardFound = false;
 
-                                if (skinData != "") {
+                                if (!skinData.equals("")) {
                                     JSONArray skinJson = (JSONArray) new JSONParser().parse(skinData);
 
                                     for (Object obj : skinJson) {
@@ -460,10 +460,10 @@ public class ClientConnection extends Thread {
                                 disconnectDuringLogin(new BaseComponent[] {new TextComponent(ChatColor.RED + "Please connect from the proxy!")});
                             }
                         }
-
                         int messageId = this.random.nextInt();
                         while (clientSocket.isConnected()) {
                             PacketIn packetIn = channel.readPacket();
+
                             if (packetIn instanceof PacketLoginInLoginStart) {
                                 PacketLoginInLoginStart start = (PacketLoginInLoginStart) packetIn;
                                 String username = start.getUsername();
@@ -474,7 +474,10 @@ public class ClientConnection extends Thread {
                                     continue;
                                 }
 
-                                UUID uuid = isBungeecord || isBungeeGuard ? bungeeUUID : UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
+                                UUID uuid = isBungeecord || isBungeeGuard ? bungeeUUID : (start.hasUniqueId() ? start.getUniqueId() : null);
+                                if (uuid == null) {
+                                    uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
+                                }
 
                                 if (!properties.enforceWhitelist() && properties.uuidWhitelisted(uuid)) {
                                     disconnectDuringLogin(TextComponent.fromLegacyText("You are not whitelisted on the server"));
@@ -489,7 +492,6 @@ public class ClientConnection extends Thread {
                                 player = new Player(this, username, uuid, Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
                                 player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
                                 Limbo.getInstance().addPlayer(player);
-
                                 break;
                             } else if (packetIn instanceof PacketLoginInPluginMessaging) {
                                 PacketLoginInPluginMessaging response = (PacketLoginInPluginMessaging) packetIn;
@@ -546,18 +548,18 @@ public class ClientConnection extends Thread {
                 PlayerSpawnEvent spawnEvent = Limbo.getInstance().getEventsManager().callEvent(new PlayerSpawnEvent(player, worldSpawn));
                 worldSpawn = spawnEvent.getSpawnLocation();
                 World world = worldSpawn.getWorld();
-
+                
                 PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, properties.getDefaultGamemode(), Limbo.getInstance().getWorlds(), Limbo.getInstance().getDimensionRegistry().getCodec(), world, 0, (byte) properties.getMaxPlayers(), 8, 8, properties.isReducedDebugInfo(), true, false, true);
                 sendPacket(join);
                 Limbo.getInstance().getUnsafe().setPlayerGameModeSilently(player, properties.getDefaultGamemode());
-
+                
                 ByteArrayOutputStream brandOut = new ByteArrayOutputStream();
                 DataTypeIO.writeString(new DataOutputStream(brandOut), properties.getServerModName(), StandardCharsets.UTF_8);
                 sendPluginMessage(BRAND_ANNOUNCE_CHANNEL, brandOut.toByteArray());
 
                 SkinResponse skinresponce = (isVelocityModern || isBungeeGuard || isBungeecord) && forwardedSkin != null ? forwardedSkin : MojangAPIUtils.getSkinFromMojangServer(player.getName());
                 PlayerSkinProperty skin = skinresponce != null ? new PlayerSkinProperty(skinresponce.getSkin(), skinresponce.getSignature()) : null;
-                PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(PlayerInfoAction.ADD_PLAYER, player.getUniqueId(), new PlayerInfoData.PlayerInfoDataAddPlayer(player.getName(), Optional.ofNullable(skin), properties.getDefaultGamemode(), 0, false, Optional.empty()));
+                PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(EnumSet.of(PlayerInfoAction.ADD_PLAYER, PlayerInfoAction.UPDATE_GAME_MODE, PlayerInfoAction.UPDATE_LISTED, PlayerInfoAction.UPDATE_LATENCY, PlayerInfoAction.UPDATE_DISPLAY_NAME), player.getUniqueId(), new PlayerInfoData.PlayerInfoDataAddPlayer(player.getName(), true, Optional.ofNullable(skin), properties.getDefaultGamemode(), 0, false, Optional.empty()));
                 sendPacket(info);
 
                 Set<PlayerAbilityFlags> flags = new HashSet<>();
@@ -569,7 +571,7 @@ public class ClientConnection extends Thread {
                 }
                 PacketPlayOutPlayerAbilities abilities = new PacketPlayOutPlayerAbilities(0.05F, 0.1F, flags.toArray(new PlayerAbilityFlags[flags.size()]));
                 sendPacket(abilities);
-
+                
                 String str = (properties.isLogPlayerIPAddresses() ? inetAddress.getHostName() : "<ip address withheld>") + ":" + clientSocket.getPort() + "|" + player.getName() + "(" + player.getUniqueId() + ")";
                 Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had connected to the Limbo server!");
 
@@ -590,14 +592,14 @@ public class ClientConnection extends Thread {
                 player.getDataWatcher().update();
                 PacketPlayOutEntityMetadata show = new PacketPlayOutEntityMetadata(player, false, Player.class.getDeclaredField("skinLayers"));
                 sendPacket(show);
-
+                
                 Limbo.getInstance().getEventsManager().callEvent(new PlayerJoinEvent(player));
-
+                
                 if (properties.isAllowFlight()) {
                     PacketPlayOutGameState state = new PacketPlayOutGameState(3, player.getGamemode().getId());
                     sendPacket(state);
                 }
-
+                
                 // RESOURCEPACK CODE CONRIBUTED BY GAMERDUCK123
                 if (!properties.getResourcePackLink().equalsIgnoreCase("")) {
                     if (!properties.getResourcePackSHA1().equalsIgnoreCase("")) {
@@ -610,16 +612,18 @@ public class ClientConnection extends Thread {
                 } else {
                     //RESOURCEPACK NOT ENABLED
                 }
-
+                
                 // PLAYER LIST HEADER AND FOOTER CODE CONRIBUTED BY GAMERDUCK123
                 player.sendPlayerListHeaderAndFooter(properties.getTabHeader(), properties.getTabFooter());
-
+                
                 ready = true;
-
+                
                 keepAliveTask = new TimerTask() {
                     @Override
                     public void run() {
-                        if (ready) {
+                        if (state.equals(ClientState.DISCONNECTED)) {
+                            this.cancel();
+                        } else if (ready && state.equals(ClientState.PLAY)) {
                             long now = System.currentTimeMillis();
                             if (now - getLastPacketTimestamp() > 15000) {
                                 PacketPlayOutKeepAlive keepAlivePacket = new PacketPlayOutKeepAlive(now);
@@ -629,13 +633,11 @@ public class ClientConnection extends Thread {
                                 } catch (Exception e) {
                                 }
                             }
-                        } else {
-                            this.cancel();
                         }
                     }
                 };
                 new Timer().schedule(keepAliveTask, 5000, 10000);
-
+                
                 while (clientSocket.isConnected()) {
                     try {
                         CheckedBiConsumer<PlayerMoveEvent, Location, IOException> processMoveEvent = (event, originalTo) -> {

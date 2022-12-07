@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,31 +34,26 @@ import com.loohp.limbo.utils.GameMode;
 public class PacketPlayOutPlayerInfo extends PacketOut {
 
 	public enum PlayerInfoAction {
-		ADD_PLAYER(0), UPDATE_GAMEMODE(1), UPDATE_LATENCY(2), UPDATE_DISPLAY_NAME(3), REMOVE_PLAYER(4);
-
-		private final int id;
-
-		PlayerInfoAction(int id) {
-			this.id = id;
-		}
-
-		public int getId() {
-			return id;
-		}
+		ADD_PLAYER,
+		INITIALIZE_CHAT,
+		UPDATE_GAME_MODE,
+		UPDATE_LISTED,
+		UPDATE_LATENCY,
+		UPDATE_DISPLAY_NAME;
 	}
 
-	private PlayerInfoAction action;
+	private EnumSet<PlayerInfoAction> actions;
 	private UUID uuid;
 	private PlayerInfoData data;
 
-	public PacketPlayOutPlayerInfo(PlayerInfoAction action, UUID uuid, PlayerInfoData data) {
-		this.action = action;
+	public PacketPlayOutPlayerInfo(EnumSet<PlayerInfoAction> actions, UUID uuid, PlayerInfoData data) {
+		this.actions = actions;
 		this.uuid = uuid;
 		this.data = data;
 	}
 
-	public PlayerInfoAction getAction() {
-		return action;
+	public EnumSet<PlayerInfoAction> getActions() {
+		return actions;
 	}
 
 	public UUID getUuid() {
@@ -74,41 +70,52 @@ public class PacketPlayOutPlayerInfo extends PacketOut {
 		
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(Packet.getPlayOut().get(getClass()));
-		DataTypeIO.writeVarInt(output, action.getId());
+
+		DataTypeIO.writeEnumSet(output, actions, PlayerInfoAction.class);
 		DataTypeIO.writeVarInt(output, 1);
 		DataTypeIO.writeUUID(output, uuid);
-		
-		switch (action) {
-		case ADD_PLAYER:
-			PlayerInfoDataAddPlayer data = (PlayerInfoDataAddPlayer) this.data;
-			DataTypeIO.writeString(output, data.getName(), StandardCharsets.UTF_8);
-			if (data.getProperty().isPresent()) {
-				DataTypeIO.writeVarInt(output, 1);
-				DataTypeIO.writeString(output, "textures", StandardCharsets.UTF_8);
-				DataTypeIO.writeString(output, data.getProperty().get().getSkin(), StandardCharsets.UTF_8);
-				output.writeBoolean(true);
-				DataTypeIO.writeString(output, data.getProperty().get().getSignature(), StandardCharsets.UTF_8);
-			} else {
-				DataTypeIO.writeVarInt(output, 0);
+
+		PlayerInfoDataAddPlayer data = (PlayerInfoDataAddPlayer) this.data;
+		for (PlayerInfoAction action : actions) {
+			switch (action) {
+				case ADD_PLAYER: {
+					DataTypeIO.writeString(output, data.getName(), StandardCharsets.UTF_8);
+					if (data.getProperty().isPresent()) {
+						DataTypeIO.writeVarInt(output, 1);
+						DataTypeIO.writeString(output, "textures", StandardCharsets.UTF_8);
+						DataTypeIO.writeString(output, data.getProperty().get().getSkin(), StandardCharsets.UTF_8);
+						output.writeBoolean(true);
+						DataTypeIO.writeString(output, data.getProperty().get().getSignature(), StandardCharsets.UTF_8);
+					} else {
+						DataTypeIO.writeVarInt(output, 0);
+					}
+					break;
+				}
+				case INITIALIZE_CHAT: {
+					break;
+				}
+				case UPDATE_GAME_MODE: {
+					DataTypeIO.writeVarInt(output, data.getGamemode().getId());
+					break;
+				}
+				case UPDATE_LISTED: {
+					output.writeBoolean(data.isListed());
+					break;
+				}
+				case UPDATE_LATENCY: {
+					DataTypeIO.writeVarInt(output, data.getPing());
+					break;
+				}
+				case UPDATE_DISPLAY_NAME: {
+					if (data.getDisplayNameJson().isPresent()) {
+						output.writeBoolean(true);
+						DataTypeIO.writeString(output, data.getDisplayNameJson().get(), StandardCharsets.UTF_8);
+					} else {
+						output.writeBoolean(false);
+					}
+					break;
+				}
 			}
-			DataTypeIO.writeVarInt(output, data.getGamemode().getId());
-			DataTypeIO.writeVarInt(output, data.getPing());
-			if (data.getDisplayNameJson().isPresent()) {
-				output.writeBoolean(true);
-				DataTypeIO.writeString(output, data.getDisplayNameJson().get(), StandardCharsets.UTF_8);				
-			} else {
-				output.writeBoolean(false);
-			}
-			output.writeBoolean(false);
-			break;
-		case REMOVE_PLAYER:
-			break;
-		case UPDATE_DISPLAY_NAME:
-			break;
-		case UPDATE_GAMEMODE:
-			break;
-		case UPDATE_LATENCY:
-			break;
 		}
 		
 		return buffer.toByteArray();
@@ -121,15 +128,16 @@ public class PacketPlayOutPlayerInfo extends PacketOut {
 		public static class PlayerInfoDataAddPlayer extends PlayerInfoData {
 
 			private String name;
+			private boolean listed;
 			private Optional<PlayerSkinProperty> skin;
 			private GameMode gamemode;
 			private int ping;
 			private boolean hasDisplayName;
 			private Optional<String> displayNameJson;
 			
-			public PlayerInfoDataAddPlayer(String name, Optional<PlayerSkinProperty> skin, GameMode gamemode, int ping,
-					boolean hasDisplayName, Optional<String> displayNameJson) {
+			public PlayerInfoDataAddPlayer(String name, boolean listed, Optional<PlayerSkinProperty> skin, GameMode gamemode, int ping, boolean hasDisplayName, Optional<String> displayNameJson) {
 				this.name = name;
+				this.listed = listed;
 				this.skin = skin;
 				this.gamemode = gamemode;
 				this.ping = ping;
@@ -139,6 +147,10 @@ public class PacketPlayOutPlayerInfo extends PacketOut {
 
 			public String getName() {
 				return name;
+			}
+
+			public boolean isListed() {
+				return listed;
 			}
 
 			public Optional<PlayerSkinProperty> getProperty() {

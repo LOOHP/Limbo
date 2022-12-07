@@ -27,7 +27,7 @@ import com.loohp.limbo.utils.DataTypeIO;
 
 public class PacketHandshakingIn extends PacketIn {
 	
-	public static enum HandshakeType {
+	public enum HandshakeType {
 		STATUS(1),
 		LOGIN(2);
 		

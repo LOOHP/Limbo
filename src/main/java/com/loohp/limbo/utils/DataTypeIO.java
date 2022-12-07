@@ -24,6 +24,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import com.loohp.limbo.world.BlockPosition;
@@ -33,6 +36,47 @@ import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.Tag;
 
 public class DataTypeIO {
+
+	public static <E extends Enum<E>> void writeEnumSet(DataOutputStream out, EnumSet<E> enumset, Class<E> oclass) throws IOException {
+		E[] ae = oclass.getEnumConstants();
+		BitSet bitset = new BitSet(ae.length);
+
+		for (int i = 0; i < ae.length; ++i) {
+			bitset.set(i, enumset.contains(ae[i]));
+		}
+
+		writeFixedBitSet(out, bitset, ae.length);
+	}
+
+	public static <E extends Enum<E>> EnumSet<E> readEnumSet(DataInputStream in, Class<E> oclass) throws IOException {
+		E[] ae = oclass.getEnumConstants();
+		BitSet bitset = readFixedBitSet(in, ae.length);
+		EnumSet<E> enumset = EnumSet.noneOf(oclass);
+
+		for (int i = 0; i < ae.length; ++i) {
+			if (bitset.get(i)) {
+				enumset.add(ae[i]);
+			}
+		}
+
+		return enumset;
+	}
+
+	public static void writeFixedBitSet(DataOutputStream out, BitSet bitset, int i) throws IOException {
+		if (bitset.length() > i) {
+			int j = bitset.length();
+			throw new RuntimeException("BitSet is larger than expected size (" + j + ">" + i + ")");
+		} else {
+			byte[] abyte = bitset.toByteArray();
+			out.write(Arrays.copyOf(abyte, -Math.floorDiv(-i, 8)));
+		}
+	}
+
+	public static BitSet readFixedBitSet(DataInputStream in, int i) throws IOException {
+		byte[] abyte = new byte[-Math.floorDiv(-i, 8)];
+		in.readFully(abyte);
+		return BitSet.valueOf(abyte);
+	}
 	
 	public static void writeBlockPosition(DataOutputStream out, BlockPosition position) throws IOException {
         out.writeLong(((position.getX() & 0x3FFFFFF) << 38) | ((position.getZ() & 0x3FFFFFF) << 12) | (position.getY() & 0xFFF));

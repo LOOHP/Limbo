@@ -22,12 +22,15 @@ package com.loohp.limbo.network.protocol.packets;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+import java.util.UUID;
 
 import com.loohp.limbo.utils.DataTypeIO;
 
 public class PacketLoginInLoginStart extends PacketIn {
 	
 	private String username;
+	private Optional<UUID> uuid;
 	
 	public PacketLoginInLoginStart(String username) {
 		this.username = username;
@@ -35,13 +38,10 @@ public class PacketLoginInLoginStart extends PacketIn {
 	
 	public PacketLoginInLoginStart(DataInputStream in) throws IOException {
 		this.username = DataTypeIO.readString(in, StandardCharsets.UTF_8);
-		boolean hasSigData = in.readBoolean();
-		if (hasSigData) {
-			in.readLong();
-			int publicKeyLength = DataTypeIO.readVarInt(in);
-			in.readFully(new byte[publicKeyLength]);
-			int signatureLength = DataTypeIO.readVarInt(in);
-			in.readFully(new byte[signatureLength]);
+		if (in.readBoolean()) {
+			this.uuid = Optional.of(DataTypeIO.readUUID(in));
+		} else {
+			this.uuid = Optional.empty();
 		}
 	}
 
@@ -49,4 +49,11 @@ public class PacketLoginInLoginStart extends PacketIn {
 		return username;
 	}
 
+	public boolean hasUniqueId() {
+		return uuid.isPresent();
+	}
+
+	public UUID getUniqueId() {
+		return uuid.orElse(null);
+	}
 }

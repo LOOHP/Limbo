@@ -107,7 +107,7 @@ public class Channel implements AutoCloseable {
 
     @Override
     public synchronized void close() throws Exception {
-        if (valid.compareAndSet(false, true)) {
+        if (valid.compareAndSet(true, false)) {
             input.close();
             output.close();
         }

@@ -41,12 +41,12 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
 import java.util.UUID;
 
 public class ServerProperties {
@@ -77,7 +77,7 @@ public class ServerProperties {
 	private double ticksPerSecond;
 	private boolean handshakeVerbose;
 	private boolean enforceWhitelist;
-	private Set<UUID> whitelist;
+	private Map<UUID, String> whitelist;
 	
 	private String resourcePackSHA1;
 	private String resourcePackLink;
@@ -191,20 +191,26 @@ public class ServerProperties {
 		}
 
 		enforceWhitelist = Boolean.parseBoolean(prop.getProperty("enforce-whitelist"));
-		if (enforceWhitelist) {
-			reloadWhitelist();
-		}
+		reloadWhitelist();
 
 		Limbo.getInstance().getConsole().sendMessage("Loaded server.properties");
 	}
 
 	public void reloadWhitelist() {
         Console console = Limbo.getInstance().getConsole();
-
-		whitelist = new HashSet<>();
+		File whitelistFile = new File("whitelist.json");
+		if (!whitelistFile.exists()) {
+			try (PrintWriter pw = new PrintWriter(new OutputStreamWriter(Files.newOutputStream(whitelistFile.toPath())))) {
+				pw.println("[]");
+				pw.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		whitelist = new HashMap<>();
         try {
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(new InputStreamReader(Files.newInputStream(new File("whitelist.json").toPath()), StandardCharsets.UTF_8));
+            Object obj = parser.parse(new InputStreamReader(Files.newInputStream(whitelistFile.toPath()), StandardCharsets.UTF_8));
 
             if (!(obj instanceof JSONArray)) {
                 console.sendMessage("whitelist: expected [] got {}");
@@ -231,8 +237,9 @@ public class ServerProperties {
 				}
 
 				String uuidStr = (String) o;
-				UUID allowedUuid = UUID.fromString(uuidStr);
-				whitelist.add(allowedUuid);
+				UUID uuid = UUID.fromString(uuidStr);
+				String name = element.containsKey("name") ? (String) element.get("name") : null;
+				whitelist.put(uuid, name);
 			}
         } catch (Exception e) {
 			e.printStackTrace();
@@ -352,7 +359,7 @@ public class ServerProperties {
 	}
 
 	public boolean uuidWhitelisted(UUID uuid)  {
-		return whitelist.contains(uuid);
+		return whitelist.containsKey(uuid);
 	}
 	
 	public String getResourcePackLink() {
