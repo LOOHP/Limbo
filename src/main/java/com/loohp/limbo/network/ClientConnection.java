@@ -88,6 +88,7 @@ import com.loohp.limbo.utils.MojangAPIUtils.SkinResponse;
 import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.world.BlockPosition;
 import com.loohp.limbo.world.World;
+
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -360,9 +361,9 @@ public class ClientConnection extends Thread {
                         break;
                     case LOGIN:
                         state = ClientState.LOGIN;
+                        ServerProperties properties = Limbo.getInstance().getServerProperties();
 
                         if (isBungeecord || isBungeeGuard) {
-                            ServerProperties properties = Limbo.getInstance().getServerProperties();
                             try {
                                 String[] data = bungeeForwarding.split("\\x00");
                                 String host = "";
@@ -468,6 +469,11 @@ public class ClientConnection extends Thread {
                                 }
 
                                 UUID uuid = isBungeecord || isBungeeGuard ? bungeeUUID : UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
+
+                                if (!Limbo.getInstance().uuidIsAllowed(uuid)) {
+                                    disconnectDuringLogin(TextComponent.fromLegacyText("You are not invited to this server"));
+                                    break;
+                                }
 
                                 PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(uuid, username);
                                 sendPacket(success);
