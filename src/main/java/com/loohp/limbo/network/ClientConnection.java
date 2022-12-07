@@ -90,6 +90,7 @@ import com.loohp.limbo.world.BlockPosition;
 import com.loohp.limbo.world.World;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -231,6 +232,11 @@ public class ClientConnection extends Thread {
     }
 
     private void disconnectDuringLogin(Component reason) {
+        ServerProperties properties = Limbo.getInstance().getServerProperties();
+        if (!properties.isReducedDebugInfo()) {
+            String str = (properties.isLogPlayerIPAddresses() ? inetAddress.getHostName() : "<ip address withheld>") + ":" + clientSocket.getPort();
+            Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player disconnected with the reason " + PlainTextComponentSerializer.plainText().serialize(reason));
+        }
         try {
             PacketLoginOutDisconnect packet = new PacketLoginOutDisconnect(reason);
             sendPacket(packet);
@@ -470,8 +476,8 @@ public class ClientConnection extends Thread {
 
                                 UUID uuid = isBungeecord || isBungeeGuard ? bungeeUUID : UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
 
-                                if (!Limbo.getInstance().uuidIsAllowed(uuid)) {
-                                    disconnectDuringLogin(TextComponent.fromLegacyText("You are not invited to this server"));
+                                if (!properties.enforceWhitelist() && properties.uuidWhitelisted(uuid)) {
+                                    disconnectDuringLogin(TextComponent.fromLegacyText("You are not whitelisted on the server"));
                                     break;
                                 }
 

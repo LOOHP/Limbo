@@ -165,14 +165,16 @@ public class DefaultCommands implements CommandExecutor, TabCompletor {
 			}
 			return;
 		}
-		if (args[0].equalsIgnoreCase("allowlist")) {
-			if (sender.hasPermission("limboserver.allowlist")) {
+
+		if (args[0].equalsIgnoreCase("whitelist")) {
+			if (sender.hasPermission("limboserver.whitelist")) {
 				if (args.length != 2) {
 					sender.sendMessage(ChatColor.RED + "Invalid usage!");
 				} else if (!args[1].equalsIgnoreCase("reload")) {
 					sender.sendMessage(ChatColor.RED + "Invalid usage!");
 				} else {
-					Limbo.getInstance().reloadAllowlist();
+					Limbo.getInstance().getServerProperties().reloadWhitelist();
+					sender.sendMessage("Whitelist has been reloaded");
 				}
 			} else {
 				sender.sendMessage(ChatColor.RED + "You do not have permission to use that command!");

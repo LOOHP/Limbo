@@ -19,33 +19,6 @@
 
 package com.loohp.limbo.file;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.UUID;
-
-import javax.imageio.ImageIO;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import com.google.common.collect.Lists;
 import com.loohp.limbo.Console;
 import com.loohp.limbo.Limbo;
@@ -53,9 +26,28 @@ import com.loohp.limbo.location.Location;
 import com.loohp.limbo.utils.GameMode;
 import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.world.World;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
+import java.util.UUID;
 
 public class ServerProperties {
 	
@@ -84,8 +76,8 @@ public class ServerProperties {
 	private int viewDistance;
 	private double ticksPerSecond;
 	private boolean handshakeVerbose;
-	private boolean enforceAllowlist;
-	private HashMap<UUID, Boolean> allowlist;
+	private boolean enforceWhitelist;
+	private Set<UUID> whitelist;
 	
 	private String resourcePackSHA1;
 	private String resourcePackLink;
@@ -106,7 +98,7 @@ public class ServerProperties {
 		defStream.close();
 		
 		Properties prop = new Properties();
-		InputStreamReader stream = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+		InputStreamReader stream = new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8);
 		prop.load(stream);
 		stream.close();
 		
@@ -115,7 +107,7 @@ public class ServerProperties {
 			String value = entry.getValue().toString();
 			prop.putIfAbsent(key, value);
 		}
-		PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
+		PrintWriter pw = new PrintWriter(new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8));
 		prop.store(pw, COMMENT);
 		pw.close();
 
@@ -198,63 +190,53 @@ public class ServerProperties {
 			favicon = Optional.empty();
 		}
 
-		enforceAllowlist = Boolean.parseBoolean(prop.getProperty("enforce-allowlist"));
-		if (enforceAllowlist) {
-			reloadAllowlist();
+		enforceWhitelist = Boolean.parseBoolean(prop.getProperty("enforce-whitelist"));
+		if (enforceWhitelist) {
+			reloadWhitelist();
 		}
 
 		Limbo.getInstance().getConsole().sendMessage("Loaded server.properties");
 	}
 
-	public void reloadAllowlist() {
+	public void reloadWhitelist() {
         Console console = Limbo.getInstance().getConsole();
 
-		allowlist = new HashMap<UUID, Boolean>();
+		whitelist = new HashSet<>();
         try {
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(new FileReader("allowlist.json"));
+            Object obj = parser.parse(new InputStreamReader(Files.newInputStream(new File("whitelist.json").toPath()), StandardCharsets.UTF_8));
 
             if (!(obj instanceof JSONArray)) {
-                console.sendMessage("allowlist: expected [] got {}");
+                console.sendMessage("whitelist: expected [] got {}");
                 return;
             }
 
             JSONArray array = (JSONArray) obj;
 
-            Iterator<?> iter = array.iterator();
-            while (iter.hasNext()) {
-                Object o = iter.next();
-                if (!(o instanceof JSONObject)) {
-                    console.sendMessage("allowlist: array element is not an object");
-                    continue;
-                }
+			for (Object o : array) {
+				if (!(o instanceof JSONObject)) {
+					console.sendMessage("whitelist: array element is not an object");
+					continue;
+				}
 
-                JSONObject element = (JSONObject) o;
-                o = element.get("uuid");
-                if (o == null) {
-                    console.sendMessage("allowlist: missing uuid attribute");
-                    continue;
-                }
-                if (!(o instanceof String)) {
-                    console.sendMessage("allowlist: uuid is not a string");
-                    continue;
-                }
+				JSONObject element = (JSONObject) o;
+				o = element.get("uuid");
+				if (o == null) {
+					console.sendMessage("whitelist: missing uuid attribute");
+					continue;
+				}
+				if (!(o instanceof String)) {
+					console.sendMessage("whitelist: uuid is not a string");
+					continue;
+				}
 
 				String uuidStr = (String) o;
-                UUID allowedUuid = UUID.fromString(uuidStr);
-				allowlist.put(allowedUuid, true);
-            }
-        } catch (IllegalArgumentException e) {
-                console.sendMessage(e.toString());
-        } catch (FileNotFoundException e) {
-                console.sendMessage(String.format("allowlist: %s", e.toString()));
-        } catch (IOException e) {
-                console.sendMessage(String.format("allowlist: %s", e.toString()));
-        } catch (ParseException e) {
-                console.sendMessage(String.format(" allowlist: parse: %s", e.toString()));
+				UUID allowedUuid = UUID.fromString(uuidStr);
+				whitelist.add(allowedUuid);
+			}
+        } catch (Exception e) {
+			e.printStackTrace();
         }
-
-		console.sendMessage("allowlist: reloaded");
 	}
 
 	public String getServerImplementationVersion() {
@@ -365,15 +347,12 @@ public class ServerProperties {
 		return handshakeVerbose;
 	}
 
-	public boolean isEnforceAllowlist() {
-		return enforceAllowlist;
+	public boolean enforceWhitelist() {
+		return enforceWhitelist;
 	}
 
-	public boolean uuidIsAllowed(UUID requestedUuid)  {
-		if (allowlist.containsKey(requestedUuid)) {
-			return true;
-		}
-		return false;
+	public boolean uuidWhitelisted(UUID uuid)  {
+		return whitelist.contains(uuid);
 	}
 	
 	public String getResourcePackLink() {
