@@ -49,7 +49,6 @@ import com.loohp.limbo.sounds.SoundEffect;
 import com.loohp.limbo.utils.BungeecordAdventureConversionUtils;
 import com.loohp.limbo.utils.GameMode;
 import com.loohp.limbo.utils.MessageSignature;
-import com.loohp.limbo.utils.NamespacedKey;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.identity.Identity;
@@ -241,7 +240,7 @@ public class Player extends LivingEntity implements CommandSender {
 		super.teleport(location);
 	}
 
-	public void sendPluginMessage(NamespacedKey channel, byte[] data) throws IOException {
+	public void sendPluginMessage(Key channel, byte[] data) throws IOException {
 		sendPluginMessage(channel.toString(), data);
 	}
 
@@ -454,8 +453,7 @@ public class Player extends LivingEntity implements CommandSender {
 
 	@Override
 	public void stopSound(SoundStop stop) {
-		Key sound = stop.sound();
-		PacketPlayOutStopSound stopSound = new PacketPlayOutStopSound(sound == null ? null : NamespacedKey.fromKey(sound), stop.source());
+		PacketPlayOutStopSound stopSound = new PacketPlayOutStopSound(stop.sound(), stop.source());
 		try {
 			clientConnection.sendPacket(stopSound);
 		} catch (IOException e) {
@@ -471,7 +469,7 @@ public class Player extends LivingEntity implements CommandSender {
 	@Override
 	public void playSound(Sound sound, double x, double y, double z) {
 		PacketPlayOutNamedSoundEffect namedSoundEffect = new PacketPlayOutNamedSoundEffect(
-				SoundEffect.createVariableRangeEvent(NamespacedKey.fromKey(sound.name())),
+				SoundEffect.createVariableRangeEvent(sound.name()),
 				sound.source(), x, y, z, sound.volume(), sound.pitch(), sound.seed().orElse(ThreadLocalRandom.current().nextLong())
 		);
 		try {

@@ -19,6 +19,12 @@
 
 package com.loohp.limbo.utils;
 
+import com.loohp.limbo.Limbo;
+import net.kyori.adventure.key.Key;
+
+import javax.crypto.Mac;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -28,15 +34,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.UUID;
 
-import javax.crypto.Mac;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-
-import com.loohp.limbo.Limbo;
-
 public class ForwardingUtils {
 
-    public static final NamespacedKey VELOCITY_FORWARDING_CHANNEL = new NamespacedKey("velocity", "player_info");
+    public static final Key VELOCITY_FORWARDING_CHANNEL = Key.key("velocity", "player_info");
 
     public static boolean validateVelocityModernResponse(byte[] data) throws IOException {
         ByteArrayInputStream byteIn = new ByteArrayInputStream(data);

@@ -19,12 +19,12 @@
 
 package com.loohp.limbo.location;
 
-import java.util.Random;
-
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.Doubles;
 import com.loohp.limbo.utils.NumberConversions;
 import com.loohp.limbo.world.World;
+
+import java.util.Random;
 
 /**
  * Represents a mutable vector. Because the components of Vectors are mutable,

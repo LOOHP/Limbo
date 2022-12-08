@@ -19,15 +19,14 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.utils.DataTypeIO;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
-
-import com.loohp.limbo.utils.DataTypeIO;
 
 public class PacketPlayOutPositionAndLook extends PacketOut {
 	

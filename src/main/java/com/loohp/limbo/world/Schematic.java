@@ -19,15 +19,14 @@
 
 package com.loohp.limbo.world;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import com.loohp.limbo.utils.SchematicConvertionUtils;
-
+import com.loohp.limbo.utils.SchematicConversionUtils;
 import net.querz.mca.Chunk;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 
 public class Schematic {
@@ -81,7 +80,7 @@ public class Schematic {
 					
 					if (pos[0] == x && pos[1] == y && pos[2] == z) {
 						ListTag<CompoundTag> newTag = chunk.getTileEntities();
-						newTag.add(SchematicConvertionUtils.toTileEntityTag(tag));
+						newTag.add(SchematicConversionUtils.toTileEntityTag(tag));
 						chunk.setTileEntities(newTag);
 						itr.remove();
 						break;

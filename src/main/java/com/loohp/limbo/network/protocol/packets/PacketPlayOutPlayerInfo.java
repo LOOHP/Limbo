@@ -19,6 +19,10 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerInfo.PlayerInfoData.PlayerInfoDataAddPlayer;
+import com.loohp.limbo.utils.DataTypeIO;
+import com.loohp.limbo.utils.GameMode;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -26,10 +30,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.UUID;
-
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerInfo.PlayerInfoData.PlayerInfoDataAddPlayer;
-import com.loohp.limbo.utils.DataTypeIO;
-import com.loohp.limbo.utils.GameMode;
 
 public class PacketPlayOutPlayerInfo extends PacketOut {
 

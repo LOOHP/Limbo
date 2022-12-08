@@ -19,6 +19,11 @@
 
 package com.loohp.limbo.file;
 
+import com.loohp.limbo.utils.YamlOrder;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.representer.Representer;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,12 +38,6 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.representer.Representer;
-
-import com.loohp.limbo.utils.YamlOrder;
 
 public class FileConfiguration {
 	

@@ -19,6 +19,12 @@
 
 package com.loohp.limbo.registry;
 
+import com.loohp.limbo.Limbo;
+import net.kyori.adventure.key.Key;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -31,13 +37,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import com.loohp.limbo.Limbo;
-import com.loohp.limbo.utils.NamespacedKey;
 
 public class Registry {
 	
@@ -54,7 +53,7 @@ public class Registry {
             }
         }
         
-        Map<NamespacedKey, Integer> blockEntityType = new HashMap<>();
+        Map<Key, Integer> blockEntityType = new HashMap<>();
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
 			JSONObject json = (JSONObject) new JSONParser().parse(reader);
 			
@@ -62,7 +61,7 @@ public class Registry {
 			for (Object obj : blockEntityJson.keySet()) {
 				String key = obj.toString();
 				int id = (int) (long) ((JSONObject) blockEntityJson.get(key)).get("protocol_id");
-				blockEntityType.put(new NamespacedKey(key), id);
+				blockEntityType.put(Key.key(key), id);
 			}
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
@@ -72,26 +71,26 @@ public class Registry {
 	
     public static class BlockEntityRegistry {
     	
-    	private Map<NamespacedKey, Integer> blockEntityType;
+    	private Map<Key, Integer> blockEntityType;
     	
-    	private BlockEntityRegistry(Map<NamespacedKey, Integer> blockEntityType) {
+    	private BlockEntityRegistry(Map<Key, Integer> blockEntityType) {
     		this.blockEntityType = blockEntityType;
     	}
     	
-    	public int getId(NamespacedKey key) {
+    	public int getId(Key key) {
     		Integer exact = blockEntityType.get(key);
     		if (exact != null) {
     			return exact;
     		}
     		List<String> toTest = new LinkedList<>();
-    		toTest.add(key.getKey());
-    		if (key.getKey().contains("head")) {
+    		toTest.add(key.value());
+    		if (key.value().contains("head")) {
     			toTest.add("skull");
     		}
-    		for (Entry<NamespacedKey, Integer> entry : blockEntityType.entrySet()) {
-    			NamespacedKey namespacedKey = entry.getKey();
+    		for (Entry<Key, Integer> entry : blockEntityType.entrySet()) {
+    			Key Key = entry.getKey();
     			for (String each : toTest) {
-    				if (namespacedKey.getNamespace().equals(key.getNamespace()) && (each.contains(namespacedKey.getKey()) || namespacedKey.getKey().contains(each))) {
+    				if (Key.namespace().equals(key.namespace()) && (each.contains(Key.value()) || Key.value().contains(each))) {
         				return entry.getValue();
         			}
     			}

@@ -19,6 +19,35 @@
 
 package com.loohp.limbo;
 
+import com.loohp.limbo.commands.CommandSender;
+import com.loohp.limbo.consolegui.ConsoleTextOutput;
+import com.loohp.limbo.utils.CustomStringUtils;
+import jline.console.ConsoleReader;
+import net.kyori.adventure.audience.MessageType;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.inventory.Book;
+import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.sound.Sound.Emitter;
+import net.kyori.adventure.sound.SoundStop;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.title.TitlePart;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.Ansi.Attribute;
+import org.jline.reader.Candidate;
+import org.jline.reader.Completer;
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReader.SuggestionType;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.ParsedLine;
+import org.jline.reader.UserInterruptException;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,37 +63,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import org.fusesource.jansi.Ansi;
-import org.fusesource.jansi.Ansi.Attribute;
-import org.jline.reader.Candidate;
-import org.jline.reader.Completer;
-import org.jline.reader.EndOfFileException;
-import org.jline.reader.LineReader;
-import org.jline.reader.LineReader.SuggestionType;
-import org.jline.reader.LineReaderBuilder;
-import org.jline.reader.ParsedLine;
-import org.jline.reader.UserInterruptException;
-import org.jline.terminal.Terminal;
-import org.jline.terminal.TerminalBuilder;
-
-import com.loohp.limbo.commands.CommandSender;
-import com.loohp.limbo.consolegui.ConsoleTextOutput;
-import com.loohp.limbo.utils.CustomStringUtils;
-
-import jline.console.ConsoleReader;
-import net.kyori.adventure.audience.MessageType;
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.identity.Identity;
-import net.kyori.adventure.inventory.Book;
-import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.sound.Sound.Emitter;
-import net.kyori.adventure.sound.SoundStop;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import net.kyori.adventure.title.TitlePart;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 
 public class Console implements CommandSender {
 	
@@ -136,7 +134,7 @@ public class Console implements CommandSender {
 	public String getName() {
 		return CONSOLE;
 	}
-	
+
 	@Override
 	public boolean hasPermission(String permission) {
 		return Limbo.getInstance().getPermissionsManager().hasPermission(this, permission);
@@ -170,7 +168,7 @@ public class Console implements CommandSender {
 	public void sendMessage(BaseComponent[] component) {
 		sendMessage(String.join("", Arrays.asList(component).stream().map(each -> each.toLegacyText()).collect(Collectors.toList())));
 	}
-	
+
 	@Override
 	public void sendMessage(Identity source, Component message, MessageType type) {
 		sendMessage(PlainTextComponentSerializer.plainText().serialize(message));

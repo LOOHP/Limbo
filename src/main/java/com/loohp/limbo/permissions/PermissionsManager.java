@@ -19,17 +19,17 @@
 
 package com.loohp.limbo.permissions;
 
+import com.loohp.limbo.Console;
+import com.loohp.limbo.commands.CommandSender;
+import com.loohp.limbo.file.FileConfiguration;
+import com.loohp.limbo.player.Player;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.loohp.limbo.Console;
-import com.loohp.limbo.commands.CommandSender;
-import com.loohp.limbo.file.FileConfiguration;
-import com.loohp.limbo.player.Player;
 
 public class PermissionsManager {
 	

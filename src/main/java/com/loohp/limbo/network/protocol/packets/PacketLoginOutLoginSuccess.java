@@ -19,13 +19,13 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.utils.DataTypeIO;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
-
-import com.loohp.limbo.utils.DataTypeIO;
 
 public class PacketLoginOutLoginSuccess extends PacketOut {
 	

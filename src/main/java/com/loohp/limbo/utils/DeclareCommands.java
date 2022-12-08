@@ -19,15 +19,15 @@
 
 package com.loohp.limbo.utils;
 
+import com.loohp.limbo.Limbo;
+import com.loohp.limbo.commands.CommandSender;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutDeclareCommands;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-
-import com.loohp.limbo.Limbo;
-import com.loohp.limbo.commands.CommandSender;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutDeclareCommands;
 
 public class DeclareCommands {
 	

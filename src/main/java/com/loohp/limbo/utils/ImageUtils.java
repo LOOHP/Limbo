@@ -19,12 +19,11 @@
 
 package com.loohp.limbo.utils;
 
+import javax.imageio.ImageIO;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
-
-import javax.imageio.ImageIO;
 
 public class ImageUtils {
 

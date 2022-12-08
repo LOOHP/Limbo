@@ -19,14 +19,14 @@
 
 package com.loohp.limbo.events;
 
+import com.loohp.limbo.plugins.LimboPlugin;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.loohp.limbo.plugins.LimboPlugin;
 
 public class RegisteredCachedListener {
 	

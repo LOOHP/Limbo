@@ -21,8 +21,8 @@ package com.loohp.limbo.bossbar;
 
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutBoss;
 import com.loohp.limbo.player.Player;
-import com.loohp.limbo.utils.NamespacedKey;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class KeyedBossBar {
 
     private final UUID uuid;
-    private final NamespacedKey key;
+    private final Key key;
     private final BossBar properties;
     private final Set<Player> players;
     protected final LimboBossBarHandler listener;
@@ -45,7 +45,7 @@ public class KeyedBossBar {
 
     @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
-    public KeyedBossBar(NamespacedKey key, BossBar properties) {
+    public KeyedBossBar(Key key, BossBar properties) {
         this.uuid = UUID.randomUUID();
         this.key = key;
         this.properties = properties;
@@ -60,7 +60,7 @@ public class KeyedBossBar {
         return uuid;
     }
 
-    public NamespacedKey getKey() {
+    public Key getKey() {
         return key;
     }
 

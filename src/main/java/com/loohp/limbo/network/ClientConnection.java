@@ -85,9 +85,9 @@ import com.loohp.limbo.utils.ForwardingUtils;
 import com.loohp.limbo.utils.GameMode;
 import com.loohp.limbo.utils.MojangAPIUtils;
 import com.loohp.limbo.utils.MojangAPIUtils.SkinResponse;
-import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.world.BlockPosition;
 import com.loohp.limbo.world.World;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
@@ -126,8 +126,8 @@ import java.util.stream.Stream;
 
 public class ClientConnection extends Thread {
 
-    private static final NamespacedKey DEFAULT_HANDLER_NAMESPACE = new NamespacedKey("default");
-    private static final String BRAND_ANNOUNCE_CHANNEL = new NamespacedKey("brand").toString();
+    private static final Key DEFAULT_HANDLER_NAMESPACE = Key.key("default");
+    private static final String BRAND_ANNOUNCE_CHANNEL = Key.key("brand").toString();
 
     private final Random random = new Random();
     private final Socket clientSocket;

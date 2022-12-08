@@ -19,14 +19,14 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.utils.DataTypeIO;
+import com.loohp.limbo.utils.LastSeenMessages;
+import com.loohp.limbo.utils.MessageSignature;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-
-import com.loohp.limbo.utils.DataTypeIO;
-import com.loohp.limbo.utils.LastSeenMessages;
-import com.loohp.limbo.utils.MessageSignature;
 
 public class PacketPlayInChat extends PacketIn {
 	

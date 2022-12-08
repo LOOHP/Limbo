@@ -19,6 +19,11 @@
 
 package com.loohp.limbo.utils;
 
+import com.loohp.limbo.world.BlockPosition;
+import net.querz.nbt.io.NBTOutputStream;
+import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.Tag;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -28,12 +33,6 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.UUID;
-
-import com.loohp.limbo.world.BlockPosition;
-
-import net.querz.nbt.io.NBTOutputStream;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.Tag;
 
 public class DataTypeIO {
 

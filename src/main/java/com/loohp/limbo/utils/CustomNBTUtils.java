@@ -19,9 +19,6 @@
 
 package com.loohp.limbo.utils;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import net.querz.nbt.tag.ByteArrayTag;
 import net.querz.nbt.tag.ByteTag;
 import net.querz.nbt.tag.CompoundTag;
@@ -35,6 +32,8 @@ import net.querz.nbt.tag.LongTag;
 import net.querz.nbt.tag.ShortTag;
 import net.querz.nbt.tag.StringTag;
 import net.querz.nbt.tag.Tag;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 @SuppressWarnings("rawtypes")
 public class CustomNBTUtils {

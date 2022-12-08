@@ -19,12 +19,12 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.utils.DataTypeIO;
+import com.loohp.limbo.world.BlockPosition;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-
-import com.loohp.limbo.utils.DataTypeIO;
-import com.loohp.limbo.world.BlockPosition;
 
 public class PacketPlayOutSpawnPosition extends PacketOut {
 	

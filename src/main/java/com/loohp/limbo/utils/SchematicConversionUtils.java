@@ -19,9 +19,10 @@
 
 package com.loohp.limbo.utils;
 
+import net.kyori.adventure.key.Key;
 import net.querz.nbt.tag.CompoundTag;
 
-public class SchematicConvertionUtils {
+public class SchematicConversionUtils {
 	
 	public static CompoundTag toTileEntityTag(CompoundTag tag) {
 		int[] pos = tag.getIntArray("Pos");
@@ -37,11 +38,11 @@ public class SchematicConvertionUtils {
 		int index = input.indexOf("[");
 		CompoundTag tag = new CompoundTag();
 		if (index < 0) {
-			tag.putString("Name", new NamespacedKey(input).toString());
+			tag.putString("Name", Key.key(input).toString());
 			return tag;
 		}
 		
-		tag.putString("Name", new NamespacedKey(input.substring(0, index)).toString());
+		tag.putString("Name", Key.key(input.substring(0, index)).toString());
 		
 		String[] states = input.substring(index + 1, input.lastIndexOf("]")).replace(" ", "").split(",");
 		

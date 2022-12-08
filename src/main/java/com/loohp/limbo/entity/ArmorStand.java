@@ -19,14 +19,14 @@
 
 package com.loohp.limbo.entity;
 
-import java.util.UUID;
-
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.entity.DataWatcher.WatchableField;
 import com.loohp.limbo.entity.DataWatcher.WatchableObjectType;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.utils.Rotation3f;
 import com.loohp.limbo.world.World;
+
+import java.util.UUID;
 
 public class ArmorStand extends LivingEntity {
 	

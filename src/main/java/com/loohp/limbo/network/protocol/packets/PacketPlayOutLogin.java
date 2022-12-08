@@ -21,9 +21,9 @@ package com.loohp.limbo.network.protocol.packets;
 
 import com.loohp.limbo.utils.DataTypeIO;
 import com.loohp.limbo.utils.GameMode;
-import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.world.Environment;
 import com.loohp.limbo.world.World;
+import net.kyori.adventure.key.Key;
 import net.querz.nbt.tag.CompoundTag;
 
 import java.io.ByteArrayOutputStream;
@@ -140,11 +140,11 @@ public class PacketPlayOutLogin extends PacketOut {
 		output.writeByte(-1);
 		DataTypeIO.writeVarInt(output, worlds.size());
 		for (World world : worlds) {
-			DataTypeIO.writeString(output, new NamespacedKey(world.getName()).toString(), StandardCharsets.UTF_8);
+			DataTypeIO.writeString(output, Key.key(world.getName()).toString(), StandardCharsets.UTF_8);
 		}
 		DataTypeIO.writeCompoundTag(output, dimensionCodec);
-		DataTypeIO.writeString(output, world.getEnvironment().getNamespacedKey().toString(), StandardCharsets.UTF_8);
-		DataTypeIO.writeString(output, new NamespacedKey(world.getName()).toString(), StandardCharsets.UTF_8);
+		DataTypeIO.writeString(output, world.getEnvironment().getKey().toString(), StandardCharsets.UTF_8);
+		DataTypeIO.writeString(output, Key.key(world.getName()).toString(), StandardCharsets.UTF_8);
 		output.writeLong(hashedSeed);
 		DataTypeIO.writeVarInt(output, maxPlayers);
 		DataTypeIO.writeVarInt(output, viewDistance);

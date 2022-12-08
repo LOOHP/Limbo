@@ -19,57 +19,57 @@
 
 package com.loohp.limbo.world;
 
+import net.kyori.adventure.key.Key;
+
 import java.util.HashSet;
 import java.util.Set;
 
-import com.loohp.limbo.utils.NamespacedKey;
-
 public class Environment {
 
-	public static final Environment NORMAL = new Environment(new NamespacedKey("minecraft:overworld"), true);
-	public static final Environment NETHER = new Environment(new NamespacedKey("minecraft:the_nether"), false);
-	public static final Environment END = new Environment(new NamespacedKey("minecraft:the_end"), false);
+	public static final Environment NORMAL = new Environment(Key.key("minecraft:overworld"), true);
+	public static final Environment NETHER = new Environment(Key.key("minecraft:the_nether"), false);
+	public static final Environment END = new Environment(Key.key("minecraft:the_end"), false);
 	
 	public static final Set<Environment> REGISTERED_ENVIRONMENTS = new HashSet<>();
 
-	public static Environment fromNamespacedKey(NamespacedKey key) {
-		if (key.equals(NORMAL.getNamespacedKey())) {
+	public static Environment fromKey(Key key) {
+		if (key.equals(NORMAL.getKey())) {
 			return NORMAL;
-		} else if (key.equals(NETHER.getNamespacedKey())) {
+		} else if (key.equals(NETHER.getKey())) {
 			return NETHER;
-		} else if (key.equals(END.getNamespacedKey())) {
+		} else if (key.equals(END.getKey())) {
 			return END;
 		}
 		return null;
 	}
 	
 	@Deprecated
-	public static Environment createCustom(NamespacedKey key) {
+	public static Environment createCustom(Key key) {
 		return createCustom(key, true);
 	}
 	
-	public static Environment createCustom(NamespacedKey key, boolean hasSkyLight) {
-		if (REGISTERED_ENVIRONMENTS.stream().anyMatch(each -> each.getNamespacedKey().equals(key))) {
-			throw new IllegalArgumentException("An Environment is already created with this NamespacedKey");
+	public static Environment createCustom(Key key, boolean hasSkyLight) {
+		if (REGISTERED_ENVIRONMENTS.stream().anyMatch(each -> each.getKey().equals(key))) {
+			throw new IllegalArgumentException("An Environment is already created with this Key");
 		}
 		return new Environment(key, hasSkyLight);
 	}
 	
-	public static Environment getCustom(NamespacedKey key) {
-		return REGISTERED_ENVIRONMENTS.stream().filter(each -> each.getNamespacedKey().equals(key)).findFirst().orElse(null); 
+	public static Environment getCustom(Key key) {
+		return REGISTERED_ENVIRONMENTS.stream().filter(each -> each.getKey().equals(key)).findFirst().orElse(null); 
 	}
 	
 	//=========================
 	
-	private NamespacedKey key;
+	private Key key;
 	private boolean hasSkyLight;
 	
-	private Environment(NamespacedKey key, boolean hasSkyLight) {
+	private Environment(Key key, boolean hasSkyLight) {
 		this.key = key;
 		this.hasSkyLight = hasSkyLight;
 	}
 	
-	public NamespacedKey getNamespacedKey() {
+	public Key getKey() {
 		return key;
 	}
 	

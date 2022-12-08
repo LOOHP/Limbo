@@ -42,13 +42,13 @@ import com.loohp.limbo.scheduler.LimboScheduler;
 import com.loohp.limbo.scheduler.Tick;
 import com.loohp.limbo.utils.CustomStringUtils;
 import com.loohp.limbo.utils.ImageUtils;
-import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.utils.NetworkUtils;
 import com.loohp.limbo.world.DimensionRegistry;
 import com.loohp.limbo.world.Environment;
 import com.loohp.limbo.world.Schematic;
 import com.loohp.limbo.world.World;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -146,7 +146,7 @@ public final class Limbo {
 	private final List<World> worlds = new CopyOnWriteArrayList<>();
 	final Map<String, Player> playersByName = new ConcurrentHashMap<>();
 	final Map<UUID, Player> playersByUUID = new ConcurrentHashMap<>();
-	private final Map<NamespacedKey, KeyedBossBar> bossBars = new ConcurrentHashMap<>();
+	private final Map<Key, KeyedBossBar> bossBars = new ConcurrentHashMap<>();
 	
 	private final ServerProperties properties;
 	
@@ -290,7 +290,7 @@ public final class Limbo {
 		
 		worlds.add(loadDefaultWorld());
 		Location spawn = properties.getWorldSpawn();
-		properties.setWorldSpawn(new Location(getWorld(properties.getLevelName().getKey()), spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch()));
+		properties.setWorldSpawn(new Location(getWorld(properties.getLevelName().value()), spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch()));
 		
 		if (!NetworkUtils.available(properties.getServerPort())) {
 			console.sendMessage("");
@@ -401,7 +401,7 @@ public final class Limbo {
 		}
 		
 		try {
-			World world = Schematic.toWorld(properties.getLevelName().getKey(), Environment.fromNamespacedKey(properties.getLevelDimension()), (CompoundTag) NBTUtil.read(schem).getTag());		
+			World world = Schematic.toWorld(properties.getLevelName().value(), Environment.fromKey(properties.getLevelDimension()), (CompoundTag) NBTUtil.read(schem).getTag());
 			console.sendMessage("Loaded world " + properties.getLevelName() + "!");		
 			return world;
 		} catch (Throwable e) {
@@ -434,14 +434,14 @@ public final class Limbo {
 		}
 	}
 
-	public KeyedBossBar createBossBar(NamespacedKey namespacedKey, Component name, float progress, BossBar.Color color, BossBar.Overlay overlay, BossBar.Flag... flags) {
-		KeyedBossBar keyedBossBar = new KeyedBossBar(namespacedKey, BossBar.bossBar(name, progress, color, overlay, new HashSet<>(Arrays.asList(flags))));
-		bossBars.put(namespacedKey, keyedBossBar);
+	public KeyedBossBar createBossBar(Key Key, Component name, float progress, BossBar.Color color, BossBar.Overlay overlay, BossBar.Flag... flags) {
+		KeyedBossBar keyedBossBar = new KeyedBossBar(Key, BossBar.bossBar(name, progress, color, overlay, new HashSet<>(Arrays.asList(flags))));
+		bossBars.put(Key, keyedBossBar);
 		return keyedBossBar;
 	}
 
-	public void removeBossBar(NamespacedKey namespacedKey) {
-		KeyedBossBar keyedBossBar = bossBars.remove(namespacedKey);
+	public void removeBossBar(Key Key) {
+		KeyedBossBar keyedBossBar = bossBars.remove(Key);
 		keyedBossBar.getProperties().removeListener(keyedBossBar.getUnsafe().getLimboListener());
 		keyedBossBar.getUnsafe().invalidate();
 		PacketPlayOutBoss packetPlayOutBoss = new PacketPlayOutBoss(keyedBossBar, PacketPlayOutBoss.BossBarAction.REMOVE);
@@ -454,7 +454,7 @@ public final class Limbo {
 		}
 	}
 
-	public Map<NamespacedKey, KeyedBossBar> getBossBars() {
+	public Map<Key, KeyedBossBar> getBossBars() {
 		return Collections.unmodifiableMap(bossBars);
 	}
 

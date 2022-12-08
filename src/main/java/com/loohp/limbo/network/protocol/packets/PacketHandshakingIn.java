@@ -19,11 +19,11 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.utils.DataTypeIO;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
-import com.loohp.limbo.utils.DataTypeIO;
 
 public class PacketHandshakingIn extends PacketIn {
 	

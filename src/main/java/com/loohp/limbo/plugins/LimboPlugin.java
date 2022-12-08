@@ -19,10 +19,10 @@
 
 package com.loohp.limbo.plugins;
 
-import java.io.File;
-
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.file.FileConfiguration;
+
+import java.io.File;
 
 public class LimboPlugin {
 

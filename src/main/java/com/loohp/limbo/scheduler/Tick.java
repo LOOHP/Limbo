@@ -19,6 +19,10 @@
 
 package com.loohp.limbo.scheduler;
 
+import com.loohp.limbo.Limbo;
+import com.loohp.limbo.scheduler.LimboScheduler.CurrentSchedulerTask;
+import com.loohp.limbo.scheduler.LimboScheduler.LimboSchedulerTask;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +30,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-
-import com.loohp.limbo.Limbo;
-import com.loohp.limbo.scheduler.LimboScheduler.CurrentSchedulerTask;
-import com.loohp.limbo.scheduler.LimboScheduler.LimboSchedulerTask;
 
 public class Tick {
 	

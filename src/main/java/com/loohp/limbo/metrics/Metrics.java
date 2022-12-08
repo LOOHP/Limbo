@@ -19,6 +19,12 @@
 
 package com.loohp.limbo.metrics;
 
+import com.loohp.limbo.Limbo;
+import com.loohp.limbo.file.FileConfiguration;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import javax.net.ssl.HttpsURLConnection;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -34,14 +40,6 @@ import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.zip.GZIPOutputStream;
-
-import javax.net.ssl.HttpsURLConnection;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import com.loohp.limbo.Limbo;
-import com.loohp.limbo.file.FileConfiguration;
 
 /**
  * bStats collects some data for plugin authors.

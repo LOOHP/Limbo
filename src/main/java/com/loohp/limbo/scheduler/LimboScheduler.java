@@ -19,6 +19,9 @@
 
 package com.loohp.limbo.scheduler;
 
+import com.loohp.limbo.Limbo;
+import com.loohp.limbo.plugins.LimboPlugin;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,9 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import com.loohp.limbo.Limbo;
-import com.loohp.limbo.plugins.LimboPlugin;
 
 public class LimboScheduler {
 	

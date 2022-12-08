@@ -19,19 +19,18 @@
 
 package com.loohp.limbo.entity;
 
-import java.util.UUID;
-
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.entity.DataWatcher.WatchableField;
 import com.loohp.limbo.entity.DataWatcher.WatchableObjectType;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.utils.BungeecordAdventureConversionUtils;
 import com.loohp.limbo.world.World;
-
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
+
+import java.util.UUID;
 
 public abstract class Entity implements Sound.Emitter {
 	

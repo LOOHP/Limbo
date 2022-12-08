@@ -20,7 +20,6 @@
 package com.loohp.limbo.world;
 
 import com.loohp.limbo.location.Location;
-
 import net.querz.mca.Chunk;
 
 public class ChunkPosition {

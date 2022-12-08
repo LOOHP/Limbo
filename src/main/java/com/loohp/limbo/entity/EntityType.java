@@ -19,13 +19,13 @@
 
 package com.loohp.limbo.entity;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.player.Player;
-import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.world.World;
+import net.kyori.adventure.key.Key;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public enum EntityType {
 
@@ -294,7 +294,7 @@ public enum EntityType {
     private final short typeId;
     private final boolean independent;
     private final boolean living;
-    private final NamespacedKey key;
+    private final Key key;
 
     private static final Map<String, EntityType> NAME_MAP = new HashMap<>();
     private static final Map<Short, EntityType> ID_MAP = new HashMap<>();
@@ -337,7 +337,7 @@ public enum EntityType {
         this.typeId = (short) typeId;
         this.independent = independent;
         this.living = clazz != null && LivingEntity.class.isAssignableFrom(clazz);
-        this.key = (name == null) ? null : NamespacedKey.minecraft(name);
+        this.key = (name == null) ? null : Key.key(Key.MINECRAFT_NAMESPACE, name);
     }
 
     /**
@@ -351,7 +351,7 @@ public enum EntityType {
         return name;
     }
 
-    public NamespacedKey getKey() {
+    public Key getKey() {
         return key;
     }
 

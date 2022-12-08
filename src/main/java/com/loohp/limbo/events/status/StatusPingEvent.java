@@ -19,12 +19,11 @@
 
 package com.loohp.limbo.events.status;
 
-import java.awt.image.BufferedImage;
-
 import com.loohp.limbo.events.Event;
 import com.loohp.limbo.network.ClientConnection;
-
 import net.kyori.adventure.text.Component;
+
+import java.awt.image.BufferedImage;
 
 public class StatusPingEvent extends Event {
 

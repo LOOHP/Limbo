@@ -19,11 +19,11 @@
 
 package com.loohp.limbo.consolegui;
 
+import com.loohp.limbo.Limbo;
+
 import java.lang.management.ManagementFactory;
 import java.text.NumberFormat;
 import java.util.concurrent.TimeUnit;
-
-import com.loohp.limbo.Limbo;
 
 public class SystemInfo {
 	

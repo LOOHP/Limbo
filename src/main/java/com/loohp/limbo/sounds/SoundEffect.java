@@ -19,31 +19,31 @@
 
 package com.loohp.limbo.sounds;
 
-import com.loohp.limbo.utils.NamespacedKey;
+import net.kyori.adventure.key.Key;
 
 import java.util.Optional;
 
 public class SoundEffect {
 
-    public static SoundEffect createVariableRangeEvent(NamespacedKey namespacedKey) {
-        return new SoundEffect(namespacedKey, 16.0F, false);
+    public static SoundEffect createVariableRangeEvent(Key key) {
+        return new SoundEffect(key, 16.0F, false);
     }
 
-    public static SoundEffect createFixedRangeEvent(NamespacedKey namespacedKey, float range) {
-        return new SoundEffect(namespacedKey, range, true);
+    public static SoundEffect createFixedRangeEvent(Key key, float range) {
+        return new SoundEffect(key, range, true);
     }
 
-    private final NamespacedKey sound;
+    private final Key sound;
     private final float range;
     private final boolean newSystem;
 
-    private SoundEffect(NamespacedKey sound, float range, boolean newSystem) {
+    private SoundEffect(Key sound, float range, boolean newSystem) {
         this.sound = sound;
         this.range = range;
         this.newSystem = newSystem;
     }
 
-    public NamespacedKey getSound() {
+    public Key getSound() {
         return sound;
     }
 

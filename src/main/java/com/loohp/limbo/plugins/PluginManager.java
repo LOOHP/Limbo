@@ -19,6 +19,13 @@
 
 package com.loohp.limbo.plugins;
 
+import com.loohp.limbo.Limbo;
+import com.loohp.limbo.commands.CommandExecutor;
+import com.loohp.limbo.commands.CommandSender;
+import com.loohp.limbo.commands.DefaultCommands;
+import com.loohp.limbo.commands.TabCompletor;
+import com.loohp.limbo.file.FileConfiguration;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
@@ -30,13 +37,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import com.loohp.limbo.Limbo;
-import com.loohp.limbo.commands.CommandExecutor;
-import com.loohp.limbo.commands.CommandSender;
-import com.loohp.limbo.commands.DefaultCommands;
-import com.loohp.limbo.commands.TabCompletor;
-import com.loohp.limbo.file.FileConfiguration;
 
 public class PluginManager {
 

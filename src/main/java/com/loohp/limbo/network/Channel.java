@@ -22,8 +22,8 @@ package com.loohp.limbo.network;
 import com.loohp.limbo.network.protocol.packets.PacketIn;
 import com.loohp.limbo.network.protocol.packets.PacketOut;
 import com.loohp.limbo.utils.DataTypeIO;
-import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.utils.Pair;
+import net.kyori.adventure.key.Key;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Channel implements AutoCloseable {
 
-    private final List<Pair<NamespacedKey, ChannelPacketHandler>> handlers;
+    private final List<Pair<Key, ChannelPacketHandler>> handlers;
     private final AtomicBoolean valid;
     protected final DataInputStream input;
     protected final DataOutputStream output;
@@ -52,15 +52,15 @@ public class Channel implements AutoCloseable {
         }
     }
 
-    public void addHandlerBefore(NamespacedKey key, ChannelPacketHandler handler) {
+    public void addHandlerBefore(Key key, ChannelPacketHandler handler) {
         handlers.add(0, new Pair<>(key, handler));
     }
 
-    public void addHandlerAfter(NamespacedKey key, ChannelPacketHandler handler) {
+    public void addHandlerAfter(Key key, ChannelPacketHandler handler) {
         handlers.add(new Pair<>(key, handler));
     }
 
-    public void removeHandler(NamespacedKey key) {
+    public void removeHandler(Key key) {
         handlers.removeIf(each -> each.getFirst().equals(key));
     }
 
@@ -75,7 +75,7 @@ public class Channel implements AutoCloseable {
             size = size < 0 ? DataTypeIO.readVarInt(input) : size;
             int packetId = DataTypeIO.readVarInt(input);
             ChannelPacketRead read = new ChannelPacketRead(size, packetId, input);
-            for (Pair<NamespacedKey, ChannelPacketHandler> pair : handlers) {
+            for (Pair<Key, ChannelPacketHandler> pair : handlers) {
                 read = pair.getSecond().read(read);
                 if (read == null) {
                     packet = null;
@@ -91,7 +91,7 @@ public class Channel implements AutoCloseable {
     protected boolean writePacket(PacketOut packet) throws IOException {
         ensureOpen();
         ChannelPacketWrite write = new ChannelPacketWrite(packet);
-        for (Pair<NamespacedKey, ChannelPacketHandler> pair : handlers) {
+        for (Pair<Key, ChannelPacketHandler> pair : handlers) {
             write = pair.getSecond().write(write);
             if (write == null) {
                 return false;

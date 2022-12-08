@@ -19,8 +19,6 @@
 
 package com.loohp.limbo.commands;
 
-import java.util.UUID;
-
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
@@ -31,6 +29,8 @@ import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.TitlePart;
 import net.md_5.bungee.api.chat.BaseComponent;
+
+import java.util.UUID;
 
 public interface CommandSender extends Audience {
 	

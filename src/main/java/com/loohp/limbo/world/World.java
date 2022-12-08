@@ -19,16 +19,6 @@
 
 package com.loohp.limbo.world;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.entity.ArmorStand;
 import com.loohp.limbo.entity.DataWatcher;
@@ -39,11 +29,20 @@ import com.loohp.limbo.location.Location;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutEntityDestroy;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutEntityMetadata;
 import com.loohp.limbo.player.Player;
-import com.loohp.limbo.utils.SchematicConvertionUtils;
-
+import com.loohp.limbo.utils.SchematicConversionUtils;
 import net.querz.mca.Chunk;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class World {
 	
@@ -122,7 +121,7 @@ public class World {
 			chunk = Chunk.newChunk();
 			this.chunks[(x >> 4)][(z >> 4)] = chunk;
 		}
-		CompoundTag block = SchematicConvertionUtils.toBlockTag(blockdata);
+		CompoundTag block = SchematicConversionUtils.toBlockTag(blockdata);
 		chunk.setBlockStateAt(x, y, z, block, false);
 	}
 	

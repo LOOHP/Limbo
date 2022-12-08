@@ -19,18 +19,17 @@
 
 package com.loohp.limbo.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.loohp.limbo.Console;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.player.Player;
 import com.loohp.limbo.utils.GameMode;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class DefaultCommands implements CommandExecutor, TabCompletor {
 	

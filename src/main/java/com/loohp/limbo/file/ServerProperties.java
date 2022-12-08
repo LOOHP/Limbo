@@ -24,8 +24,8 @@ import com.loohp.limbo.Console;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.utils.GameMode;
-import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.world.World;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.json.simple.JSONArray;
@@ -57,9 +57,9 @@ public class ServerProperties {
 	private int maxPlayers;
 	private int serverPort;
 	private String serverIp;
-	private NamespacedKey levelName;
+	private Key levelName;
 	private String schemFileName;
-	private NamespacedKey levelDimension;
+	private Key levelDimension;
 	private GameMode defaultGamemode;
 	private Location worldSpawn;
 	private boolean reducedDebugInfo;
@@ -117,10 +117,10 @@ public class ServerProperties {
 		serverPort = Integer.parseInt(prop.getProperty("server-port"));
 		serverIp = prop.getProperty("server-ip");
 		String[] level = prop.getProperty("level-name").split(";");
-		levelName = new NamespacedKey(level[0]);
+		levelName = Key.key(level[0]);
 		schemFileName = level[1];
-		levelDimension = new NamespacedKey(prop.getProperty("level-dimension"));
-		defaultGamemode = GameMode.fromName(new NamespacedKey(prop.getProperty("default-gamemode")).getKey());
+		levelDimension = Key.key(prop.getProperty("level-dimension"));
+		defaultGamemode = GameMode.fromName(Key.key(prop.getProperty("default-gamemode")).value());
 		String[] locStr = prop.getProperty("world-spawn").split(";");
 		World world = Limbo.getInstance().getWorld(locStr[0]);
 		double x = Double.parseDouble(locStr[1]);
@@ -290,7 +290,7 @@ public class ServerProperties {
 		return serverIp;
 	}
 
-	public NamespacedKey getLevelName() {
+	public Key getLevelName() {
 		return levelName;
 	}
 
@@ -298,7 +298,7 @@ public class ServerProperties {
 		return schemFileName;
 	}
 
-	public NamespacedKey getLevelDimension() {
+	public Key getLevelDimension() {
 		return levelDimension;
 	}
 

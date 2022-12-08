@@ -19,19 +19,18 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.utils.DataTypeIO;
+import com.loohp.limbo.utils.GameMode;
+import com.loohp.limbo.world.Environment;
+import com.loohp.limbo.world.World;
+import net.kyori.adventure.key.Key;
+import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.ListTag;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
-import com.loohp.limbo.utils.DataTypeIO;
-import com.loohp.limbo.utils.GameMode;
-import com.loohp.limbo.utils.NamespacedKey;
-import com.loohp.limbo.world.Environment;
-import com.loohp.limbo.world.World;
-
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
 
 public class PacketPlayOutRespawn extends PacketOut {
 
@@ -47,7 +46,7 @@ public class PacketPlayOutRespawn extends PacketOut {
 	public PacketPlayOutRespawn(World world, CompoundTag dimensionCodec, long hashedSeed, GameMode gamemode, boolean isDebug, boolean isFlat, boolean copyMetaData) {
 		this.dimension = world.getEnvironment();
 		this.dimensionCodec = dimensionCodec;
-		this.worldName = new NamespacedKey(world.getName()).toString();
+		this.worldName = Key.key(world.getName()).toString();
 		this.hashedSeed = hashedSeed;
 		this.gamemode = gamemode;
 		this.isDebug = isDebug;
@@ -96,7 +95,7 @@ public class PacketPlayOutRespawn extends PacketOut {
 		CompoundTag tag = null;
 		ListTag<CompoundTag> list = dimensionCodec.getCompoundTag("minecraft:dimension_type").getListTag("value").asCompoundTagList();
 		for (CompoundTag each : list) {
-			if (each.getString("name").equals(dimension.getNamespacedKey().toString())) {
+			if (each.getString("name").equals(dimension.getKey().toString())) {
 				tag = each.getCompoundTag("element");
 				break;
 			}

@@ -19,15 +19,14 @@
 
 package com.loohp.limbo.world;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import com.loohp.limbo.utils.NamespacedKey;
-
+import net.kyori.adventure.key.Key;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.StringTag;
 import net.querz.nbt.tag.Tag;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class BlockState {
 	
@@ -41,12 +40,12 @@ public class BlockState {
 		return tag;
 	}
 	
-	public NamespacedKey getType() {
-		return new NamespacedKey(tag.getString("Name"));
+	public Key getType() {
+		return Key.key(tag.getString("Name"));
 	}
 	
-	public void setType(NamespacedKey namespacedKey) {
-		tag.putString("Name", namespacedKey.toString());
+	public void setType(Key Key) {
+		tag.putString("Name", Key.toString());
 	}
 	
 	public Map<String, String> getProperties() {

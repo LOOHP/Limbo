@@ -19,6 +19,16 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.entity.DataWatcher.WatchableObject;
+import com.loohp.limbo.entity.DataWatcher.WatchableObjectType;
+import com.loohp.limbo.entity.Entity;
+import com.loohp.limbo.entity.Pose;
+import com.loohp.limbo.utils.DataTypeIO;
+import com.loohp.limbo.utils.Rotation3f;
+import com.loohp.limbo.world.BlockPosition;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -31,17 +41,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
-
-import com.loohp.limbo.entity.DataWatcher.WatchableObject;
-import com.loohp.limbo.entity.DataWatcher.WatchableObjectType;
-import com.loohp.limbo.entity.Entity;
-import com.loohp.limbo.entity.Pose;
-import com.loohp.limbo.utils.DataTypeIO;
-import com.loohp.limbo.utils.Rotation3f;
-import com.loohp.limbo.world.BlockPosition;
-
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
 public class PacketPlayOutEntityMetadata extends PacketOut {
 	

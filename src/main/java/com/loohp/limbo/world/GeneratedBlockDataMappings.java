@@ -19,6 +19,13 @@
 
 package com.loohp.limbo.world;
 
+import com.loohp.limbo.Limbo;
+import net.querz.nbt.tag.CompoundTag;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -27,15 +34,6 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
-import com.loohp.limbo.Limbo;
-
-import net.querz.nbt.tag.CompoundTag;
 
 public class GeneratedBlockDataMappings {
 	

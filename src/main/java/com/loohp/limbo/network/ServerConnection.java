@@ -19,14 +19,14 @@
 
 package com.loohp.limbo.network;
 
+import com.loohp.limbo.Limbo;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.loohp.limbo.Limbo;
 
 public class ServerConnection extends Thread {
 	

@@ -19,20 +19,21 @@
 
 package com.loohp.limbo.utils;
 
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutPluginMessaging;
+import net.kyori.adventure.key.Key;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutPluginMessaging;
-
 public class BungeeLoginMessageUtils {
 
-	public static final String BUNGEECORD_MAIN = new NamespacedKey("bungeecord", "main").toString();
+	public static final String BUNGEECORD_MAIN = Key.key("bungeecord", "main").toString();
 
 	public static void sendUUIDRequest(DataOutputStream output) throws IOException {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
