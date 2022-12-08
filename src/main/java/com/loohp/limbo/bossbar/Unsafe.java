@@ -19,9 +19,17 @@
 
 package com.loohp.limbo.bossbar;
 
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.key.Key;
+
 @SuppressWarnings("DeprecatedIsStillUsed")
 @Deprecated
 public class Unsafe {
+
+	@Deprecated
+	public static KeyedBossBar create(Key key, BossBar properties) {
+		return new KeyedBossBar(key, properties);
+	}
 
 	private final KeyedBossBar instance;
 	

@@ -435,7 +435,7 @@ public final class Limbo {
 	}
 
 	public KeyedBossBar createBossBar(Key Key, Component name, float progress, BossBar.Color color, BossBar.Overlay overlay, BossBar.Flag... flags) {
-		KeyedBossBar keyedBossBar = new KeyedBossBar(Key, BossBar.bossBar(name, progress, color, overlay, new HashSet<>(Arrays.asList(flags))));
+		KeyedBossBar keyedBossBar = com.loohp.limbo.bossbar.Unsafe.create(Key, BossBar.bossBar(name, progress, color, overlay, new HashSet<>(Arrays.asList(flags))));
 		bossBars.put(Key, keyedBossBar);
 		return keyedBossBar;
 	}

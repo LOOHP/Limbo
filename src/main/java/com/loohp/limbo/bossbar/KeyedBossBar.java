@@ -43,9 +43,7 @@ public class KeyedBossBar {
     protected final AtomicBoolean valid;
     private final Unsafe unsafe;
 
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    @Deprecated
-    public KeyedBossBar(Key key, BossBar properties) {
+    KeyedBossBar(Key key, BossBar properties) {
         this.uuid = UUID.randomUUID();
         this.key = key;
         this.properties = properties;

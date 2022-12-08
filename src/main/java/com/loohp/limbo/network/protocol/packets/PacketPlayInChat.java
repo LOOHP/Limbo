@@ -34,20 +34,18 @@ public class PacketPlayInChat extends PacketIn {
 	private Instant time;
 	private long salt;
 	private MessageSignature signature;
-	private boolean signedPreview;
 	private LastSeenMessages.b lastSeenMessages;
 
-	public PacketPlayInChat(String message, Instant time, long salt, MessageSignature signature, boolean signedPreview, LastSeenMessages.b lastSeenMessages) {
+	public PacketPlayInChat(String message, Instant time, long salt, MessageSignature signature, LastSeenMessages.b lastSeenMessages) {
 		this.message = message;
 		this.time = time;
 		this.salt = salt;
 		this.signature = signature;
-		this.signedPreview = signedPreview;
 		this.lastSeenMessages = lastSeenMessages;
 	}
 
 	public PacketPlayInChat(DataInputStream in) throws IOException {
-		this(DataTypeIO.readString(in, StandardCharsets.UTF_8), Instant.ofEpochMilli(in.readLong()), in.readLong(), new MessageSignature(in), in.readBoolean(), new LastSeenMessages.b(in));
+		this(DataTypeIO.readString(in, StandardCharsets.UTF_8), Instant.ofEpochMilli(in.readLong()), in.readLong(), in.readBoolean() ? new MessageSignature(in) : null, new LastSeenMessages.b(in));
 	}
 
 	public String getMessage() {
@@ -60,10 +58,6 @@ public class PacketPlayInChat extends PacketIn {
 
 	public MessageSignature getSignature() {
 		return signature;
-	}
-
-	public boolean isSignedPreview() {
-		return signedPreview;
 	}
 
 	public long getSalt() {

@@ -110,6 +110,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -122,7 +123,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ClientConnection extends Thread {
 
@@ -283,7 +283,7 @@ public class ClientConnection extends Thread {
                         return null;
                     }
                     Constructor<?>[] constructors = packetType.getConstructors();
-                    Constructor<?> constructor = Stream.of(constructors).filter(each -> each.getParameterCount() > 0 && each.getParameterTypes()[0].equals(DataInputStream.class)).findFirst().orElse(null);
+                    Constructor<?> constructor = Arrays.stream(constructors).filter(each -> each.getParameterCount() > 0 && each.getParameterTypes()[0].equals(DataInputStream.class)).findFirst().orElse(null);
                     if (constructor == null) {
                         throw new NoSuchMethodException(packetType + " has no valid constructors!");
                     } else if (constructor.getParameterCount() == 1) {

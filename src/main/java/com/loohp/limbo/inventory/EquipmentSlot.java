@@ -23,7 +23,7 @@ public enum EquipmentSlot {
 	
 	MAINHAND,
 	OFFHAND,
-	HELMENT,
+	HELMET,
 	CHESTPLATE,
 	LEGGINGS,
 	BOOTS;

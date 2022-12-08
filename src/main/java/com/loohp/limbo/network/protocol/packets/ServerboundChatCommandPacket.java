@@ -34,15 +34,13 @@ public class ServerboundChatCommandPacket extends PacketIn {
     private Instant time;
     private long salt;
     private ArgumentSignatures argumentSignatures;
-    private boolean commandPreview;
     private LastSeenMessages.b lastSeenMessages;
 
-    public ServerboundChatCommandPacket(String command, Instant time, long salt, ArgumentSignatures argumentSignatures, boolean commandPreview, LastSeenMessages.b lastSeenMessages) {
+    public ServerboundChatCommandPacket(String command, Instant time, long salt, ArgumentSignatures argumentSignatures, LastSeenMessages.b lastSeenMessages) {
         this.command = command;
         this.time = time;
         this.salt = salt;
         this.argumentSignatures = argumentSignatures;
-        this.commandPreview = commandPreview;
         this.lastSeenMessages = lastSeenMessages;
     }
 
@@ -51,7 +49,6 @@ public class ServerboundChatCommandPacket extends PacketIn {
         this.time = Instant.ofEpochMilli(in.readLong());
         this.salt = in.readLong();
         this.argumentSignatures = new ArgumentSignatures(in);
-        this.commandPreview = in.readBoolean();
         this.lastSeenMessages = new LastSeenMessages.b(in);
     }
 
@@ -69,10 +66,6 @@ public class ServerboundChatCommandPacket extends PacketIn {
 
     public ArgumentSignatures getArgumentSignatures() {
         return argumentSignatures;
-    }
-
-    public boolean isCommandPreview() {
-        return commandPreview;
     }
 
     public LastSeenMessages.b getLastSeenMessages() {
