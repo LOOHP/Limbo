@@ -28,11 +28,12 @@ import com.loohp.limbo.location.Location;
 import com.loohp.limbo.utils.BungeecordAdventureConversionUtils;
 import com.loohp.limbo.world.World;
 
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
 
-public abstract class Entity {
+public abstract class Entity implements Sound.Emitter {
 	
 	@WatchableField(MetadataIndex = 0, WatchableObjectType = WatchableObjectType.BYTE, IsBitmask = true, Bitmask = 0x01) 
 	protected boolean onFire = false;

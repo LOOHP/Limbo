@@ -34,46 +34,46 @@ import net.md_5.bungee.api.chat.BaseComponent;
 
 public interface CommandSender extends Audience {
 	
-	public void sendMessage(BaseComponent[] component, UUID uuid);
+	void sendMessage(BaseComponent[] component, UUID uuid);
 	
-	public void sendMessage(BaseComponent component, UUID uuid);
+	void sendMessage(BaseComponent component, UUID uuid);
 	
-	public void sendMessage(String message, UUID uuid);
+	void sendMessage(String message, UUID uuid);
 	
-	public void sendMessage(BaseComponent[] component);
+	void sendMessage(BaseComponent[] component);
 	
-	public void sendMessage(BaseComponent component);
+	void sendMessage(BaseComponent component);
 	
-	public void sendMessage(String message);
+	void sendMessage(String message);
 	
-	public boolean hasPermission(String permission);
+	boolean hasPermission(String permission);
 	
-	public String getName();
-	
-	public void sendMessage(Identity source, Component message, MessageType type);
-	
-	public void openBook(Book book);
-	
-	public void stopSound(SoundStop stop);
-	
-	public void playSound(Sound sound, Sound.Emitter emitter);
-	
-	public void playSound(Sound sound, double x, double y, double z);
-	
-	public void playSound(Sound sound);
-	
-	public void sendActionBar(Component message);
-	
-	public void sendPlayerListHeaderAndFooter(Component header, Component footer);
-	
-	public <T> void sendTitlePart(TitlePart<T> part, T value);
-	
-	public void clearTitle();
-	
-	public void resetTitle();
-	  
-	public void showBossBar(BossBar bar);
+	String getName();
 
-	public void hideBossBar(BossBar bar);
+	void sendMessage(Identity source, Component message, MessageType type);
+	
+	void openBook(Book book);
+	
+	void stopSound(SoundStop stop);
+	
+	void playSound(Sound sound, Sound.Emitter emitter);
+	
+	void playSound(Sound sound, double x, double y, double z);
+	
+	void playSound(Sound sound);
+	
+	void sendActionBar(Component message);
+	
+	void sendPlayerListHeaderAndFooter(Component header, Component footer);
+	
+	<T> void sendTitlePart(TitlePart<T> part, T value);
+	
+	void clearTitle();
+	
+	void resetTitle();
+	  
+	void showBossBar(BossBar bar);
+
+	void hideBossBar(BossBar bar);
 	
 }

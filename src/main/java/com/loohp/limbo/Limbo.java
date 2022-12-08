@@ -19,42 +19,9 @@
 
 package com.loohp.limbo;
 
-import java.awt.GraphicsEnvironment;
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.loohp.limbo.bossbar.KeyedBossBar;
 import com.loohp.limbo.commands.CommandSender;
 import com.loohp.limbo.commands.DefaultCommands;
 import com.loohp.limbo.consolegui.GUI;
@@ -66,6 +33,7 @@ import com.loohp.limbo.network.ServerConnection;
 import com.loohp.limbo.network.protocol.packets.Packet;
 import com.loohp.limbo.network.protocol.packets.PacketIn;
 import com.loohp.limbo.network.protocol.packets.PacketOut;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutBoss;
 import com.loohp.limbo.permissions.PermissionsManager;
 import com.loohp.limbo.player.Player;
 import com.loohp.limbo.plugins.LimboPlugin;
@@ -74,21 +42,56 @@ import com.loohp.limbo.scheduler.LimboScheduler;
 import com.loohp.limbo.scheduler.Tick;
 import com.loohp.limbo.utils.CustomStringUtils;
 import com.loohp.limbo.utils.ImageUtils;
+import com.loohp.limbo.utils.NamespacedKey;
 import com.loohp.limbo.utils.NetworkUtils;
 import com.loohp.limbo.world.DimensionRegistry;
 import com.loohp.limbo.world.Environment;
 import com.loohp.limbo.world.Schematic;
 import com.loohp.limbo.world.World;
-
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.tag.CompoundTag;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import javax.swing.UnsupportedLookAndFeelException;
+import java.awt.GraphicsEnvironment;
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
-public class Limbo {
+public final class Limbo {
 
 	public static final String LIMBO_BRAND = "Limbo";
 
@@ -135,39 +138,41 @@ public class Limbo {
 	public final int SERVER_IMPLEMENTATION_PROTOCOL = 761;
 	public final String LIMBO_IMPLEMENTATION_VERSION;
 	
-	private AtomicBoolean isRunning;
+	private final AtomicBoolean isRunning;
 	
-	private ServerConnection server;
-	private Console console;
+	private final ServerConnection server;
+	private final Console console;
 	
-	private List<World> worlds = new ArrayList<>();
-	private Map<String, Player> playersByName = new HashMap<>();
-	private Map<UUID, Player> playersByUUID = new HashMap<>();
+	private final List<World> worlds = new CopyOnWriteArrayList<>();
+	final Map<String, Player> playersByName = new ConcurrentHashMap<>();
+	final Map<UUID, Player> playersByUUID = new ConcurrentHashMap<>();
+	private final Map<NamespacedKey, KeyedBossBar> bossBars = new ConcurrentHashMap<>();
 	
-	private ServerProperties properties;
+	private final ServerProperties properties;
 	
-	private PluginManager pluginManager;
-	private EventsManager eventsManager;
-	private PermissionsManager permissionManager;
-	private File pluginFolder;
+	private final PluginManager pluginManager;
+	private final EventsManager eventsManager;
+	private final PermissionsManager permissionManager;
+	private final File pluginFolder;
 	
-	private File internalDataFolder;
+	private final File internalDataFolder;
 	
-	private DimensionRegistry dimensionRegistry;
+	private final DimensionRegistry dimensionRegistry;
 	
-	private Tick tick;
-	private LimboScheduler scheduler;
+	private final Tick tick;
+	private final LimboScheduler scheduler;
 	
-	private Metrics metrics;
+	private final Metrics metrics;
 	
-	public AtomicInteger entityIdCount = new AtomicInteger();
+	public final AtomicInteger entityIdCount = new AtomicInteger();
 	
 	@SuppressWarnings("deprecation")
-	private Unsafe unsafe = new Unsafe();
+	private Unsafe unsafe;
 	
 	@SuppressWarnings("unchecked")
 	public Limbo() throws IOException, ParseException, NumberFormatException, ClassNotFoundException, InterruptedException {
 		instance = this;
+		unsafe = new Unsafe(this);
 		isRunning = new AtomicBoolean(true);
 		
 		if (!noGui) {
@@ -305,7 +310,7 @@ public class Limbo {
             	e.printStackTrace();
             }
         }
-        
+
         scheduler = new LimboScheduler();
 		tick = new Tick(this);
         
@@ -428,7 +433,31 @@ public class Limbo {
 			worlds.remove(world);
 		}
 	}
-	
+
+	public KeyedBossBar createBossBar(NamespacedKey namespacedKey, Component name, float progress, BossBar.Color color, BossBar.Overlay overlay, BossBar.Flag... flags) {
+		KeyedBossBar keyedBossBar = new KeyedBossBar(namespacedKey, BossBar.bossBar(name, progress, color, overlay, new HashSet<>(Arrays.asList(flags))));
+		bossBars.put(namespacedKey, keyedBossBar);
+		return keyedBossBar;
+	}
+
+	public void removeBossBar(NamespacedKey namespacedKey) {
+		KeyedBossBar keyedBossBar = bossBars.remove(namespacedKey);
+		keyedBossBar.getProperties().removeListener(keyedBossBar.getUnsafe().getLimboListener());
+		keyedBossBar.getUnsafe().invalidate();
+		PacketPlayOutBoss packetPlayOutBoss = new PacketPlayOutBoss(keyedBossBar, PacketPlayOutBoss.BossBarAction.REMOVE);
+		for (Player player : keyedBossBar.getPlayers()) {
+			try {
+				player.clientConnection.sendPacket(packetPlayOutBoss);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public Map<NamespacedKey, KeyedBossBar> getBossBars() {
+		return Collections.unmodifiableMap(bossBars);
+	}
+
 	public ServerProperties getServerProperties() {
 		return properties;
 	}
@@ -455,16 +484,6 @@ public class Limbo {
 	
 	public Player getPlayer(UUID uuid) {
 		return playersByUUID.get(uuid);
-	}
-	
-	public void addPlayer(Player player) {
-		playersByName.put(player.getName(), player);
-		playersByUUID.put(player.getUniqueId(), player);
-	}
-	
-	public void removePlayer(Player player) {
-		playersByName.remove(player.getName());
-		playersByUUID.remove(player.getUniqueId());
 	}
 	
 	public List<World> getWorlds() {

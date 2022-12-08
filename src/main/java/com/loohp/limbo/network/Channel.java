@@ -48,7 +48,7 @@ public class Channel implements AutoCloseable {
 
     private void ensureOpen() {
         if (!valid.get()) {
-            throw new IllegalStateException("Channel already closed!");
+            close();
         }
     }
 
@@ -106,10 +106,13 @@ public class Channel implements AutoCloseable {
     }
 
     @Override
-    public synchronized void close() throws Exception {
+    public synchronized void close() {
         if (valid.compareAndSet(true, false)) {
-            input.close();
-            output.close();
+            try {
+                input.close();
+                output.close();
+            } catch (Exception ignore) {
+            }
         }
     }
 

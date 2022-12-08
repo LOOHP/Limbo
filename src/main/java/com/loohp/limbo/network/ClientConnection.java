@@ -491,7 +491,7 @@ public class ClientConnection extends Thread {
 
                                 player = new Player(this, username, uuid, Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
                                 player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
-                                Limbo.getInstance().addPlayer(player);
+                                Limbo.getInstance().getUnsafe().addPlayer(player);
                                 break;
                             } else if (packetIn instanceof PacketLoginInPluginMessaging) {
                                 PacketLoginInPluginMessaging response = (PacketLoginInPluginMessaging) packetIn;
@@ -519,7 +519,7 @@ public class ClientConnection extends Thread {
 
                                 player = new Player(this, data.getUsername(), data.getUuid(), Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
                                 player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
-                                Limbo.getInstance().addPlayer(player);
+                                Limbo.getInstance().getUnsafe().addPlayer(player);
 
                                 break;
                             }
@@ -757,7 +757,7 @@ public class ClientConnection extends Thread {
         state = ClientState.DISCONNECTED;
 
         if (player != null) {
-            Limbo.getInstance().removePlayer(player);
+            Limbo.getInstance().getUnsafe().removePlayer(player);
         }
         Limbo.getInstance().getServerConnection().getClients().remove(this);
         running = false;

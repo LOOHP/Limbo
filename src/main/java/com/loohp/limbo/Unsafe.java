@@ -28,13 +28,16 @@ import com.loohp.limbo.player.Player;
 import com.loohp.limbo.utils.GameMode;
 import com.loohp.limbo.world.World;
 
+@SuppressWarnings("DeprecatedIsStillUsed")
 @Deprecated
 public class Unsafe {
-	
+
+	private final Limbo instance;
 	private com.loohp.limbo.player.Unsafe playerUnsafe;
 	private com.loohp.limbo.world.Unsafe worldUnsafe;
 	
-	protected Unsafe() {
+	protected Unsafe(Limbo instance) {
+		this.instance = instance;
 		try {
 			Constructor<com.loohp.limbo.player.Unsafe> playerConstructor = com.loohp.limbo.player.Unsafe.class.getDeclaredConstructor();
 			playerConstructor.setAccessible(true);
@@ -76,6 +79,19 @@ public class Unsafe {
 	@Deprecated
 	public void setPlayerLocationSilently(Player player, Location location) {
 		playerUnsafe.a(player, location);
+	}
+
+	@Deprecated
+	public void addPlayer(Player player) {
+		instance.playersByName.put(player.getName(), player);
+		instance.playersByUUID.put(player.getUniqueId(), player);
+	}
+
+	@Deprecated
+	public void removePlayer(Player player) {
+		instance.getBossBars().values().forEach(each -> each.hidePlayer(player));
+		instance.playersByName.remove(player.getName());
+		instance.playersByUUID.remove(player.getUniqueId());
 	}
 
 }

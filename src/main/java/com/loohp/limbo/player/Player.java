@@ -31,6 +31,7 @@ import com.loohp.limbo.events.player.PlayerTeleportEvent;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.network.ClientConnection;
 import com.loohp.limbo.network.protocol.packets.ClientboundClearTitlesPacket;
+import com.loohp.limbo.network.protocol.packets.ClientboundSetActionBarTextPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundSetSubtitleTextPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundSetTitleTextPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundSetTitlesAnimationPacket;
@@ -38,10 +39,13 @@ import com.loohp.limbo.network.protocol.packets.ClientboundSystemChatPacket;
 import com.loohp.limbo.network.protocol.packets.PacketOut;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutGameState;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutHeldItemChange;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutNamedSoundEffect;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerListHeaderFooter;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutPositionAndLook;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutResourcePackSend;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutRespawn;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutStopSound;
+import com.loohp.limbo.sounds.SoundEffect;
 import com.loohp.limbo.utils.BungeecordAdventureConversionUtils;
 import com.loohp.limbo.utils.GameMode;
 import com.loohp.limbo.utils.MessageSignature;
@@ -50,6 +54,7 @@ import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.inventory.Book;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.sound.Sound.Emitter;
 import net.kyori.adventure.sound.SoundStop;
@@ -65,6 +70,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Player extends LivingEntity implements CommandSender {
 	
@@ -448,7 +454,13 @@ public class Player extends LivingEntity implements CommandSender {
 
 	@Override
 	public void stopSound(SoundStop stop) {
-		throw new UnsupportedOperationException("This function has not been implemented yet.");
+		Key sound = stop.sound();
+		PacketPlayOutStopSound stopSound = new PacketPlayOutStopSound(sound == null ? null : NamespacedKey.fromKey(sound), stop.source());
+		try {
+			clientConnection.sendPacket(stopSound);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -458,27 +470,37 @@ public class Player extends LivingEntity implements CommandSender {
 
 	@Override
 	public void playSound(Sound sound, double x, double y, double z) {
-		throw new UnsupportedOperationException("This function has not been implemented yet.");
+		PacketPlayOutNamedSoundEffect namedSoundEffect = new PacketPlayOutNamedSoundEffect(
+				SoundEffect.createVariableRangeEvent(NamespacedKey.fromKey(sound.name())),
+				sound.source(), x, y, z, sound.volume(), sound.pitch(), sound.seed().orElse(ThreadLocalRandom.current().nextLong())
+		);
+		try {
+			clientConnection.sendPacket(namedSoundEffect);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void playSound(Sound sound) {
-		throw new UnsupportedOperationException("This function has not been implemented yet.");
+		playSound(sound, x, y, z);
 	}
 
 	@Override
 	public void sendActionBar(Component message) {
 		try {
-			ClientboundSystemChatPacket chat = new ClientboundSystemChatPacket(message, true);
-			clientConnection.sendPacket(chat);
-		} catch (IOException ignored) {}
+			ClientboundSetActionBarTextPacket setActionBar = new ClientboundSetActionBarTextPacket(message);
+			clientConnection.sendPacket(setActionBar);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void sendPlayerListHeaderAndFooter(Component header, Component footer) {
 		try {
-			PacketPlayOutPlayerListHeaderFooter packsend = new PacketPlayOutPlayerListHeaderFooter(header, footer);
-			clientConnection.sendPacket(packsend);
+			PacketPlayOutPlayerListHeaderFooter listHeaderFooter = new PacketPlayOutPlayerListHeaderFooter(header, footer);
+			clientConnection.sendPacket(listHeaderFooter);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
