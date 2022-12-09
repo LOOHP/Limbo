@@ -20,6 +20,8 @@
 package com.loohp.limbo.network;
 
 import com.loohp.limbo.Limbo;
+import com.loohp.limbo.entity.EntityEquipment;
+import com.loohp.limbo.events.inventory.AnvilRenameInputEvent;
 import com.loohp.limbo.events.inventory.InventoryCloseEvent;
 import com.loohp.limbo.events.inventory.InventoryCreativeEvent;
 import com.loohp.limbo.events.player.PlayerInteractEvent;
@@ -30,10 +32,13 @@ import com.loohp.limbo.events.player.PlayerQuitEvent;
 import com.loohp.limbo.events.player.PlayerResourcePackStatusEvent;
 import com.loohp.limbo.events.player.PlayerSelectedSlotChangeEvent;
 import com.loohp.limbo.events.player.PlayerSpawnEvent;
+import com.loohp.limbo.events.player.PlayerSwapHandItemsEvent;
 import com.loohp.limbo.events.player.PluginMessageEvent;
 import com.loohp.limbo.events.status.StatusPingEvent;
 import com.loohp.limbo.file.ServerProperties;
+import com.loohp.limbo.inventory.AnvilInventory;
 import com.loohp.limbo.inventory.Inventory;
+import com.loohp.limbo.inventory.ItemStack;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.network.protocol.packets.Packet;
 import com.loohp.limbo.network.protocol.packets.PacketHandshakingIn;
@@ -44,11 +49,14 @@ import com.loohp.limbo.network.protocol.packets.PacketLoginOutDisconnect;
 import com.loohp.limbo.network.protocol.packets.PacketLoginOutLoginSuccess;
 import com.loohp.limbo.network.protocol.packets.PacketLoginOutPluginMessaging;
 import com.loohp.limbo.network.protocol.packets.PacketOut;
+import com.loohp.limbo.network.protocol.packets.PacketPlayInBlockDig;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInBlockPlace;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInChat;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInCloseWindow;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInHeldItemChange;
+import com.loohp.limbo.network.protocol.packets.PacketPlayInItemName;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInKeepAlive;
+import com.loohp.limbo.network.protocol.packets.PacketPlayInPickItem;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInPluginMessaging;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInPosition;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInPositionAndLook;
@@ -85,6 +93,7 @@ import com.loohp.limbo.network.protocol.packets.PacketStatusOutResponse;
 import com.loohp.limbo.network.protocol.packets.ServerboundChatCommandPacket;
 import com.loohp.limbo.player.Player;
 import com.loohp.limbo.player.PlayerInteractManager;
+import com.loohp.limbo.player.PlayerInventory;
 import com.loohp.limbo.utils.BungeecordAdventureConversionUtils;
 import com.loohp.limbo.utils.CheckedBiConsumer;
 import com.loohp.limbo.utils.CustomStringUtils;
@@ -92,6 +101,7 @@ import com.loohp.limbo.utils.DataTypeIO;
 import com.loohp.limbo.utils.DeclareCommands;
 import com.loohp.limbo.utils.ForwardingUtils;
 import com.loohp.limbo.utils.GameMode;
+import com.loohp.limbo.utils.InventoryClickUtils;
 import com.loohp.limbo.utils.MojangAPIUtils;
 import com.loohp.limbo.utils.MojangAPIUtils.SkinResponse;
 import com.loohp.limbo.world.BlockPosition;
@@ -99,6 +109,7 @@ import com.loohp.limbo.world.BlockState;
 import com.loohp.limbo.world.World;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -124,7 +135,6 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -668,9 +678,9 @@ public class ClientConnection extends Thread {
                                 sendPacket(response);
                             }
                         };
-                        System.out.println("Waiting");
+
                         PacketIn packetIn = channel.readPacket();
-                        System.out.println("Received " + packetIn.getClass());
+
                         if (packetIn instanceof PacketPlayInPositionAndLook) {
                             PacketPlayInPositionAndLook pos = (PacketPlayInPositionAndLook) packetIn;
                             Location from = player.getLocation();
@@ -757,31 +767,78 @@ public class ClientConnection extends Thread {
                             Limbo.getInstance().getEventsManager().callEvent(new PlayerInteractEvent(player, PlayerInteractEvent.Action.RIGHT_CLICK_AIR, player.getEquipment().getItem(packet.getHand()), block, packet.getBlockHit().getDirection(), packet.getHand()));
                         } else if (packetIn instanceof PacketPlayInSetCreativeSlot) {
                             PacketPlayInSetCreativeSlot packet = (PacketPlayInSetCreativeSlot) packetIn;
-                            InventoryCreativeEvent event = Limbo.getInstance().getEventsManager().callEvent(new InventoryCreativeEvent(player, player.getInventoryView(), player.getInventory(), player.getInventory().getUnsafe().b().applyAsInt(packet.getSlotNumber()), packet.getItemStack()));
+                            InventoryCreativeEvent event = Limbo.getInstance().getEventsManager().callEvent(new InventoryCreativeEvent(player.getInventoryView(), player.getInventory().getUnsafe().b().applyAsInt(packet.getSlotNumber()), packet.getItemStack()));
                             if (event.isCancelled()) {
                                 player.updateInventory();
                             } else {
-                                player.getInventory().getUnsafe().b(packet.getSlotNumber(), event.getNewItem());
+                                player.getInventory().setItem(event.getSlot(), event.getNewItem());
                             }
                         } else if (packetIn instanceof PacketPlayInWindowClick) {
                             PacketPlayInWindowClick packet = (PacketPlayInWindowClick) packetIn;
-                            /*
-                            InventoryCreativeEvent event = Limbo.getInstance().getEventsManager().callEvent(new InventoryCreativeEvent(player, player.getInventoryView(), player.getInventory(), player.getInventory().getUnsafe().b().applyAsInt(packet.getSlotNumber()), packet.getItemStack()));
-                            if (event.isCancelled()) {
-                                player.updateInventory();
-                            } else {
-                               player.getInventory().getUnsafe().b(packet.getSlotNumber(), event.getNewItem());
+                            try {
+                                InventoryClickUtils.handle(player, packet);
+                            } catch (Throwable e) {
+                                e.printStackTrace();
                             }
-                            */
                         } else if (packetIn instanceof PacketPlayInCloseWindow) {
                             PacketPlayInCloseWindow packet = (PacketPlayInCloseWindow) packetIn;
                             Inventory inventory = player.getInventoryView().getTopInventory();
                             if (inventory != null) {
                                 Integer id = inventory.getUnsafe().c().get(player);
                                 if (id != null) {
-                                    Limbo.getInstance().getEventsManager().callEvent(new InventoryCloseEvent(player, player.getInventoryView()));
-                                    player.getInventoryView().getUnsafe().a(null);
+                                    Limbo.getInstance().getEventsManager().callEvent(new InventoryCloseEvent(player.getInventoryView()));
+                                    player.getInventoryView().getUnsafe().a(null, null);
                                     inventory.getUnsafe().c().remove(player);
+                                }
+                            }
+                        } else if (packetIn instanceof PacketPlayInBlockDig) {
+                            PacketPlayInBlockDig packet = (PacketPlayInBlockDig) packetIn;
+                            //noinspection SwitchStatementWithTooFewBranches
+                            switch (packet.getAction()) {
+                                case SWAP_ITEM_WITH_OFFHAND: {
+                                    EntityEquipment equipment = player.getEquipment();
+                                    PlayerSwapHandItemsEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerSwapHandItemsEvent(player, equipment.getItemInOffHand(), equipment.getItemInMainHand()));
+                                    if (!event.isCancelled()) {
+                                        equipment.setItemInMainHand(event.getMainHandItem());
+                                        equipment.setItemInOffHand(event.getOffHandItem());
+                                    }
+                                    break;
+                                }
+                            }
+                        } else if (packetIn instanceof PacketPlayInPickItem) {
+                            PacketPlayInPickItem packet = (PacketPlayInPickItem) packetIn;
+                            PlayerInventory inventory = player.getInventory();
+                            int slot = inventory.getUnsafe().b().applyAsInt(packet.getSlot());
+                            int i = player.getSelectedSlot();
+                            byte selectedSlot = -1;
+                            boolean firstRun = true;
+                            while (selectedSlot < 0 || (!firstRun && i == player.getSelectedSlot())) {
+                                ItemStack itemStack = inventory.getItem(i);
+                                if (itemStack == null) {
+                                    selectedSlot = (byte) i;
+                                    break;
+                                }
+                                if (++i >= 9) {
+                                    i = 0;
+                                }
+                            }
+                            if (selectedSlot < 0) {
+                                selectedSlot = player.getSelectedSlot();
+                            }
+                            ItemStack leavingHotbar = inventory.getItem(selectedSlot);
+                            inventory.setItem(selectedSlot, inventory.getItem(slot));
+                            inventory.setItem(slot, leavingHotbar);
+                            player.setSelectedSlot(selectedSlot);
+                        } else if (packetIn instanceof PacketPlayInItemName) {
+                            PacketPlayInItemName packet = (PacketPlayInItemName) packetIn;
+                            if (player.getInventoryView().getTopInventory() instanceof AnvilInventory) {
+                                AnvilRenameInputEvent event = Limbo.getInstance().getEventsManager().callEvent(new AnvilRenameInputEvent(player.getInventoryView(), packet.getName()));
+                                if (!event.isCancelled()) {
+                                    AnvilInventory anvilInventory = (AnvilInventory) player.getInventoryView().getTopInventory();
+                                    ItemStack result = anvilInventory.getItem(2);
+                                    if (result != null) {
+                                        result.displayName(LegacyComponentSerializer.legacySection().deserialize(event.getInput()));
+                                    }
                                 }
                             }
                         }

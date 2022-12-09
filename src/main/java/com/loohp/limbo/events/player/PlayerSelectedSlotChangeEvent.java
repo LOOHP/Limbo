@@ -24,22 +24,23 @@ import com.loohp.limbo.player.Player;
 
 public class PlayerSelectedSlotChangeEvent extends PlayerEvent implements Cancellable {
 
-    private boolean cancel = false;
+    private boolean cancelled;
     private byte slot;
 
     public PlayerSelectedSlotChangeEvent(Player player, byte slot) {
         super(player);
         this.slot = slot;
+        this.cancelled = false;
     }
 
     @Override
     public void setCancelled(boolean cancelled) {
-        this.cancel = cancelled;
+        this.cancelled = cancelled;
     }
 
     @Override
     public boolean isCancelled() {
-        return cancel;
+        return cancelled;
     }
 
     public byte getSlot() {

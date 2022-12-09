@@ -38,7 +38,7 @@ public class PacketPlayOutSetSlot extends PacketOut {
         this.containerId = containerId;
         this.stateId = stateId;
         this.slot = slot;
-        this.itemStack = itemStack;
+        this.itemStack = itemStack == null ? ItemStack.AIR : itemStack;
     }
 
     public int getContainerId() {

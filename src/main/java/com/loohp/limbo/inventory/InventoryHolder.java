@@ -19,10 +19,14 @@
 
 package com.loohp.limbo.inventory;
 
+import com.loohp.limbo.location.Location;
+
 public interface InventoryHolder {
 
     Inventory getInventory();
 
     InventoryHolder getHolder();
+
+    Location getLocation();
 
 }

@@ -20,8 +20,12 @@
 package com.loohp.limbo.inventory;
 
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
+import net.querz.nbt.io.SNBTUtil;
 import net.querz.nbt.tag.CompoundTag;
 
+import java.io.IOException;
 import java.util.Objects;
 
 public class ItemStack implements Cloneable {
@@ -86,6 +90,43 @@ public class ItemStack implements Cloneable {
         return new ItemStack(material, amount, nbt == null ? null : nbt.clone());
     }
 
+    public Component displayName() {
+        if (type().equals(AIR.type()) || nbt == null) {
+            return null;
+        }
+        CompoundTag displayTag = nbt.getCompoundTag("display");
+        if (displayTag == null) {
+            return null;
+        }
+        String json = displayTag.getString("Name");
+        if (json == null) {
+            return null;
+        }
+        try {
+            return GsonComponentSerializer.gson().deserialize(json);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public ItemStack displayName(Component component) {
+        if (type().equals(AIR.type())) {
+            return this;
+        }
+        try {
+            String json = GsonComponentSerializer.gson().serialize(component);
+            CompoundTag nbt = this.nbt.clone();
+            CompoundTag displayTag = nbt.getCompoundTag("display");
+            if (displayTag == null) {
+                nbt.put("display", displayTag = new CompoundTag());
+            }
+            displayTag.putString("Name", json);
+            return nbt(nbt);
+        } catch (Exception ignore) {
+        }
+        return this;
+    }
+
     public int getMaxStackSize() {
         return 64;
     }
@@ -112,11 +153,21 @@ public class ItemStack implements Cloneable {
     }
 
     public boolean isSimilar(ItemStack stack) {
-        return material.equals(stack.material) && Objects.equals(nbt, stack.nbt);
+        return stack != null && material.equals(stack.material) && Objects.equals(nbt, stack.nbt);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(material, amount, nbt);
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return SNBTUtil.toSNBT(getFullTag());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }

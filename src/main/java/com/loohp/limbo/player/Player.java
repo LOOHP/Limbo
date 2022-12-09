@@ -132,8 +132,9 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 	}
 
 	public void setSelectedSlot(byte slot) {
-		if(slot == selectedSlot)
+		if (slot == selectedSlot) {
 			return;
+		}
 		try {
 			PacketPlayOutHeldItemChange state = new PacketPlayOutHeldItemChange(slot);
 			clientConnection.sendPacket(state);
@@ -603,22 +604,22 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 	}
 
 	public void openInventory(Inventory inventory) {
-		inventoryView.getUnsafe().a(inventory);
+		Component title = inventory instanceof TitledInventory ? ((TitledInventory) inventory).getTitle() : Component.translatable("container.chest");
+		inventoryView.getUnsafe().a(inventory, title);
 		int id = nextContainerId();
 		inventory.getUnsafe().c().put(this, id);
-		InventoryOpenEvent event = Limbo.getInstance().getEventsManager().callEvent(new InventoryOpenEvent(this, inventoryView));
+		InventoryOpenEvent event = Limbo.getInstance().getEventsManager().callEvent(new InventoryOpenEvent(inventoryView));
 		if (event.isCancelled()) {
-			inventoryView.getUnsafe().a(null);
+			inventoryView.getUnsafe().a(null, null);
 			inventory.getUnsafe().c().remove(this);
 		} else {
-			Component title = inventory instanceof TitledInventory ? ((TitledInventory) inventory).getTitle() : Component.translatable("container.chest");
 			PacketPlayOutOpenWindow packet = new PacketPlayOutOpenWindow(id, inventory.getType().getRawType(inventory.getSize()), title);
 			try {
 				clientConnection.sendPacket(packet);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			inventory.updateInventory(this);
+			inventoryView.updateView();
 		}
 	}
 
@@ -627,8 +628,8 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 		if (inventory != null) {
 			Integer id = inventory.getUnsafe().c().get(this);
 			if (id != null) {
-				Limbo.getInstance().getEventsManager().callEvent(new InventoryCloseEvent(this, inventoryView));
-				inventoryView.getUnsafe().a(null);
+				Limbo.getInstance().getEventsManager().callEvent(new InventoryCloseEvent(inventoryView));
+				inventoryView.getUnsafe().a(null, null);
 				inventory.getUnsafe().c().remove(this);
 				PacketPlayOutCloseWindow packet = new PacketPlayOutCloseWindow(id);
 				try {

@@ -21,14 +21,13 @@ package com.loohp.limbo.events.inventory;
 
 import com.loohp.limbo.events.Cancellable;
 import com.loohp.limbo.inventory.InventoryView;
-import com.loohp.limbo.player.Player;
 
 public class InventoryOpenEvent extends InventoryEvent implements Cancellable {
 
 	private boolean cancelled;
 
-	public InventoryOpenEvent(Player player, InventoryView inventoryView) {
-		super(player, inventoryView, inventoryView.getTopInventory());
+	public InventoryOpenEvent(InventoryView inventoryView) {
+		super(inventoryView, inventoryView.getTopInventory());
 		this.cancelled = false;
 	}
 

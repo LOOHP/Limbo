@@ -31,7 +31,7 @@ public class PacketPlayOutPlayerAbilities extends PacketOut {
 		ALLOW_FLYING(0x04),
 		CREATIVE(0x08);
 		
-		int bitvalue;
+		private final int bitvalue;
 		
 		PlayerAbilityFlags(int bitvalue) {
 			this.bitvalue = bitvalue;

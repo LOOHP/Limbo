@@ -19,12 +19,35 @@
 
 package com.loohp.limbo.events.inventory;
 
+import com.loohp.limbo.events.Cancellable;
 import com.loohp.limbo.inventory.InventoryView;
 
-public class InventoryCloseEvent extends InventoryEvent {
+public class AnvilRenameInputEvent extends InventoryEvent implements Cancellable  {
 
-	public InventoryCloseEvent(InventoryView inventoryView) {
-		super(inventoryView, inventoryView.getTopInventory());
-	}
+    private boolean cancelled;
+    private String input;
 
+    public AnvilRenameInputEvent(InventoryView inventoryView, String input) {
+        super(inventoryView, inventoryView.getTopInventory());
+        this.input = input;
+        this.cancelled = false;
+    }
+
+    public void setInput(String input) {
+        this.input = input;
+    }
+
+    public String getInput() {
+        return input;
+    }
+
+    @Override
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return cancelled;
+    }
 }

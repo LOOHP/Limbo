@@ -17,32 +17,39 @@
  * limitations under the License.
  */
 
-package com.loohp.limbo.events.inventory;
+package com.loohp.limbo.events.player;
 
 import com.loohp.limbo.events.Cancellable;
-import com.loohp.limbo.inventory.InventoryView;
 import com.loohp.limbo.inventory.ItemStack;
+import com.loohp.limbo.player.Player;
 
-public class InventoryCreativeEvent extends InventoryEvent implements Cancellable {
+public class PlayerSwapHandItemsEvent extends PlayerEvent implements Cancellable {
 
 	private boolean cancelled;
-	private final int slot;
-	private ItemStack newItem;
+	private ItemStack mainHandItem;
+	private ItemStack offHandItem;
 
-	public InventoryCreativeEvent(InventoryView inventoryView, int slot, ItemStack newItem) {
-		super(inventoryView, inventoryView.getBottomInventory());
-		this.slot = slot;
-		this.newItem = newItem;
+	public PlayerSwapHandItemsEvent(Player player, ItemStack mainHandItem, ItemStack offHandItem) {
+		super(player);
+		this.mainHandItem = mainHandItem;
+		this.offHandItem = offHandItem;
 		this.cancelled = false;
 	}
 
-	public int getSlot() {
-		return slot;
+	public ItemStack getMainHandItem() {
+		return mainHandItem;
 	}
 
-	@Override
-	public boolean isCancelled() {
-		return cancelled;
+	public void setMainHandItem(ItemStack mainHandItem) {
+		this.mainHandItem = mainHandItem;
+	}
+
+	public ItemStack getOffHandItem() {
+		return offHandItem;
+	}
+
+	public void setOffHandItem(ItemStack offHandItem) {
+		this.offHandItem = offHandItem;
 	}
 
 	@Override
@@ -50,11 +57,9 @@ public class InventoryCreativeEvent extends InventoryEvent implements Cancellabl
 		this.cancelled = cancelled;
 	}
 
-	public ItemStack getNewItem() {
-		return newItem == null ? null : newItem.clone();
+	@Override
+	public boolean isCancelled() {
+		return cancelled;
 	}
 
-	public void setNewItem(ItemStack newItem) {
-		this.newItem = newItem == null ? null : newItem.clone();
-	}
 }

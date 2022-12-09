@@ -27,6 +27,7 @@ import com.loohp.limbo.commands.DefaultCommands;
 import com.loohp.limbo.consolegui.GUI;
 import com.loohp.limbo.events.EventsManager;
 import com.loohp.limbo.file.ServerProperties;
+import com.loohp.limbo.inventory.AnvilInventory;
 import com.loohp.limbo.inventory.CustomInventory;
 import com.loohp.limbo.inventory.Inventory;
 import com.loohp.limbo.inventory.InventoryHolder;
@@ -626,7 +627,15 @@ public final class Limbo {
 	}
 
 	public Inventory createInventory(Component title, InventoryType type, InventoryHolder holder) {
-		throw new UnsupportedOperationException("This function has not been implemented yet.");
+		if (!type.isCreatable()) {
+			throw new UnsupportedOperationException("This InventoryType cannot be created.");
+		}
+		switch (type) {
+			case ANVIL:
+				return new AnvilInventory(title, holder);
+			default:
+				throw new UnsupportedOperationException("This InventoryType has not been implemented yet.");
+		}
 	}
 
 }

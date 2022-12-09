@@ -26,7 +26,10 @@
     "0x31": "PacketPlayInUseItem",
     "0x2B": "PacketPlayInSetCreativeSlot",
     "0x0A": "PacketPlayInWindowClick",
-    "0x0B": "PacketPlayInCloseWindow"
+    "0x0B": "PacketPlayInCloseWindow",
+    "0x19": "PacketPlayInPickItem",
+    "0x1C": "PacketPlayInBlockDig",
+    "0x23": "PacketPlayInItemName"
   },
   "PlayOut": {
     "PacketPlayOutLogin": "0x24",

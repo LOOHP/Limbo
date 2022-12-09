@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.inventory;
 
+import com.loohp.limbo.location.Location;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutSetSlot;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutWindowItems;
 import com.loohp.limbo.player.Player;
@@ -107,6 +108,11 @@ public abstract class AbstractInventory implements Inventory {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public Location getLocation() {
+        return inventoryHolder == null ? null : inventoryHolder.getLocation();
     }
 
     @Override
@@ -311,7 +317,7 @@ public abstract class AbstractInventory implements Inventory {
     public boolean contains(ItemStack item) {
         for (int i = 0; i < inventory.length(); i++) {
             ItemStack itemStack = getItem(i);
-            if (itemStack.equals(item)) {
+            if (Objects.equals(itemStack, item)) {
                 return true;
             }
         }
@@ -525,6 +531,9 @@ public abstract class AbstractInventory implements Inventory {
 
         @Deprecated
         public void a(int index, ItemStack itemStack) {
+            if (itemStack != null && itemStack.type().equals(ItemStack.AIR.type())) {
+                itemStack = null;
+            }
             inventory.inventory.set(index, itemStack);
         }
 

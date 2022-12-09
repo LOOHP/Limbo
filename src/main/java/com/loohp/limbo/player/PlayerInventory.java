@@ -27,7 +27,6 @@ import com.loohp.limbo.inventory.AbstractInventory;
 import com.loohp.limbo.inventory.EquipmentSlot;
 import com.loohp.limbo.inventory.InventoryType;
 import com.loohp.limbo.inventory.ItemStack;
-import com.loohp.limbo.location.Location;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -163,11 +162,6 @@ public class PlayerInventory extends AbstractInventory implements EntityEquipmen
                 i++;
             }
         }
-    }
-
-    @Override
-    public Location getLocation() {
-        return player.getLocation();
     }
 
 }

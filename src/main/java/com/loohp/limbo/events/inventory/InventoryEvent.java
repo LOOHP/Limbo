@@ -25,22 +25,20 @@ import com.loohp.limbo.inventory.InventoryView;
 import com.loohp.limbo.player.Player;
 
 public class InventoryEvent extends Event {
-	
-	private final Player player;
+
 	private final InventoryView inventoryView;
 	private final Inventory clickedInventory;
 	
-	public InventoryEvent(Player player, InventoryView inventoryView, Inventory clickedInventory) {
-		this.player = player;
+	public InventoryEvent(InventoryView inventoryView, Inventory clickedInventory) {
 		this.inventoryView = inventoryView;
 		this.clickedInventory = clickedInventory;
 	}
 	
 	public Player getPlayer() {
-		return player;
+		return inventoryView.getPlayer();
 	}
 
-	public InventoryView getInventoryView() {
+	public InventoryView getView() {
 		return inventoryView;
 	}
 

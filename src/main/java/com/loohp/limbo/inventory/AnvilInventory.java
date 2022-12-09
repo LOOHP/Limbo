@@ -19,24 +19,20 @@
 
 package com.loohp.limbo.inventory;
 
-import com.loohp.limbo.location.Location;
 import net.kyori.adventure.text.Component;
 
-public class CustomInventory extends AbstractInventory implements TitledInventory {
+public class AnvilInventory extends AbstractInventory implements TitledInventory {
 
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    @Deprecated
-    public static CustomInventory create(Component title, int size, InventoryHolder inventoryHolder) {
-        if (size % 9 != 0 || size > 54 || size < 9) {
-            throw new IllegalArgumentException("size must be a multiple of 9 and within 9 - 54");
-        }
-        return new CustomInventory(title, size, inventoryHolder);
-    }
+    public static final Component DEFAULT_TITLE = Component.translatable("container.repair");
 
     private Component title;
 
-    private CustomInventory(Component title, int size, InventoryHolder inventoryHolder) {
-        super(size, inventoryHolder, InventoryType.CHEST, null, null);
+    public AnvilInventory(Component title, InventoryHolder inventoryHolder) {
+        super(InventoryType.ANVIL.getDefaultSize(), inventoryHolder, InventoryType.ANVIL, null, null);
+        this.title = title == null ? DEFAULT_TITLE : title;
+    }
+
+    public void setTitle(Component title) {
         this.title = title;
     }
 
@@ -44,9 +40,4 @@ public class CustomInventory extends AbstractInventory implements TitledInventor
     public Component getTitle() {
         return title;
     }
-
-    public void setTitle(Component title) {
-        this.title = title;
-    }
-
 }

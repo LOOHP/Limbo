@@ -17,14 +17,26 @@
  * limitations under the License.
  */
 
-package com.loohp.limbo.events.inventory;
+package com.loohp.limbo.network.protocol.packets;
 
-import com.loohp.limbo.inventory.InventoryView;
+import com.loohp.limbo.utils.DataTypeIO;
 
-public class InventoryCloseEvent extends InventoryEvent {
+import java.io.DataInputStream;
+import java.io.IOException;
 
-	public InventoryCloseEvent(InventoryView inventoryView) {
-		super(inventoryView, inventoryView.getTopInventory());
+public class PacketPlayInPickItem extends PacketIn {
+
+	private int slot;
+
+	public PacketPlayInPickItem(int slot) {
+		this.slot = slot;
 	}
 
+	public PacketPlayInPickItem(DataInputStream in) throws IOException {
+		this(DataTypeIO.readVarInt(in));
+	}
+
+	public int getSlot() {
+		return slot;
+	}
 }
