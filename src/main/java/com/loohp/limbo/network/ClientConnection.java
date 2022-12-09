@@ -20,6 +20,9 @@
 package com.loohp.limbo.network;
 
 import com.loohp.limbo.Limbo;
+import com.loohp.limbo.events.inventory.InventoryCloseEvent;
+import com.loohp.limbo.events.inventory.InventoryCreativeEvent;
+import com.loohp.limbo.events.player.PlayerInteractEvent;
 import com.loohp.limbo.events.player.PlayerJoinEvent;
 import com.loohp.limbo.events.player.PlayerLoginEvent;
 import com.loohp.limbo.events.player.PlayerMoveEvent;
@@ -30,6 +33,7 @@ import com.loohp.limbo.events.player.PlayerSpawnEvent;
 import com.loohp.limbo.events.player.PluginMessageEvent;
 import com.loohp.limbo.events.status.StatusPingEvent;
 import com.loohp.limbo.file.ServerProperties;
+import com.loohp.limbo.inventory.Inventory;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.network.protocol.packets.Packet;
 import com.loohp.limbo.network.protocol.packets.PacketHandshakingIn;
@@ -40,7 +44,9 @@ import com.loohp.limbo.network.protocol.packets.PacketLoginOutDisconnect;
 import com.loohp.limbo.network.protocol.packets.PacketLoginOutLoginSuccess;
 import com.loohp.limbo.network.protocol.packets.PacketLoginOutPluginMessaging;
 import com.loohp.limbo.network.protocol.packets.PacketOut;
+import com.loohp.limbo.network.protocol.packets.PacketPlayInBlockPlace;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInChat;
+import com.loohp.limbo.network.protocol.packets.PacketPlayInCloseWindow;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInHeldItemChange;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInKeepAlive;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInPluginMessaging;
@@ -49,7 +55,10 @@ import com.loohp.limbo.network.protocol.packets.PacketPlayInPositionAndLook;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInResourcePackStatus;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInResourcePackStatus.EnumResourcePackStatus;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInRotation;
+import com.loohp.limbo.network.protocol.packets.PacketPlayInSetCreativeSlot;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInTabComplete;
+import com.loohp.limbo.network.protocol.packets.PacketPlayInUseItem;
+import com.loohp.limbo.network.protocol.packets.PacketPlayInWindowClick;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutDeclareCommands;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutDisconnect;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutEntityMetadata;
@@ -86,6 +95,7 @@ import com.loohp.limbo.utils.GameMode;
 import com.loohp.limbo.utils.MojangAPIUtils;
 import com.loohp.limbo.utils.MojangAPIUtils.SkinResponse;
 import com.loohp.limbo.world.BlockPosition;
+import com.loohp.limbo.world.BlockState;
 import com.loohp.limbo.world.World;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -114,6 +124,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
@@ -491,7 +502,7 @@ public class ClientConnection extends Thread {
 
                                 player = new Player(this, username, uuid, Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
                                 player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
-                                Limbo.getInstance().getUnsafe().addPlayer(player);
+                                Limbo.getInstance().getUnsafe().a(player);
                                 break;
                             } else if (packetIn instanceof PacketLoginInPluginMessaging) {
                                 PacketLoginInPluginMessaging response = (PacketLoginInPluginMessaging) packetIn;
@@ -519,7 +530,7 @@ public class ClientConnection extends Thread {
 
                                 player = new Player(this, data.getUsername(), data.getUuid(), Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
                                 player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
-                                Limbo.getInstance().getUnsafe().addPlayer(player);
+                                Limbo.getInstance().getUnsafe().a(player);
 
                                 break;
                             }
@@ -551,7 +562,7 @@ public class ClientConnection extends Thread {
                 
                 PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, properties.getDefaultGamemode(), Limbo.getInstance().getWorlds(), Limbo.getInstance().getDimensionRegistry().getCodec(), world, 0, (byte) properties.getMaxPlayers(), 8, 8, properties.isReducedDebugInfo(), true, false, true);
                 sendPacket(join);
-                Limbo.getInstance().getUnsafe().setPlayerGameModeSilently(player, properties.getDefaultGamemode());
+                Limbo.getInstance().getUnsafe().a(player, properties.getDefaultGamemode());
                 
                 ByteArrayOutputStream brandOut = new ByteArrayOutputStream();
                 DataTypeIO.writeString(new DataOutputStream(brandOut), properties.getServerModName(), StandardCharsets.UTF_8);
@@ -586,7 +597,7 @@ public class ClientConnection extends Thread {
                 sendPacket(spawnPos);
 
                 PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(worldSpawn.getX(), worldSpawn.getY(), worldSpawn.getZ(), worldSpawn.getYaw(), worldSpawn.getPitch(), 1, false);
-                Limbo.getInstance().getUnsafe().setPlayerLocationSilently(player, new Location(world, worldSpawn.getX(), worldSpawn.getY(), worldSpawn.getZ(), worldSpawn.getYaw(), worldSpawn.getPitch()));
+                Limbo.getInstance().getUnsafe().a(player, new Location(world, worldSpawn.getX(), worldSpawn.getY(), worldSpawn.getZ(), worldSpawn.getYaw(), worldSpawn.getPitch()));
                 sendPacket(positionLook);
 
                 player.getDataWatcher().update();
@@ -647,7 +658,7 @@ public class ClientConnection extends Thread {
                                 sendPacket(cancel);
                             } else {
                                 Location to = event.getTo();
-                                Limbo.getInstance().getUnsafe().setPlayerLocationSilently(player, to);
+                                Limbo.getInstance().getUnsafe().a(player, to);
                                 // If an event handler used setTo, let's make sure we tell the player about it.
                                 if (!originalTo.equals(to)) {
                                     PacketPlayOutPositionAndLook pos = new PacketPlayOutPositionAndLook(to.getX(), to.getY(), to.getZ(), to.getYaw(), to.getPitch(), 1, false);
@@ -657,7 +668,9 @@ public class ClientConnection extends Thread {
                                 sendPacket(response);
                             }
                         };
+                        System.out.println("Waiting");
                         PacketIn packetIn = channel.readPacket();
+                        System.out.println("Received " + packetIn.getClass());
                         if (packetIn instanceof PacketPlayInPositionAndLook) {
                             PacketPlayInPositionAndLook pos = (PacketPlayInPositionAndLook) packetIn;
                             Location from = player.getLocation();
@@ -720,9 +733,9 @@ public class ClientConnection extends Thread {
                             } else if (change.getSlot() != event.getSlot()) {
                                 PacketPlayOutHeldItemChange changePacket = new PacketPlayOutHeldItemChange(event.getSlot());
                                 sendPacket(changePacket);
-                                Limbo.getInstance().getUnsafe().setSelectedSlotSilently(player, event.getSlot());
+                                Limbo.getInstance().getUnsafe().a(player, event.getSlot());
                             } else {
-                                Limbo.getInstance().getUnsafe().setSelectedSlotSilently(player, event.getSlot());
+                                Limbo.getInstance().getUnsafe().a(player, event.getSlot());
                             }
 
                         } else if (packetIn instanceof PacketPlayInResourcePackStatus) {
@@ -735,6 +748,42 @@ public class ClientConnection extends Thread {
                         } else if (packetIn instanceof PacketPlayInPluginMessaging) {
                             PacketPlayInPluginMessaging inPluginMessaging = (PacketPlayInPluginMessaging) packetIn;
                             Limbo.getInstance().getEventsManager().callEvent(new PluginMessageEvent(player, inPluginMessaging.getChannel(), inPluginMessaging.getData()));
+                        } else if (packetIn instanceof PacketPlayInBlockPlace) {
+                            PacketPlayInBlockPlace packet = (PacketPlayInBlockPlace) packetIn;
+                            Limbo.getInstance().getEventsManager().callEvent(new PlayerInteractEvent(player, PlayerInteractEvent.Action.RIGHT_CLICK_AIR, player.getEquipment().getItem(packet.getHand()), null, null, packet.getHand()));
+                        } else if (packetIn instanceof PacketPlayInUseItem) {
+                            PacketPlayInUseItem packet = (PacketPlayInUseItem) packetIn;
+                            BlockState block = player.getWorld().getBlock(packet.getBlockHit().getBlockPos());
+                            Limbo.getInstance().getEventsManager().callEvent(new PlayerInteractEvent(player, PlayerInteractEvent.Action.RIGHT_CLICK_AIR, player.getEquipment().getItem(packet.getHand()), block, packet.getBlockHit().getDirection(), packet.getHand()));
+                        } else if (packetIn instanceof PacketPlayInSetCreativeSlot) {
+                            PacketPlayInSetCreativeSlot packet = (PacketPlayInSetCreativeSlot) packetIn;
+                            InventoryCreativeEvent event = Limbo.getInstance().getEventsManager().callEvent(new InventoryCreativeEvent(player, player.getInventoryView(), player.getInventory(), player.getInventory().getUnsafe().b().applyAsInt(packet.getSlotNumber()), packet.getItemStack()));
+                            if (event.isCancelled()) {
+                                player.updateInventory();
+                            } else {
+                                player.getInventory().getUnsafe().b(packet.getSlotNumber(), event.getNewItem());
+                            }
+                        } else if (packetIn instanceof PacketPlayInWindowClick) {
+                            PacketPlayInWindowClick packet = (PacketPlayInWindowClick) packetIn;
+                            /*
+                            InventoryCreativeEvent event = Limbo.getInstance().getEventsManager().callEvent(new InventoryCreativeEvent(player, player.getInventoryView(), player.getInventory(), player.getInventory().getUnsafe().b().applyAsInt(packet.getSlotNumber()), packet.getItemStack()));
+                            if (event.isCancelled()) {
+                                player.updateInventory();
+                            } else {
+                               player.getInventory().getUnsafe().b(packet.getSlotNumber(), event.getNewItem());
+                            }
+                            */
+                        } else if (packetIn instanceof PacketPlayInCloseWindow) {
+                            PacketPlayInCloseWindow packet = (PacketPlayInCloseWindow) packetIn;
+                            Inventory inventory = player.getInventoryView().getTopInventory();
+                            if (inventory != null) {
+                                Integer id = inventory.getUnsafe().c().get(player);
+                                if (id != null) {
+                                    Limbo.getInstance().getEventsManager().callEvent(new InventoryCloseEvent(player, player.getInventoryView()));
+                                    player.getInventoryView().getUnsafe().a(null);
+                                    inventory.getUnsafe().c().remove(player);
+                                }
+                            }
                         }
                     } catch (Exception e) {
                         break;
@@ -757,7 +806,7 @@ public class ClientConnection extends Thread {
         state = ClientState.DISCONNECTED;
 
         if (player != null) {
-            Limbo.getInstance().getUnsafe().removePlayer(player);
+            Limbo.getInstance().getUnsafe().b(player);
         }
         Limbo.getInstance().getServerConnection().getClients().remove(this);
         running = false;

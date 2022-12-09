@@ -52,43 +52,43 @@ public class Unsafe {
 	}
 
 	@Deprecated
-	public void setPlayerGameModeSilently(Player player, GameMode mode) {
+	public void a(Player player, GameMode mode) {
 		playerUnsafe.a(player, mode);
 	}
 
 	@Deprecated
-	public void setSelectedSlotSilently(Player player, byte slot) {
+	public void a(Player player, byte slot) {
 		playerUnsafe.a(player, slot);
 	}
 
 	@Deprecated
-	public void setPlayerEntityId(Player player, int entityId) {
+	public void a(Player player, int entityId) {
 		playerUnsafe.a(player, entityId);
 	}
 	
 	@Deprecated
-	public void removeEntity(World world, Entity entity) {
+	public void a(World world, Entity entity) {
 		worldUnsafe.a(world, entity);
 	}
 	
 	@Deprecated
-	public DataWatcher getDataWatcher(World world, Entity entity) {
+	public DataWatcher b(World world, Entity entity) {
 		return worldUnsafe.b(world, entity);
 	}
 	
 	@Deprecated
-	public void setPlayerLocationSilently(Player player, Location location) {
+	public void a(Player player, Location location) {
 		playerUnsafe.a(player, location);
 	}
 
 	@Deprecated
-	public void addPlayer(Player player) {
+	public void a(Player player) {
 		instance.playersByName.put(player.getName(), player);
 		instance.playersByUUID.put(player.getUniqueId(), player);
 	}
 
 	@Deprecated
-	public void removePlayer(Player player) {
+	public void b(Player player) {
 		instance.getBossBars().values().forEach(each -> each.hidePlayer(player));
 		instance.playersByName.remove(player.getName());
 		instance.playersByUUID.remove(player.getUniqueId());

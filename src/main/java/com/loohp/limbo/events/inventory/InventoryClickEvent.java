@@ -17,34 +17,29 @@
  * limitations under the License.
  */
 
-package com.loohp.limbo.bossbar;
+package com.loohp.limbo.events.inventory;
 
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.key.Key;
+import com.loohp.limbo.events.Cancellable;
+import com.loohp.limbo.inventory.Inventory;
+import com.loohp.limbo.inventory.InventoryView;
+import com.loohp.limbo.player.Player;
 
-@SuppressWarnings("DeprecatedIsStillUsed")
-@Deprecated
-public class Unsafe {
+public class InventoryClickEvent extends InventoryEvent implements Cancellable {
 
-	@Deprecated
-	public static KeyedBossBar a(Key key, BossBar properties) {
-		return new KeyedBossBar(key, properties);
+	private boolean cancelled;
+
+	public InventoryClickEvent(Player player, InventoryView inventoryView, Inventory clickedInventory) {
+		super(player, inventoryView, clickedInventory);
 	}
 
-	private final KeyedBossBar instance;
-	
-	protected Unsafe(KeyedBossBar instance) {
-		this.instance = instance;
+	@Override
+	public boolean isCancelled() {
+		return cancelled;
 	}
 
-	@Deprecated
-	public KeyedBossBar.LimboBossBarHandler a() {
-		return instance.listener;
-	}
-
-	@Deprecated
-	public void b() {
-		instance.valid.set(false);
+	@Override
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
 	}
 
 }

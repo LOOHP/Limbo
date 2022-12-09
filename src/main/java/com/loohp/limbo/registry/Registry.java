@@ -19,6 +19,8 @@
 
 package com.loohp.limbo.registry;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.loohp.limbo.Limbo;
 import net.kyori.adventure.key.Key;
 import org.json.simple.JSONObject;
@@ -41,6 +43,8 @@ import java.util.Map.Entry;
 public class Registry {
 	
 	public static final BlockEntityRegistry BLOCK_ENTITY_TYPE;
+	public static final ItemRegistry ITEM_REGISTRY;
+	public static final MenuRegistry MENU_REGISTRY;
 	
 	static {
 		String name = "registries.json";
@@ -54,23 +58,44 @@ public class Registry {
         }
         
         Map<Key, Integer> blockEntityType = new HashMap<>();
+		Key defaultItemKey = null;
+		BiMap<Key, Integer> itemIds = HashBiMap.create();
+		Map<Key, Integer> menuIds = new HashMap<>();
         try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
 			JSONObject json = (JSONObject) new JSONParser().parse(reader);
 			
 			JSONObject blockEntityJson = (JSONObject) ((JSONObject) json.get("minecraft:block_entity_type")).get("entries");
 			for (Object obj : blockEntityJson.keySet()) {
 				String key = obj.toString();
-				int id = (int) (long) ((JSONObject) blockEntityJson.get(key)).get("protocol_id");
+				int id = ((Number) ((JSONObject) blockEntityJson.get(key)).get("protocol_id")).intValue();
 				blockEntityType.put(Key.key(key), id);
+			}
+
+			JSONObject itemJson = (JSONObject) json.get("minecraft:item");
+			defaultItemKey = Key.key((String) itemJson.get("default"));
+			JSONObject itemEntriesJson = (JSONObject) itemJson.get("entries");
+			for (Object obj : itemEntriesJson.keySet()) {
+				String key = obj.toString();
+				int id = ((Number) ((JSONObject) itemEntriesJson.get(key)).get("protocol_id")).intValue();
+				itemIds.put(Key.key(key), id);
+			}
+
+			JSONObject menuEntriesJson = (JSONObject) ((JSONObject) json.get("minecraft:menu")).get("entries");
+			for (Object obj : menuEntriesJson.keySet()) {
+				String key = obj.toString();
+				int id = ((Number) ((JSONObject) menuEntriesJson.get(key)).get("protocol_id")).intValue();
+				menuIds.put(Key.key(key), id);
 			}
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
 		}
         BLOCK_ENTITY_TYPE = new BlockEntityRegistry(blockEntityType);
+		ITEM_REGISTRY = new ItemRegistry(defaultItemKey, itemIds);
+		MENU_REGISTRY = new MenuRegistry(menuIds);
 	}
 	
     public static class BlockEntityRegistry {
-    	
+
     	private Map<Key, Integer> blockEntityType;
     	
     	private BlockEntityRegistry(Map<Key, Integer> blockEntityType) {
@@ -98,5 +123,48 @@ public class Registry {
     		return -1;
     	}
     }
+
+	public static class ItemRegistry {
+
+		private final Key defaultKey;
+		private final BiMap<Key, Integer> itemIds;
+
+		private ItemRegistry(Key defaultKey, BiMap<Key, Integer> itemIds) {
+			this.defaultKey = defaultKey;
+			this.itemIds = itemIds;
+		}
+
+		public Key getDefaultKey() {
+			return defaultKey;
+		}
+
+		public int getId(Key key) {
+			Integer id = itemIds.get(key);
+			if (id != null) {
+				return id;
+			}
+			if (defaultKey == null) {
+				return 0;
+			}
+			return itemIds.getOrDefault(defaultKey, 0);
+		}
+
+		public Key fromId(int id) {
+			return itemIds.inverse().getOrDefault(id, defaultKey);
+		}
+	}
+
+	public static class MenuRegistry {
+
+		private final Map<Key, Integer> menuIds;
+
+		private MenuRegistry(Map<Key, Integer> menuIds) {
+			this.menuIds = menuIds;
+		}
+
+		public int getId(Key key) {
+			return menuIds.getOrDefault(key, -1);
+		}
+	}
 
 }

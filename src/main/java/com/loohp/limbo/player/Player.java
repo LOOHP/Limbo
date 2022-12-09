@@ -24,10 +24,17 @@ import com.loohp.limbo.commands.CommandSender;
 import com.loohp.limbo.entity.DataWatcher;
 import com.loohp.limbo.entity.DataWatcher.WatchableField;
 import com.loohp.limbo.entity.DataWatcher.WatchableObjectType;
+import com.loohp.limbo.entity.EntityEquipment;
 import com.loohp.limbo.entity.EntityType;
 import com.loohp.limbo.entity.LivingEntity;
+import com.loohp.limbo.events.inventory.InventoryCloseEvent;
+import com.loohp.limbo.events.inventory.InventoryOpenEvent;
 import com.loohp.limbo.events.player.PlayerChatEvent;
 import com.loohp.limbo.events.player.PlayerTeleportEvent;
+import com.loohp.limbo.inventory.Inventory;
+import com.loohp.limbo.inventory.InventoryHolder;
+import com.loohp.limbo.inventory.InventoryView;
+import com.loohp.limbo.inventory.TitledInventory;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.network.ClientConnection;
 import com.loohp.limbo.network.protocol.packets.ClientboundClearTitlesPacket;
@@ -37,9 +44,11 @@ import com.loohp.limbo.network.protocol.packets.ClientboundSetTitleTextPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundSetTitlesAnimationPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundSystemChatPacket;
 import com.loohp.limbo.network.protocol.packets.PacketOut;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutCloseWindow;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutGameState;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutHeldItemChange;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutNamedSoundEffect;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutOpenWindow;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerListHeaderFooter;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutPositionAndLook;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutResourcePackSend;
@@ -70,8 +79,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class Player extends LivingEntity implements CommandSender {
+public class Player extends LivingEntity implements CommandSender, InventoryHolder {
 	
 	public static final String CHAT_DEFAULT_FORMAT = "<%name%> %message%";
 
@@ -82,6 +92,9 @@ public class Player extends LivingEntity implements CommandSender {
 	protected GameMode gamemode;
 	protected DataWatcher watcher;
 	protected byte selectedSlot;
+	protected final PlayerInventory playerInventory;
+	protected final InventoryView inventoryView;
+	private final AtomicInteger containerIdCounter;
 	
 	@WatchableField(MetadataIndex = 15, WatchableObjectType = WatchableObjectType.FLOAT) 
 	protected float additionalHearts = 0.0F;
@@ -101,10 +114,17 @@ public class Player extends LivingEntity implements CommandSender {
 		this.clientConnection = clientConnection;
 		this.username = username;
 		this.entityId = entityId;
+		this.containerIdCounter = new AtomicInteger(1);
+		this.playerInventory = new PlayerInventory(this);
+		this.inventoryView = new InventoryView(this, null, null, playerInventory);
 		this.playerInteractManager = playerInteractManager;
 		this.playerInteractManager.setPlayer(this);
 		this.watcher = new DataWatcher(this);
 		this.watcher.update();
+	}
+
+	protected int nextContainerId() {
+		return containerIdCounter.updateAndGet(i -> ++i > Byte.MAX_VALUE ? 1 : i);
 	}
 
 	public byte getSelectedSlot() {
@@ -551,14 +571,81 @@ public class Player extends LivingEntity implements CommandSender {
 		}
 	}
 
+	/**
+	 * Use {@link com.loohp.limbo.bossbar.KeyedBossBar#showPlayer(Player)} instead
+	 */
 	@Override
+	@Deprecated
 	public void showBossBar(BossBar bar) {
-		throw new UnsupportedOperationException("This function has not been implemented yet.");
+		Limbo.getInstance().getBossBars().values().stream().filter(each -> each.getProperties() == bar).findFirst().ifPresent(each -> each.showPlayer(this));
+	}
+
+	/**
+	 * Use {@link com.loohp.limbo.bossbar.KeyedBossBar#hidePlayer(Player)} instead
+	 */
+	@Override
+	@Deprecated
+	public void hideBossBar(BossBar bar) {
+		Limbo.getInstance().getBossBars().values().stream().filter(each -> each.getProperties() == bar).findFirst().ifPresent(each -> each.hidePlayer(this));
 	}
 
 	@Override
-	public void hideBossBar(BossBar bar) {
-		throw new UnsupportedOperationException("This function has not been implemented yet.");
+	public PlayerInventory getInventory() {
+		return playerInventory;
 	}
-	
+
+	public InventoryView getInventoryView() {
+		return inventoryView;
+	}
+
+	public void updateInventory() {
+		playerInventory.updateInventory(this);
+	}
+
+	public void openInventory(Inventory inventory) {
+		inventoryView.getUnsafe().a(inventory);
+		int id = nextContainerId();
+		inventory.getUnsafe().c().put(this, id);
+		InventoryOpenEvent event = Limbo.getInstance().getEventsManager().callEvent(new InventoryOpenEvent(this, inventoryView));
+		if (event.isCancelled()) {
+			inventoryView.getUnsafe().a(null);
+			inventory.getUnsafe().c().remove(this);
+		} else {
+			Component title = inventory instanceof TitledInventory ? ((TitledInventory) inventory).getTitle() : Component.translatable("container.chest");
+			PacketPlayOutOpenWindow packet = new PacketPlayOutOpenWindow(id, inventory.getType().getRawType(inventory.getSize()), title);
+			try {
+				clientConnection.sendPacket(packet);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			inventory.updateInventory(this);
+		}
+	}
+
+	public void closeInventory() {
+		Inventory inventory = inventoryView.getTopInventory();
+		if (inventory != null) {
+			Integer id = inventory.getUnsafe().c().get(this);
+			if (id != null) {
+				Limbo.getInstance().getEventsManager().callEvent(new InventoryCloseEvent(this, inventoryView));
+				inventoryView.getUnsafe().a(null);
+				inventory.getUnsafe().c().remove(this);
+				PacketPlayOutCloseWindow packet = new PacketPlayOutCloseWindow(id);
+				try {
+					clientConnection.sendPacket(packet);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public EntityEquipment getEquipment() {
+		return playerInventory;
+	}
+
+	@Override
+	public InventoryHolder getHolder() {
+		return this;
+	}
 }

@@ -17,34 +17,24 @@
  * limitations under the License.
  */
 
-package com.loohp.limbo.bossbar;
+package com.loohp.limbo.network.protocol.packets;
 
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.key.Key;
+import java.io.DataInputStream;
+import java.io.IOException;
 
-@SuppressWarnings("DeprecatedIsStillUsed")
-@Deprecated
-public class Unsafe {
+public class PacketPlayInCloseWindow extends PacketIn {
 
-	@Deprecated
-	public static KeyedBossBar a(Key key, BossBar properties) {
-		return new KeyedBossBar(key, properties);
+	private int containerId;
+
+	public PacketPlayInCloseWindow(int containerId) {
+		this.containerId = containerId;
 	}
 
-	private final KeyedBossBar instance;
-	
-	protected Unsafe(KeyedBossBar instance) {
-		this.instance = instance;
+	public PacketPlayInCloseWindow(DataInputStream in) throws IOException {
+		this(in.readByte());
 	}
 
-	@Deprecated
-	public KeyedBossBar.LimboBossBarHandler a() {
-		return instance.listener;
+	public int getContainerId() {
+		return containerId;
 	}
-
-	@Deprecated
-	public void b() {
-		instance.valid.set(false);
-	}
-
 }

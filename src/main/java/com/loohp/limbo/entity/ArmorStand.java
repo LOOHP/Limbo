@@ -150,5 +150,4 @@ public class ArmorStand extends LivingEntity {
 	public void setRightLegRotation(Rotation3f rightLegRotation) {
 		this.rightLegRotation = rightLegRotation;
 	}
-
 }

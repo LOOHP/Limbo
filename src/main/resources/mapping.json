@@ -21,7 +21,12 @@
     "0x0C": "PacketPlayInPluginMessaging",
     "0x08": "PacketPlayInTabComplete",
     "0x28": "PacketPlayInHeldItemChange",
-    "0x24": "PacketPlayInResourcePackStatus"
+    "0x24": "PacketPlayInResourcePackStatus",
+    "0x32": "PacketPlayInBlockPlace",
+    "0x31": "PacketPlayInUseItem",
+    "0x2B": "PacketPlayInSetCreativeSlot",
+    "0x0A": "PacketPlayInWindowClick",
+    "0x0B": "PacketPlayInCloseWindow"
   },
   "PlayOut": {
     "PacketPlayOutLogin": "0x24",
@@ -53,7 +58,12 @@
     "ClientboundClearTitlesPacket": "0x0C",
     "PacketPlayOutBoss": "0x0A",
     "PacketPlayOutNamedSoundEffect": "0x5E",
-    "PacketPlayOutStopSound": "0x5F"
+    "PacketPlayOutStopSound": "0x5F",
+    "PacketPlayOutWindowItems": "0x10",
+    "PacketPlayOutSetSlot": "0x12",
+    "PacketPlayOutOpenWindow": "0x2C",
+    "PacketPlayOutCloseWindow": "0x0F",
+    "PacketPlayOutWindowData": "0x11"
   },
   "StatusIn": {
     "0x01": "PacketStatusInPing",

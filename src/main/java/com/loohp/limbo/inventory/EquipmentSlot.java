@@ -28,4 +28,24 @@ public enum EquipmentSlot {
 	LEGGINGS,
 	BOOTS;
 
+	public boolean isHandSlot() {
+		switch (this) {
+			case MAINHAND:
+			case OFFHAND:
+				return true;
+		}
+		return false;
+	}
+
+	public boolean isArmorSlot() {
+		switch (this) {
+			case HELMET:
+			case CHESTPLATE:
+			case LEGGINGS:
+			case BOOTS:
+				return true;
+		}
+		return false;
+	}
+
 }

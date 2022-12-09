@@ -301,12 +301,12 @@ public abstract class Entity implements Sound.Emitter {
 	
 	@SuppressWarnings("deprecation")
 	public void remove() {
-		Limbo.getInstance().getUnsafe().removeEntity(world, this);
+		Limbo.getInstance().getUnsafe().a(world, this);
 	}
 	
 	@SuppressWarnings("deprecation")
 	public DataWatcher getDataWatcher() {
-		return Limbo.getInstance().getUnsafe().getDataWatcher(world, this);
+		return Limbo.getInstance().getUnsafe().b(world, this);
 	}
 
 }

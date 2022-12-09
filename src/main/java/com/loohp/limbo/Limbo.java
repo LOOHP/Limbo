@@ -27,6 +27,10 @@ import com.loohp.limbo.commands.DefaultCommands;
 import com.loohp.limbo.consolegui.GUI;
 import com.loohp.limbo.events.EventsManager;
 import com.loohp.limbo.file.ServerProperties;
+import com.loohp.limbo.inventory.CustomInventory;
+import com.loohp.limbo.inventory.Inventory;
+import com.loohp.limbo.inventory.InventoryHolder;
+import com.loohp.limbo.inventory.InventoryType;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.metrics.Metrics;
 import com.loohp.limbo.network.ServerConnection;
@@ -435,15 +439,15 @@ public final class Limbo {
 	}
 
 	public KeyedBossBar createBossBar(Key Key, Component name, float progress, BossBar.Color color, BossBar.Overlay overlay, BossBar.Flag... flags) {
-		KeyedBossBar keyedBossBar = com.loohp.limbo.bossbar.Unsafe.create(Key, BossBar.bossBar(name, progress, color, overlay, new HashSet<>(Arrays.asList(flags))));
+		KeyedBossBar keyedBossBar = com.loohp.limbo.bossbar.Unsafe.a(Key, BossBar.bossBar(name, progress, color, overlay, new HashSet<>(Arrays.asList(flags))));
 		bossBars.put(Key, keyedBossBar);
 		return keyedBossBar;
 	}
 
 	public void removeBossBar(Key Key) {
 		KeyedBossBar keyedBossBar = bossBars.remove(Key);
-		keyedBossBar.getProperties().removeListener(keyedBossBar.getUnsafe().getLimboListener());
-		keyedBossBar.getUnsafe().invalidate();
+		keyedBossBar.getProperties().removeListener(keyedBossBar.getUnsafe().a());
+		keyedBossBar.getUnsafe().b();
 		PacketPlayOutBoss packetPlayOutBoss = new PacketPlayOutBoss(keyedBossBar, PacketPlayOutBoss.BossBarAction.REMOVE);
 		for (Player player : keyedBossBar.getPlayers()) {
 			try {
@@ -578,11 +582,7 @@ public final class Limbo {
 	}
 	
 	public int getNextEntityId() {
-		if (entityIdCount.get() == Integer.MAX_VALUE) {
-			return entityIdCount.getAndSet(0);
-		} else {
-			return entityIdCount.getAndIncrement();
-		}
+		return entityIdCount.getAndUpdate(i -> i == Integer.MAX_VALUE ? 0 : ++i);
 	}
 	
 	public void dispatchCommand(CommandSender sender, String str) {
@@ -607,14 +607,26 @@ public final class Limbo {
 		Enumeration<URL> manifests = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
 		while (manifests.hasMoreElements()) {
 			URL url = manifests.nextElement();
-			BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-			Optional<String> line = br.lines().filter(each -> each.startsWith("Limbo-Version:")).findFirst();
-			br.close();
-			if (line.isPresent()) {
-				return line.get().substring(14).trim();
+			try (BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()))) {
+				Optional<String> line = br.lines().filter(each -> each.startsWith("Limbo-Version:")).findFirst();
+				if (line.isPresent()) {
+					return line.get().substring(14).trim();
+				}
 			}
 		}
 		return "Unknown";
+	}
+
+	public Inventory createInventory(Component title, int slots, InventoryHolder holder) {
+		return CustomInventory.create(title, slots, holder);
+	}
+
+	public Inventory createInventory(InventoryType type, InventoryHolder holder) {
+		return createInventory(null, type, holder);
+	}
+
+	public Inventory createInventory(Component title, InventoryType type, InventoryHolder holder) {
+		throw new UnsupportedOperationException("This function has not been implemented yet.");
 	}
 
 }

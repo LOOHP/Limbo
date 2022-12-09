@@ -19,7 +19,14 @@
 
 package com.loohp.limbo.utils;
 
+import com.loohp.limbo.inventory.ItemStack;
+import com.loohp.limbo.location.BlockFace;
+import com.loohp.limbo.location.MovingObjectPositionBlock;
+import com.loohp.limbo.location.Vector;
+import com.loohp.limbo.registry.Registry;
 import com.loohp.limbo.world.BlockPosition;
+import net.kyori.adventure.key.Key;
+import net.querz.nbt.io.NBTInputStream;
 import net.querz.nbt.io.NBTOutputStream;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.Tag;
@@ -28,6 +35,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.PushbackInputStream;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -35,6 +43,52 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 public class DataTypeIO {
+
+	public static void writeItemStack(DataOutputStream out, ItemStack itemstack) throws IOException {
+		if (itemstack == null || itemstack.isSimilar(ItemStack.AIR) || itemstack.amount() == 0) {
+			out.writeBoolean(false);
+		} else {
+			out.writeBoolean(true);
+			writeVarInt(out, Registry.ITEM_REGISTRY.getId(itemstack.type()));
+			out.writeByte(itemstack.amount());
+			writeCompoundTag(out, itemstack.nbt());
+		}
+	}
+
+	public static ItemStack readItemStack(DataInputStream in) throws IOException {
+		if (!in.readBoolean()) {
+			return ItemStack.AIR;
+		} else {
+			Key key = Registry.ITEM_REGISTRY.fromId(readVarInt(in));
+			byte amount = in.readByte();
+			CompoundTag nbt = readCompoundTag(in);
+			return new ItemStack(key, amount, nbt);
+		}
+	}
+
+	public static void writeBlockHitResult(DataOutputStream out, MovingObjectPositionBlock movingobjectpositionblock) throws IOException {
+		BlockPosition blockposition = movingobjectpositionblock.getBlockPos();
+
+		writeBlockPosition(out, blockposition);
+		writeVarInt(out, movingobjectpositionblock.getDirection().ordinal());
+		Vector vector = movingobjectpositionblock.getLocation();
+
+		out.writeFloat((float) (vector.getX() - (double) blockposition.getX()));
+		out.writeFloat((float) (vector.getY() - (double) blockposition.getY()));
+		out.writeFloat((float) (vector.getZ() - (double) blockposition.getZ()));
+		out.writeBoolean(movingobjectpositionblock.isInside());
+	}
+
+	public static MovingObjectPositionBlock readBlockHitResult(DataInputStream in) throws IOException {
+		BlockPosition blockposition = readBlockPosition(in);
+		BlockFace direction = BlockFace.values()[readVarInt(in)];
+		float f = in.readFloat();
+		float f1 = in.readFloat();
+		float f2 = in.readFloat();
+		boolean flag = in.readBoolean();
+
+		return new MovingObjectPositionBlock(new Vector((double) blockposition.getX() + (double) f, (double) blockposition.getY() + (double) f1, (double) blockposition.getZ() + (double) f2), direction, blockposition, flag);
+	}
 
 	public static <E extends Enum<E>> void writeEnumSet(DataOutputStream out, EnumSet<E> enumset, Class<E> oclass) throws IOException {
 		E[] ae = oclass.getEnumConstants();
@@ -80,6 +134,14 @@ public class DataTypeIO {
 	public static void writeBlockPosition(DataOutputStream out, BlockPosition position) throws IOException {
         out.writeLong(((position.getX() & 0x3FFFFFF) << 38) | ((position.getZ() & 0x3FFFFFF) << 12) | (position.getY() & 0xFFF));
 	}
+
+	public static BlockPosition readBlockPosition(DataInputStream in) throws IOException {
+		long value = in.readLong();
+		int x = (int) (value >> 38);
+		int y = (int) (value << 52 >> 52);
+		int z = (int) (value << 26 >> 38);
+		return new BlockPosition(x, y, z);
+	}
 	
 	public static void writeUUID(DataOutputStream out, UUID uuid) throws IOException {
 		out.writeLong(uuid.getMostSignificantBits());
@@ -91,13 +153,21 @@ public class DataTypeIO {
 	}
 	
 	public static void writeCompoundTag(DataOutputStream out, CompoundTag tag) throws IOException {
-		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-		
-		DataOutputStream output = new DataOutputStream(buffer);
-		new NBTOutputStream(output).writeTag(tag, Tag.DEFAULT_MAX_DEPTH);
-		
-		byte[] b = buffer.toByteArray();
-	    out.write(b);
+		if (tag == null) {
+			out.writeByte(0);
+		} else {
+			new NBTOutputStream(out).writeTag(tag, Tag.DEFAULT_MAX_DEPTH);
+		}
+	}
+
+	public static CompoundTag readCompoundTag(DataInputStream in) throws IOException {
+		byte b = in.readByte();
+		if (b == 0) {
+			return null;
+		}
+		PushbackInputStream buffered = new PushbackInputStream(in);
+		buffered.unread(b);
+		return (CompoundTag) new NBTInputStream(buffered).readTag(Tag.DEFAULT_MAX_DEPTH).getTag();
 	}
 	
 	public static String readString(DataInputStream in, Charset charset) throws IOException {

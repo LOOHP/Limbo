@@ -17,34 +17,12 @@
  * limitations under the License.
  */
 
-package com.loohp.limbo.bossbar;
+package com.loohp.limbo.inventory;
 
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.key.Key;
+public interface InventoryHolder {
 
-@SuppressWarnings("DeprecatedIsStillUsed")
-@Deprecated
-public class Unsafe {
+    Inventory getInventory();
 
-	@Deprecated
-	public static KeyedBossBar a(Key key, BossBar properties) {
-		return new KeyedBossBar(key, properties);
-	}
-
-	private final KeyedBossBar instance;
-	
-	protected Unsafe(KeyedBossBar instance) {
-		this.instance = instance;
-	}
-
-	@Deprecated
-	public KeyedBossBar.LimboBossBarHandler a() {
-		return instance.listener;
-	}
-
-	@Deprecated
-	public void b() {
-		instance.valid.set(false);
-	}
+    InventoryHolder getHolder();
 
 }

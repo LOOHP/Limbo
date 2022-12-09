@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -91,7 +92,7 @@ public class World {
 				chunk.cleanupPalettesAndBlockStates();
 				chunk.setHeightMaps(HEIGHT_MAP.clone());
 				chunk.setBiomes(new int[256]);
-				chunk.setTileEntities(new ListTag<CompoundTag>(CompoundTag.class));
+				chunk.setTileEntities(new ListTag<>(CompoundTag.class));
 			}
 		}
 		
@@ -124,6 +125,10 @@ public class World {
 		CompoundTag block = SchematicConversionUtils.toBlockTag(blockdata);
 		chunk.setBlockStateAt(x, y, z, block, false);
 	}
+
+	public BlockState getBlock(BlockPosition blockPosition) {
+		return getBlock(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
+	}
 	
 	public BlockState getBlock(int x, int y, int z) {
 		Chunk chunk = this.chunks[(x >> 4)][(z >> 4)];
@@ -138,6 +143,10 @@ public class World {
 			tag.putString("Name", "minecraft:air");
 		}
 		return new BlockState(tag);
+	}
+
+	public void setBlock(BlockPosition blockPosition, BlockState state) {
+		setBlock(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ(), state);
 	}
 	
 	public void setBlock(int x, int y, int z, BlockState state) {
@@ -300,40 +309,15 @@ public class World {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + Arrays.deepHashCode(chunks);
-		result = prime * result + ((environment == null) ? 0 : environment.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		World world = (World) o;
+		return Objects.equals(name, world.name);
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		World other = (World) obj;
-		if (!Arrays.deepEquals(chunks, other.chunks)) {
-			return false;
-		}
-		if (environment != other.environment) {
-			return false;
-		}
-		if (name == null) {
-			if (other.name != null) {
-				return false;
-			}
-		} else if (!name.equals(other.name)) {
-			return false;
-		}
-		return true;
+	public int hashCode() {
+		return Objects.hash(name);
 	}
 }

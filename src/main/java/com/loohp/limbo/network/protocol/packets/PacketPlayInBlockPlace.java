@@ -17,34 +17,33 @@
  * limitations under the License.
  */
 
-package com.loohp.limbo.bossbar;
+package com.loohp.limbo.network.protocol.packets;
 
-import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.key.Key;
+import com.loohp.limbo.inventory.EquipmentSlot;
+import com.loohp.limbo.utils.DataTypeIO;
 
-@SuppressWarnings("DeprecatedIsStillUsed")
-@Deprecated
-public class Unsafe {
+import java.io.DataInputStream;
+import java.io.IOException;
 
-	@Deprecated
-	public static KeyedBossBar a(Key key, BossBar properties) {
-		return new KeyedBossBar(key, properties);
+public class PacketPlayInBlockPlace extends PacketIn {
+
+	private EquipmentSlot hand;
+	private int sequence;
+
+	public PacketPlayInBlockPlace(EquipmentSlot hand, int sequence) {
+		this.hand = hand;
+		this.sequence = sequence;
 	}
 
-	private final KeyedBossBar instance;
-	
-	protected Unsafe(KeyedBossBar instance) {
-		this.instance = instance;
+	public PacketPlayInBlockPlace(DataInputStream in) throws IOException {
+		this(EquipmentSlot.values()[DataTypeIO.readVarInt(in)], DataTypeIO.readVarInt(in));
 	}
 
-	@Deprecated
-	public KeyedBossBar.LimboBossBarHandler a() {
-		return instance.listener;
+	public EquipmentSlot getHand() {
+		return hand;
 	}
 
-	@Deprecated
-	public void b() {
-		instance.valid.set(false);
+	public int getSequence() {
+		return sequence;
 	}
-
 }
