@@ -48,18 +48,14 @@ public class ArgumentSignatures {
         }
     }
 
-    public List<a> getEntries() {
-        return entries;
-    }
-
     public MessageSignature get(String s) {
-        Iterator<ArgumentSignatures.a> iterator = this.entries.iterator();
+        Iterator<a> iterator = this.entries.iterator();
 
         ArgumentSignatures.a argumentsignatures_a;
 
         do {
             if (!iterator.hasNext()) {
-                return MessageSignature.EMPTY;
+                return null;
             }
 
             argumentsignatures_a = iterator.next();
@@ -69,44 +65,37 @@ public class ArgumentSignatures {
     }
 
     public void write(DataOutputStream out) throws IOException {
-        DataTypeIO.writeVarInt(out, entries.size());
-        for (ArgumentSignatures.a argumentsignatures_a : entries) {
+        DataTypeIO.writeVarInt(out, this.entries.size());
+        for (a argumentsignatures_a : this.entries) {
             argumentsignatures_a.write(out);
         }
     }
 
     public static class a {
 
-        private String name;
-        private MessageSignature signature;
+        private final String name;
+        private final MessageSignature signature;
 
         public a(String name, MessageSignature signature) {
             this.name = name;
             this.signature = signature;
         }
 
-        public String getName() {
-            return name;
-        }
-
-        public MessageSignature getSignature() {
-            return signature;
-        }
-
         public a(DataInputStream in) throws IOException {
-            this(DataTypeIO.readString(in, StandardCharsets.UTF_8), new MessageSignature(in));
+            this(DataTypeIO.readString(in, StandardCharsets.UTF_8), MessageSignature.read(in));
         }
 
         public void write(DataOutputStream out) throws IOException {
-            DataTypeIO.writeString(out, name, StandardCharsets.UTF_8);
-            this.signature.write(out);
+            DataTypeIO.writeString(out, this.name, StandardCharsets.UTF_8);
+            MessageSignature.write(out, this.signature);
         }
     }
 
     @FunctionalInterface
     public interface b {
 
-        MessageSignature sign(String s, String s1);
+        MessageSignature sign(String s);
+
     }
 
 }

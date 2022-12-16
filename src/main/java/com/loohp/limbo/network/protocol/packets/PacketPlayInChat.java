@@ -45,7 +45,7 @@ public class PacketPlayInChat extends PacketIn {
 	}
 
 	public PacketPlayInChat(DataInputStream in) throws IOException {
-		this(DataTypeIO.readString(in, StandardCharsets.UTF_8), Instant.ofEpochMilli(in.readLong()), in.readLong(), in.readBoolean() ? new MessageSignature(in) : null, new LastSeenMessages.b(in));
+		this(DataTypeIO.readString(in, StandardCharsets.UTF_8), Instant.ofEpochMilli(in.readLong()), in.readLong(), in.readBoolean() ? MessageSignature.read(in) : null, new LastSeenMessages.b(in));
 	}
 
 	public String getMessage() {

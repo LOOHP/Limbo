@@ -23,117 +23,61 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 public class LastSeenMessages {
 
-    public static LastSeenMessages EMPTY = new LastSeenMessages(Collections.emptyList());
-    public static final int LAST_SEEN_MESSAGES_MAX_LENGTH = 5;
+    public static final ArgumentSignatures EMPTY = new ArgumentSignatures(Collections.emptyList());
+    private static final int MAX_ARGUMENT_COUNT = 8;
+    private static final int MAX_ARGUMENT_NAME_LENGTH = 16;
 
-    private List<a> entries;
-
-    public LastSeenMessages(List<LastSeenMessages.a> entries) {
-        this.entries = entries;
-    }
-
-    public LastSeenMessages(DataInputStream in) throws IOException {
-        int size = DataTypeIO.readVarInt(in);
-        entries = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            entries.add(new LastSeenMessages.a(in));
-        }
-    }
-
-    public void write(DataOutputStream out) throws IOException {
-        DataTypeIO.writeVarInt(out, entries.size());
-        for (LastSeenMessages.a lastseenmessages_a : entries) {
-            lastseenmessages_a.write(out);
-        }
-    }
-
-    public void updateHash(DataOutputStream dataoutput) throws IOException {
-        Iterator<a> iterator = this.entries.iterator();
-
-        while (iterator.hasNext()) {
-            LastSeenMessages.a lastseenmessages_a = iterator.next();
-            UUID uuid = lastseenmessages_a.getProfileId();
-            MessageSignature messagesignature = lastseenmessages_a.getLastSignature();
-
-            dataoutput.writeByte(70);
-            dataoutput.writeLong(uuid.getMostSignificantBits());
-            dataoutput.writeLong(uuid.getLeastSignificantBits());
-            dataoutput.write(messagesignature.getBytes());
-        }
-
-    }
+    private List<MessageSignature> entries;
 
     public static class a {
 
-        private UUID profileId;
-        private MessageSignature lastSignature;
+        public static final LastSeenMessages.a EMPTY = new LastSeenMessages.a(Collections.emptyList());
 
-        public UUID getProfileId() {
-            return profileId;
-        }
+        private final List<MessageSignature.a> entries;
 
-        public MessageSignature getLastSignature() {
-            return lastSignature;
-        }
-
-        public a(UUID profileId, MessageSignature lastSignature) {
-            this.profileId = profileId;
-            this.lastSignature = lastSignature;
+        public a(List<MessageSignature.a> entries) {
+            this.entries = entries;
         }
 
         public a(DataInputStream in) throws IOException {
-            this(DataTypeIO.readUUID(in), new MessageSignature(in));
+            int size = DataTypeIO.readVarInt(in);
+            entries = new ArrayList<>(size);
+            for (int i = 0; i < size; i++) {
+                entries.add(MessageSignature.a.read(in));
+            }
         }
 
         public void write(DataOutputStream out) throws IOException {
-            DataTypeIO.writeUUID(out, this.profileId);
-            this.lastSignature.write(out);
+            DataTypeIO.writeVarInt(out, this.entries.size());
+            for (MessageSignature.a entry : this.entries) {
+                MessageSignature.a.write(out, entry);
+            }
         }
     }
 
     public static class b {
 
-        private LastSeenMessages lastSeen;
-        private Optional<a> lastReceived;
+        private final int offset;
+        private final BitSet acknowledged;
 
-        public b(LastSeenMessages lastSeen, Optional<LastSeenMessages.a> lastReceived) {
-            this.lastSeen = lastSeen;
-            this.lastReceived = lastReceived;
+        public b(int offset, BitSet acknowledged) {
+            this.offset = offset;
+            this.acknowledged = acknowledged;
         }
 
         public b(DataInputStream in) throws IOException {
-            this.lastSeen = new LastSeenMessages(in);
-            if (in.readBoolean()) {
-                this.lastReceived = Optional.of(new LastSeenMessages.a(in));
-            } else {
-                this.lastReceived = Optional.empty();
-            }
+            this(DataTypeIO.readVarInt(in), DataTypeIO.readFixedBitSet(in, 20));
         }
 
         public void write(DataOutputStream out) throws IOException {
-            this.lastSeen.write(out);
-            if (lastReceived.isPresent()) {
-                out.writeBoolean(true);
-                lastReceived.get().write(out);
-            } else {
-                out.writeBoolean(false);
-            }
-        }
-
-        public LastSeenMessages getLastSeen() {
-            return lastSeen;
-        }
-
-        public Optional<a> getLastReceived() {
-            return lastReceived;
+            DataTypeIO.writeVarInt(out, this.offset);
+            DataTypeIO.writeFixedBitSet(out, this.acknowledged, 20);
         }
     }
 
