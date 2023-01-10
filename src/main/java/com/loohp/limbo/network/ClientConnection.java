@@ -21,6 +21,7 @@ package com.loohp.limbo.network;
 
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.entity.EntityEquipment;
+import com.loohp.limbo.events.connection.ConnectionEstablishedEvent;
 import com.loohp.limbo.events.inventory.AnvilRenameInputEvent;
 import com.loohp.limbo.events.inventory.InventoryCloseEvent;
 import com.loohp.limbo.events.inventory.InventoryCreativeEvent;
@@ -352,6 +353,8 @@ public class ClientConnection extends Thread {
                 state = ClientState.DISCONNECTED;
             }
 
+            Limbo.getInstance().getEventsManager().callEvent(new ConnectionEstablishedEvent(this));
+
             PacketHandshakingIn handshake = (PacketHandshakingIn) channel.readPacket(handShakeSize);
 
             boolean isBungeecord = Limbo.getInstance().getServerProperties().isBungeecord();
@@ -363,195 +366,195 @@ public class ClientConnection extends Thread {
 
             try {
                 switch (handshake.getHandshakeType()) {
-                    case STATUS:
-                        state = ClientState.STATUS;
-                        while (clientSocket.isConnected()) {
-                            PacketIn packetIn = channel.readPacket();
-                            if (packetIn instanceof PacketStatusInRequest) {
-                                ServerProperties properties = Limbo.getInstance().getServerProperties();
+                case STATUS:
+                    state = ClientState.STATUS;
+                    while (clientSocket.isConnected()) {
+                        PacketIn packetIn = channel.readPacket();
+                        if (packetIn instanceof PacketStatusInRequest) {
+                            ServerProperties properties = Limbo.getInstance().getServerProperties();
 
-                                String str = (properties.isLogPlayerIPAddresses() ? inetAddress.getHostName() : "<ip address withheld>") + ":" + clientSocket.getPort();
-                                if (Limbo.getInstance().getServerProperties().handshakeVerboseEnabled()) {
-                                    Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Handshake Status has pinged");
-                                }
-                                ServerProperties p = Limbo.getInstance().getServerProperties();
-                                StatusPingEvent event = Limbo.getInstance().getEventsManager().callEvent(new StatusPingEvent(this, p.getVersionString(), p.getProtocol(), p.getMotd(), p.getMaxPlayers(), Limbo.getInstance().getPlayers().size(), p.getFavicon().orElse(null)));
-                                PacketStatusOutResponse response = new PacketStatusOutResponse(Limbo.getInstance().buildServerListResponseJson(event.getVersion(), event.getProtocol(), event.getMotd(), event.getMaxPlayers(), event.getPlayersOnline(), event.getFavicon()));
-                                sendPacket(response);
-                            } else if (packetIn instanceof PacketStatusInPing) {
-                                PacketStatusInPing ping = (PacketStatusInPing) packetIn;
-                                PacketStatusOutPong pong = new PacketStatusOutPong(ping.getPayload());
-                                sendPacket(pong);
-                                break;
+                            String str = (properties.isLogPlayerIPAddresses() ? inetAddress.getHostName() : "<ip address withheld>") + ":" + clientSocket.getPort();
+                            if (Limbo.getInstance().getServerProperties().handshakeVerboseEnabled()) {
+                                Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Handshake Status has pinged");
                             }
+                            ServerProperties p = Limbo.getInstance().getServerProperties();
+                            StatusPingEvent event = Limbo.getInstance().getEventsManager().callEvent(new StatusPingEvent(this, p.getVersionString(), p.getProtocol(), p.getMotd(), p.getMaxPlayers(), Limbo.getInstance().getPlayers().size(), p.getFavicon().orElse(null)));
+                            PacketStatusOutResponse response = new PacketStatusOutResponse(Limbo.getInstance().buildServerListResponseJson(event.getVersion(), event.getProtocol(), event.getMotd(), event.getMaxPlayers(), event.getPlayersOnline(), event.getFavicon()));
+                            sendPacket(response);
+                        } else if (packetIn instanceof PacketStatusInPing) {
+                            PacketStatusInPing ping = (PacketStatusInPing) packetIn;
+                            PacketStatusOutPong pong = new PacketStatusOutPong(ping.getPayload());
+                            sendPacket(pong);
+                            break;
                         }
-                        break;
-                    case LOGIN:
-                        state = ClientState.LOGIN;
-                        ServerProperties properties = Limbo.getInstance().getServerProperties();
+                    }
+                    break;
+                case LOGIN:
+                    state = ClientState.LOGIN;
+                    ServerProperties properties = Limbo.getInstance().getServerProperties();
 
-                        if (isBungeecord || isBungeeGuard) {
-                            try {
-                                String[] data = bungeeForwarding.split("\\x00");
-                                String host = "";
-                                String floodgate = "";
-                                String clientIp = "";
-                                String bungee = "";
-                                String skinData = "";
-                                int state = 0;
-                                for (int i = 0; i < data.length; i++) {
-                                    if (!properties.isReducedDebugInfo()) {
-                                        Limbo.getInstance().getConsole().sendMessage(String.valueOf(i) + ": " + data[i]);
-                                    }
-
-                                    switch (state) {
-                                    default:
-                                        Limbo.getInstance().getConsole().sendMessage(String.valueOf(i) + ": ignore data: State: " + String.valueOf(state));
-                                        break;
-                                    case 0:
-                                        host = data[i];
-                                        state = 1;
-                                        break;
-                                    case 1:
-                                        if (data[i].startsWith("^Floodgate^")) {
-                                            floodgate = data[i];
-                                            state = 2;
-                                            break;
-                                        }
-                                        /* fallthrough */
-                                    case 2:
-                                        clientIp = data[i];
-                                        state = 3;
-                                        break;
-                                    case 3:
-                                        bungee = data[i];
-                                        state = 4;
-                                        break;
-                                    case 4:
-                                        skinData = data[i];
-                                        state = 6;
-                                        break;
-                                    }
-                                }
-                                if (state != 6) {
-                                    throw new IllegalStateException("Illegal bungee state: " + String.valueOf(state));
-                                }
-
+                    if (isBungeecord || isBungeeGuard) {
+                        try {
+                            String[] data = bungeeForwarding.split("\\x00");
+                            String host = "";
+                            String floodgate = "";
+                            String clientIp = "";
+                            String bungee = "";
+                            String skinData = "";
+                            int state = 0;
+                            for (int i = 0; i < data.length; i++) {
                                 if (!properties.isReducedDebugInfo()) {
-                                    Limbo.getInstance().getConsole().sendMessage("Host: " + host);
-                                    Limbo.getInstance().getConsole().sendMessage("Floodgate: " + floodgate);
-                                    Limbo.getInstance().getConsole().sendMessage("clientIp: " + clientIp);
-                                    Limbo.getInstance().getConsole().sendMessage("bungee: " + bungee);
-                                    Limbo.getInstance().getConsole().sendMessage("skinData: " + skinData);
+                                    Limbo.getInstance().getConsole().sendMessage(String.valueOf(i) + ": " + data[i]);
                                 }
 
-                                bungeeUUID = UUID.fromString(bungee.replaceFirst("([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)", "$1-$2-$3-$4-$5"));
-                                inetAddress = InetAddress.getByName(clientIp);
+                                switch (state) {
+                                default:
+                                    Limbo.getInstance().getConsole().sendMessage(String.valueOf(i) + ": ignore data: State: " + String.valueOf(state));
+                                    break;
+                                case 0:
+                                    host = data[i];
+                                    state = 1;
+                                    break;
+                                case 1:
+                                    if (data[i].startsWith("^Floodgate^")) {
+                                        floodgate = data[i];
+                                        state = 2;
+                                        break;
+                                    }
+                                    /* fallthrough */
+                                case 2:
+                                    clientIp = data[i];
+                                    state = 3;
+                                    break;
+                                case 3:
+                                    bungee = data[i];
+                                    state = 4;
+                                    break;
+                                case 4:
+                                    skinData = data[i];
+                                    state = 6;
+                                    break;
+                                }
+                            }
+                            if (state != 6) {
+                                throw new IllegalStateException("Illegal bungee state: " + String.valueOf(state));
+                            }
 
-                                boolean bungeeGuardFound = false;
+                            if (!properties.isReducedDebugInfo()) {
+                                Limbo.getInstance().getConsole().sendMessage("Host: " + host);
+                                Limbo.getInstance().getConsole().sendMessage("Floodgate: " + floodgate);
+                                Limbo.getInstance().getConsole().sendMessage("clientIp: " + clientIp);
+                                Limbo.getInstance().getConsole().sendMessage("bungee: " + bungee);
+                                Limbo.getInstance().getConsole().sendMessage("skinData: " + skinData);
+                            }
 
-                                if (!skinData.equals("")) {
-                                    JSONArray skinJson = (JSONArray) new JSONParser().parse(skinData);
+                            bungeeUUID = UUID.fromString(bungee.replaceFirst("([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)", "$1-$2-$3-$4-$5"));
+                            inetAddress = InetAddress.getByName(clientIp);
 
-                                    for (Object obj : skinJson) {
-                                        JSONObject property = (JSONObject) obj;
-                                        if (property.get("name").toString().equals("textures")) {
-                                            String skin = property.get("value").toString();
-                                            String signature = property.get("signature").toString();
-                                            forwardedSkin = new SkinResponse(skin, signature);
-                                        } else if (isBungeeGuard && property.get("name").toString().equals("bungeeguard-token")) {
-                                            String token = property.get("value").toString();
-                                            bungeeGuardFound = Limbo.getInstance().getServerProperties().getForwardingSecrets().contains(token);
-                                        }
+                            boolean bungeeGuardFound = false;
+
+                            if (!skinData.equals("")) {
+                                JSONArray skinJson = (JSONArray) new JSONParser().parse(skinData);
+
+                                for (Object obj : skinJson) {
+                                    JSONObject property = (JSONObject) obj;
+                                    if (property.get("name").toString().equals("textures")) {
+                                        String skin = property.get("value").toString();
+                                        String signature = property.get("signature").toString();
+                                        forwardedSkin = new SkinResponse(skin, signature);
+                                    } else if (isBungeeGuard && property.get("name").toString().equals("bungeeguard-token")) {
+                                        String token = property.get("value").toString();
+                                        bungeeGuardFound = Limbo.getInstance().getServerProperties().getForwardingSecrets().contains(token);
                                     }
                                 }
-
-                                if (isBungeeGuard && !bungeeGuardFound) {
-                                    disconnectDuringLogin(TextComponent.fromLegacyText("Invalid information forwarding"));
-                                    break;
-                                }
-                            } catch (Exception e) {
-                                if (!properties.isReducedDebugInfo()) {
-                                    StringWriter sw = new StringWriter();
-                                    PrintWriter pw = new PrintWriter(sw);
-                                    e.printStackTrace(pw);
-                                    Limbo.getInstance().getConsole().sendMessage(sw.toString());
-                                }
-                                Limbo.getInstance().getConsole().sendMessage("If you wish to use bungeecord's IP forwarding, please enable that in your bungeecord config.yml as well!");
-                                disconnectDuringLogin(new BaseComponent[] {new TextComponent(ChatColor.RED + "Please connect from the proxy!")});
                             }
-                        }
-                        int messageId = this.random.nextInt();
-                        while (clientSocket.isConnected()) {
-                            PacketIn packetIn = channel.readPacket();
 
-                            if (packetIn instanceof PacketLoginInLoginStart) {
-                                PacketLoginInLoginStart start = (PacketLoginInLoginStart) packetIn;
-                                String username = start.getUsername();
-
-                                if (Limbo.getInstance().getServerProperties().isVelocityModern()) {
-                                    PacketLoginOutPluginMessaging loginPluginRequest = new PacketLoginOutPluginMessaging(messageId, ForwardingUtils.VELOCITY_FORWARDING_CHANNEL);
-                                    sendPacket(loginPluginRequest);
-                                    continue;
-                                }
-
-                                UUID uuid = isBungeecord || isBungeeGuard ? bungeeUUID : (start.hasUniqueId() ? start.getUniqueId() : null);
-                                if (uuid == null) {
-                                    uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
-                                }
-
-                                if (!properties.enforceWhitelist() && properties.uuidWhitelisted(uuid)) {
-                                    disconnectDuringLogin(TextComponent.fromLegacyText("You are not whitelisted on the server"));
-                                    break;
-                                }
-
-                                PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(uuid, username);
-                                sendPacket(success);
-
-                                state = ClientState.PLAY;
-
-                                player = new Player(this, username, uuid, Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
-                                player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
-                                Limbo.getInstance().getUnsafe().a(player);
-                                break;
-                            } else if (packetIn instanceof PacketLoginInPluginMessaging) {
-                                PacketLoginInPluginMessaging response = (PacketLoginInPluginMessaging) packetIn;
-                                if (response.getMessageId() != messageId) {
-                                    disconnectDuringLogin(TextComponent.fromLegacyText("Internal error, messageId did not match"));
-                                    break;
-                                }
-                                if (!response.getData().isPresent()) {
-                                    disconnectDuringLogin(TextComponent.fromLegacyText("Unknown login plugin response packet!"));
-                                    break;
-                                }
-                                byte[] responseData = response.getData().get();
-                                if (!ForwardingUtils.validateVelocityModernResponse(responseData)) {
-                                    disconnectDuringLogin(TextComponent.fromLegacyText("Invalid playerinfo forwarding!"));
-                                    break;
-                                }
-                                ForwardingUtils.VelocityModernForwardingData data = ForwardingUtils.getVelocityDataFrom(responseData);
-                                inetAddress = InetAddress.getByName(data.getIpAddress());
-                                forwardedSkin = data.getSkinResponse();
-
-                                PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(data.getUuid(), data.getUsername());
-                                sendPacket(success);
-
-                                state = ClientState.PLAY;
-
-                                player = new Player(this, data.getUsername(), data.getUuid(), Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
-                                player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
-                                Limbo.getInstance().getUnsafe().a(player);
-
+                            if (isBungeeGuard && !bungeeGuardFound) {
+                                disconnectDuringLogin(TextComponent.fromLegacyText("Invalid information forwarding"));
                                 break;
                             }
+                        } catch (Exception e) {
+                            if (!properties.isReducedDebugInfo()) {
+                                StringWriter sw = new StringWriter();
+                                PrintWriter pw = new PrintWriter(sw);
+                                e.printStackTrace(pw);
+                                Limbo.getInstance().getConsole().sendMessage(sw.toString());
+                            }
+                            Limbo.getInstance().getConsole().sendMessage("If you wish to use bungeecord's IP forwarding, please enable that in your bungeecord config.yml as well!");
+                            disconnectDuringLogin(new BaseComponent[] {new TextComponent(ChatColor.RED + "Please connect from the proxy!")});
                         }
+                    }
+                    int messageId = this.random.nextInt();
+                    while (clientSocket.isConnected()) {
+                        PacketIn packetIn = channel.readPacket();
 
-                        PlayerLoginEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerLoginEvent(this, false));
-                        if (event.isCancelled()) {
-                            disconnectDuringLogin(event.getCancelReason());
+                        if (packetIn instanceof PacketLoginInLoginStart) {
+                            PacketLoginInLoginStart start = (PacketLoginInLoginStart) packetIn;
+                            String username = start.getUsername();
+
+                            if (Limbo.getInstance().getServerProperties().isVelocityModern()) {
+                                PacketLoginOutPluginMessaging loginPluginRequest = new PacketLoginOutPluginMessaging(messageId, ForwardingUtils.VELOCITY_FORWARDING_CHANNEL);
+                                sendPacket(loginPluginRequest);
+                                continue;
+                            }
+
+                            UUID uuid = isBungeecord || isBungeeGuard ? bungeeUUID : (start.hasUniqueId() ? start.getUniqueId() : null);
+                            if (uuid == null) {
+                                uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
+                            }
+
+                            if (!properties.enforceWhitelist() && properties.uuidWhitelisted(uuid)) {
+                                disconnectDuringLogin(TextComponent.fromLegacyText("You are not whitelisted on the server"));
+                                break;
+                            }
+
+                            PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(uuid, username);
+                            sendPacket(success);
+
+                            state = ClientState.PLAY;
+
+                            player = new Player(this, username, uuid, Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
+                            player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
+                            Limbo.getInstance().getUnsafe().a(player);
+                            break;
+                        } else if (packetIn instanceof PacketLoginInPluginMessaging) {
+                            PacketLoginInPluginMessaging response = (PacketLoginInPluginMessaging) packetIn;
+                            if (response.getMessageId() != messageId) {
+                                disconnectDuringLogin(TextComponent.fromLegacyText("Internal error, messageId did not match"));
+                                break;
+                            }
+                            if (!response.getData().isPresent()) {
+                                disconnectDuringLogin(TextComponent.fromLegacyText("Unknown login plugin response packet!"));
+                                break;
+                            }
+                            byte[] responseData = response.getData().get();
+                            if (!ForwardingUtils.validateVelocityModernResponse(responseData)) {
+                                disconnectDuringLogin(TextComponent.fromLegacyText("Invalid playerinfo forwarding!"));
+                                break;
+                            }
+                            ForwardingUtils.VelocityModernForwardingData data = ForwardingUtils.getVelocityDataFrom(responseData);
+                            inetAddress = InetAddress.getByName(data.getIpAddress());
+                            forwardedSkin = data.getSkinResponse();
+
+                            PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(data.getUuid(), data.getUsername());
+                            sendPacket(success);
+
+                            state = ClientState.PLAY;
+
+                            player = new Player(this, data.getUsername(), data.getUuid(), Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
+                            player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
+                            Limbo.getInstance().getUnsafe().a(player);
+
+                            break;
                         }
+                    }
 
-                        break;
+                    PlayerLoginEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerLoginEvent(this, false, Component.empty()));
+                    if (event.isCancelled()) {
+                        disconnectDuringLogin(event.getCancelReason());
+                    }
+
+                    break;
                 }
             } catch (Exception e) {
                 channel.close();

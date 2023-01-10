@@ -22,15 +22,15 @@ package com.loohp.limbo.events.player;
 import com.loohp.limbo.events.Cancellable;
 import com.loohp.limbo.events.Event;
 import com.loohp.limbo.network.ClientConnection;
-import net.md_5.bungee.api.chat.BaseComponent;
+import net.kyori.adventure.text.Component;
 
 public class PlayerLoginEvent extends Event implements Cancellable {
 	
-	private ClientConnection connection;
+	private final ClientConnection connection;
 	private boolean cancelled;
-	private BaseComponent[] cancelReason;
+	private Component cancelReason;
 	
-	public PlayerLoginEvent(ClientConnection connection, boolean cancelled, BaseComponent... cancelReason) {
+	public PlayerLoginEvent(ClientConnection connection, boolean cancelled, Component cancelReason) {
 		this.connection = connection;
 		this.cancelled = cancelled;
 		this.cancelReason = cancelReason;
@@ -40,11 +40,11 @@ public class PlayerLoginEvent extends Event implements Cancellable {
 		return connection;
 	}		
 
-	public BaseComponent[] getCancelReason() {
+	public Component getCancelReason() {
 		return cancelReason;
 	}
 
-	public void setCancelReason(BaseComponent... cancelReason) {
+	public void setCancelReason(Component cancelReason) {
 		this.cancelReason = cancelReason;
 	}
 
