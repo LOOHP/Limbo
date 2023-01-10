@@ -338,8 +338,12 @@ public final class Limbo {
 		}
 		
 		for (LimboPlugin plugin : Limbo.getInstance().getPluginManager().getPlugins()) {
-			console.sendMessage("Enabling plugin " + plugin.getName() + " " + plugin.getInfo().getVersion());
-			plugin.onEnable();
+			try {
+				console.sendMessage("Enabling plugin " + plugin.getName() + " " + plugin.getInfo().getVersion());
+				plugin.onEnable();
+			} catch (Throwable e) {
+				new RuntimeException("Error while enabling " + plugin.getName() + " " + plugin.getInfo().getVersion(), e).printStackTrace();
+			}
 		}
 		
 		server = new ServerConnection(properties.getServerIp(), properties.getServerPort());
@@ -553,8 +557,12 @@ public final class Limbo {
 		console.sendMessage("Stopping Server...");
 		
 		for (LimboPlugin plugin : Limbo.getInstance().getPluginManager().getPlugins()) {
-			console.sendMessage("Disabling plugin " + plugin.getName() + " " + plugin.getInfo().getVersion());
-			plugin.onDisable();
+			try {
+				console.sendMessage("Disabling plugin " + plugin.getName() + " " + plugin.getInfo().getVersion());
+				plugin.onDisable();
+			} catch (Throwable e) {
+				new RuntimeException("Error while disabling " + plugin.getName() + " " + plugin.getInfo().getVersion(), e).printStackTrace();
+			}
 		}
 		
 		tick.waitAndKillThreads(5000);
