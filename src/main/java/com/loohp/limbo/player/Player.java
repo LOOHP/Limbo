@@ -34,10 +34,12 @@ import com.loohp.limbo.events.player.PlayerTeleportEvent;
 import com.loohp.limbo.inventory.Inventory;
 import com.loohp.limbo.inventory.InventoryHolder;
 import com.loohp.limbo.inventory.InventoryView;
+import com.loohp.limbo.inventory.ItemStack;
 import com.loohp.limbo.inventory.TitledInventory;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.network.ClientConnection;
 import com.loohp.limbo.network.protocol.packets.ClientboundClearTitlesPacket;
+import com.loohp.limbo.network.protocol.packets.ClientboundOpenBookPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundSetActionBarTextPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundSetSubtitleTextPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundSetTitleTextPacket;
@@ -53,6 +55,7 @@ import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerListHeaderFoo
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutPositionAndLook;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutResourcePackSend;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutRespawn;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutSetSlot;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutStopSound;
 import com.loohp.limbo.sounds.SoundEffect;
 import com.loohp.limbo.utils.BungeecordAdventureConversionUtils;
@@ -68,11 +71,15 @@ import net.kyori.adventure.sound.Sound.Emitter;
 import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.Title.Times;
 import net.kyori.adventure.title.TitlePart;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.StringTag;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -82,7 +89,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Player extends LivingEntity implements CommandSender, InventoryHolder {
-	
+
 	public static final String CHAT_DEFAULT_FORMAT = "<%name%> %message%";
 
 	public final ClientConnection clientConnection;
@@ -95,20 +102,20 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 	protected final PlayerInventory playerInventory;
 	protected final InventoryView inventoryView;
 	private final AtomicInteger containerIdCounter;
-	
-	@WatchableField(MetadataIndex = 15, WatchableObjectType = WatchableObjectType.FLOAT) 
+
+	@WatchableField(MetadataIndex = 15, WatchableObjectType = WatchableObjectType.FLOAT)
 	protected float additionalHearts = 0.0F;
-	@WatchableField(MetadataIndex = 16, WatchableObjectType = WatchableObjectType.VARINT) 
+	@WatchableField(MetadataIndex = 16, WatchableObjectType = WatchableObjectType.VARINT)
 	protected int score = 0;
-	@WatchableField(MetadataIndex = 17, WatchableObjectType = WatchableObjectType.BYTE) 
+	@WatchableField(MetadataIndex = 17, WatchableObjectType = WatchableObjectType.BYTE)
 	protected byte skinLayers = 0;
-	@WatchableField(MetadataIndex = 18, WatchableObjectType = WatchableObjectType.BYTE) 
+	@WatchableField(MetadataIndex = 18, WatchableObjectType = WatchableObjectType.BYTE)
 	protected byte mainHand = 1;
-	//@WatchableField(MetadataIndex = 19, WatchableObjectType = WatchableObjectType.NBT) 
+	//@WatchableField(MetadataIndex = 19, WatchableObjectType = WatchableObjectType.NBT)
 	//protected Entity leftShoulder = null;
-	//@WatchableField(MetadataIndex = 20, WatchableObjectType = WatchableObjectType.NBT) 
+	//@WatchableField(MetadataIndex = 20, WatchableObjectType = WatchableObjectType.NBT)
 	//protected Entity rightShoulder = null;
-	
+
 	public Player(ClientConnection clientConnection, String username, UUID uuid, int entityId, Location location, PlayerInteractManager playerInteractManager) throws IllegalArgumentException, IllegalAccessException {
 		super(EntityType.PLAYER, entityId, uuid, location.getWorld(), location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
 		this.clientConnection = clientConnection;
@@ -159,7 +166,7 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 		}
 		this.gamemode = gamemode;
 	}
-	
+
 	@Deprecated
 	protected void setEntityId(int entityId) {
 		this.entityId = entityId;
@@ -196,20 +203,20 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 	public void setMainHand(byte mainHand) {
 		this.mainHand = mainHand;
 	}
-	
+
 	@Override
 	public DataWatcher getDataWatcher() {
 		return watcher;
 	}
-	
+
 	@Override
 	public boolean isValid() {
 		return Limbo.getInstance().getPlayers().contains(this);
 	}
-	
+
 	@Override
 	public void remove() {
-		
+
 	}
 	
 	/*
@@ -234,7 +241,7 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 	public String getName() {
 		return username;
 	}
-	
+
 	@Override
 	public boolean hasPermission(String permission) {
 		return Limbo.getInstance().getPermissionsManager().hasPermission(this, permission);
@@ -256,7 +263,7 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 			} catch (IOException e) {}
 		}
 	}
-	
+
 	protected void setLocation(Location location) {
 		super.teleport(location);
 	}
@@ -269,7 +276,7 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 	public void sendPluginMessage(String channel, byte[] data) throws IOException {
 		clientConnection.sendPluginMessage(channel, data);
 	}
-	
+
 	public void sendMessage(String message, UUID uuid) {
 		sendMessage(Identity.identity(uuid), LegacyComponentSerializer.legacySection().deserialize(message));
 	}
@@ -284,7 +291,7 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 	public void sendMessage(BaseComponent[] component, UUID uuid) {
 		sendMessage(Identity.identity(uuid), BungeecordAdventureConversionUtils.toComponent(component));
 	}
-	
+
 	public void sendMessage(String message) {
 		sendMessage(LegacyComponentSerializer.legacySection().deserialize(message));
 	}
@@ -299,29 +306,29 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 	public void sendMessage(BaseComponent[] component) {
 		sendMessage(BungeecordAdventureConversionUtils.toComponent(component));
 	}
-	
+
 	public void disconnect() {
 		disconnect(Component.translatable("multiplayer.disconnect.kicked"));
 	}
-	
+
 	public void disconnect(String reason) {
 		disconnect(LegacyComponentSerializer.legacySection().deserialize(reason));
 	}
-	
+
 	public void disconnect(Component reason) {
 		clientConnection.disconnect(reason);
 	}
-	
+
 	@Deprecated
 	public void disconnect(BaseComponent reason) {
 		disconnect(new BaseComponent[] {reason});
 	}
-	
+
 	@Deprecated
 	public void disconnect(BaseComponent[] reason) {
 		disconnect(BungeecordAdventureConversionUtils.toComponent(reason));
 	}
-	
+
 	public void chat(String message) {
 		chat(message, false);
 	}
@@ -329,7 +336,7 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 	public void chat(String message, boolean verbose) {
 		chat(message, verbose, null, Instant.now());
 	}
-	
+
 	public void chat(String message, boolean verbose, MessageSignature saltSignature, Instant time) {
 		if (Limbo.getInstance().getServerProperties().isAllowChat()) {
 			PlayerChatEvent event = Limbo.getInstance().getEventsManager().callEvent(new PlayerChatEvent(this, CHAT_DEFAULT_FORMAT, message, false));
@@ -352,11 +359,11 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 			}
 		}
 	}
-	
+
 	public void setResourcePack(String url, String hash, boolean forced) {
 		setResourcePack(url, hash, forced, (BaseComponent[]) null);
 	}
-	
+
 	@Deprecated
 	public void setResourcePack(String url, String hash, boolean forced, BaseComponent promptmessage) {
 		setResourcePack(url, hash, forced, promptmessage == null ? null : new BaseComponent[] {promptmessage});
@@ -366,7 +373,7 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 	public void setResourcePack(String url, String hash, boolean forced, BaseComponent[] promptmessage) {
 		setResourcePack(url, hash, forced, promptmessage == null ? null : BungeecordAdventureConversionUtils.toComponent(promptmessage));
 	}
-	
+
 	public void setResourcePack(String url, String hash, boolean forced, Component promptmessage) {
 		try {
 			PacketPlayOutResourcePackSend packsend = new PacketPlayOutResourcePackSend(url, hash, forced, promptmessage != null, promptmessage);
@@ -375,7 +382,7 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Deprecated
 	public void setPlayerListHeaderFooter(BaseComponent[] header, BaseComponent[] footer) {
 		sendPlayerListHeaderAndFooter(header == null ? Component.empty() : BungeecordAdventureConversionUtils.toComponent(header), footer == null ? Component.empty() : BungeecordAdventureConversionUtils.toComponent(footer));
@@ -385,55 +392,55 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 	public void setPlayerListHeaderFooter(BaseComponent header, BaseComponent footer) {
 		sendPlayerListHeaderAndFooter(header == null ? Component.empty() : BungeecordAdventureConversionUtils.toComponent(header), footer == null ? Component.empty() : BungeecordAdventureConversionUtils.toComponent(footer));
 	}
-	
+
 	public void setPlayerListHeaderFooter(String header, String footer) {
 		sendPlayerListHeaderAndFooter(header == null ? Component.empty() : LegacyComponentSerializer.legacySection().deserialize(header), footer == null ? Component.empty() : LegacyComponentSerializer.legacySection().deserialize(footer));
 	}
-	
+
 	@Deprecated
 	public void setTitle(BaseComponent[] title) {
 		sendTitlePart(TitlePart.TITLE, BungeecordAdventureConversionUtils.toComponent(title));
 	}
-	
+
 	@Deprecated
 	public void setTitle(BaseComponent title) {
 		sendTitlePart(TitlePart.TITLE, BungeecordAdventureConversionUtils.toComponent(title));
 	}
-	
+
 	public void setTitle(String title) {
 		sendTitlePart(TitlePart.TITLE, LegacyComponentSerializer.legacySection().deserialize(title));
 	}
-	
+
 	@Deprecated
 	public void setSubTitle(BaseComponent[] subTitle) {
 		sendTitlePart(TitlePart.SUBTITLE, BungeecordAdventureConversionUtils.toComponent(subTitle));
 	}
-	
+
 	@Deprecated
 	public void setSubTitle(BaseComponent subTitle) {
 		sendTitlePart(TitlePart.SUBTITLE, BungeecordAdventureConversionUtils.toComponent(subTitle));
 	}
-	
+
 	public void setSubTitle(String subTitle) {
 		sendTitlePart(TitlePart.SUBTITLE, LegacyComponentSerializer.legacySection().deserialize(subTitle));
 	}
-	
+
 	public void setTitleTimer(int fadeIn, int stay, int fadeOut) {
 		sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ofMillis(fadeIn * 50), Duration.ofMillis(stay * 50), Duration.ofMillis(fadeOut * 50)));
 	}
-	
+
 	@Deprecated
 	public void setTitleSubTitle(BaseComponent[] title, BaseComponent[] subTitle, int fadeIn, int stay, int fadeOut) {
 		setTitleTimer(fadeIn, stay, fadeOut);
 		setTitle(title);
 		setSubTitle(subTitle);
 	}
-	
+
 	@Deprecated
 	public void setTitleSubTitle(BaseComponent title, BaseComponent subTitle, int fadeIn, int stay, int fadeOut) {
 		setTitleSubTitle(new BaseComponent[] {title}, new BaseComponent[] {subTitle}, fadeIn, stay, fadeOut);
 	}
-	
+
 	public void setTitleSubTitle(String title, String subTitle, int fadeIn, int stay, int fadeOut) {
 		sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ofMillis(fadeIn * 50), Duration.ofMillis(stay * 50), Duration.ofMillis(fadeOut * 50)));
 		sendTitlePart(TitlePart.SUBTITLE, LegacyComponentSerializer.legacySection().deserialize(subTitle));
@@ -469,7 +476,34 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 
 	@Override
 	public void openBook(Book book) {
-		throw new UnsupportedOperationException("This function has not been implemented yet.");
+		ItemStack item = new ItemStack(Key.key("minecraft:written_book"));
+		CompoundTag nbt = new CompoundTag();
+		nbt.putString("title", PlainTextComponentSerializer.plainText().serialize(book.title()));
+		nbt.putString("author", PlainTextComponentSerializer.plainText().serialize(book.author()));
+		ListTag<StringTag> pages = new ListTag<>(StringTag.class);
+		for (Component page : book.pages()) {
+			pages.add(new StringTag(PlainTextComponentSerializer.plainText().serialize(page)));
+		}
+		nbt.put("pages", pages);
+		item.nbt(nbt);
+		PacketPlayOutSetSlot setSlot = new PacketPlayOutSetSlot(0, 0,0, item);
+		try {
+			clientConnection.sendPacket(setSlot);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		ClientboundOpenBookPacket openBook = new ClientboundOpenBookPacket(0);
+		try {
+			clientConnection.sendPacket(openBook);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		PacketPlayOutSetSlot resetSlot = new PacketPlayOutSetSlot(0, 0,0, getInventory().getItemInMainHand());
+		try {
+			clientConnection.sendPacket(resetSlot);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
