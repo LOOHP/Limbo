@@ -64,6 +64,7 @@
     "PacketPlayOutStopSound": "0x5F",
     "PacketPlayOutWindowItems": "0x10",
     "PacketPlayOutSetSlot": "0x12",
+    "ClientboundOpenBookPacket": "0x2B",
     "PacketPlayOutOpenWindow": "0x2C",
     "PacketPlayOutCloseWindow": "0x0F",
     "PacketPlayOutWindowData": "0x11"
