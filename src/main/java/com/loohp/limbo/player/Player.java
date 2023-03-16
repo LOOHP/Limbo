@@ -251,7 +251,7 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 					PacketPlayOutRespawn respawn = new PacketPlayOutRespawn(location.getWorld(), Limbo.getInstance().getDimensionRegistry().getCodec(), 0, gamemode, false, false, true);
 					clientConnection.sendPacket(respawn);
 				}
-				PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch(), 1, false);
+				PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch(), 1);
 				clientConnection.sendPacket(positionLook);
 			} catch (IOException e) {}
 		}

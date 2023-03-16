@@ -24,7 +24,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>Limbo</artifactId>
 	<name>Limbo</name>
-	<version>0.7.2-ALPHA</version>
+	<version>0.7.4-ALPHA</version>
 	
 	<description>Standalone Limbo Minecraft Server.</description>
 	<url>https://github.com/LOOHP/Limbo</url>
@@ -136,7 +136,7 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<finalName>${project.artifactId}-${project.version}-1.19.3</finalName>
+		<finalName>${project.artifactId}-${project.version}-1.19.4</finalName>
 	</build>
 
 	<profiles>

@@ -404,12 +404,12 @@ public class ClientConnection extends Thread {
                             int state = 0;
                             for (int i = 0; i < data.length; i++) {
                                 if (!properties.isReducedDebugInfo()) {
-                                    Limbo.getInstance().getConsole().sendMessage(String.valueOf(i) + ": " + data[i]);
+                                    Limbo.getInstance().getConsole().sendMessage(i + ": " + data[i]);
                                 }
 
                                 switch (state) {
                                 default:
-                                    Limbo.getInstance().getConsole().sendMessage(String.valueOf(i) + ": ignore data: State: " + String.valueOf(state));
+                                    Limbo.getInstance().getConsole().sendMessage(i + ": ignore data: State: " + state);
                                     break;
                                 case 0:
                                     host = data[i];
@@ -437,7 +437,7 @@ public class ClientConnection extends Thread {
                                 }
                             }
                             if (state != 6) {
-                                throw new IllegalStateException("Illegal bungee state: " + String.valueOf(state));
+                                throw new IllegalStateException("Illegal bungee state: " + state);
                             }
 
                             if (!properties.isReducedDebugInfo()) {
@@ -580,12 +580,12 @@ public class ClientConnection extends Thread {
                 ByteArrayOutputStream brandOut = new ByteArrayOutputStream();
                 DataTypeIO.writeString(new DataOutputStream(brandOut), properties.getServerModName(), StandardCharsets.UTF_8);
                 sendPluginMessage(BRAND_ANNOUNCE_CHANNEL, brandOut.toByteArray());
-
+                
                 SkinResponse skinresponce = (isVelocityModern || isBungeeGuard || isBungeecord) && forwardedSkin != null ? forwardedSkin : MojangAPIUtils.getSkinFromMojangServer(player.getName());
                 PlayerSkinProperty skin = skinresponce != null ? new PlayerSkinProperty(skinresponce.getSkin(), skinresponce.getSignature()) : null;
                 PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(EnumSet.of(PlayerInfoAction.ADD_PLAYER, PlayerInfoAction.UPDATE_GAME_MODE, PlayerInfoAction.UPDATE_LISTED, PlayerInfoAction.UPDATE_LATENCY, PlayerInfoAction.UPDATE_DISPLAY_NAME), player.getUniqueId(), new PlayerInfoData.PlayerInfoDataAddPlayer(player.getName(), true, Optional.ofNullable(skin), properties.getDefaultGamemode(), 0, false, Optional.empty()));
                 sendPacket(info);
-
+                
                 Set<PlayerAbilityFlags> flags = new HashSet<>();
                 if (properties.isAllowFlight()) {
                     flags.add(PlayerAbilityFlags.FLY);
@@ -598,21 +598,21 @@ public class ClientConnection extends Thread {
                 
                 String str = (properties.isLogPlayerIPAddresses() ? inetAddress.getHostName() : "<ip address withheld>") + ":" + clientSocket.getPort() + "|" + player.getName() + "(" + player.getUniqueId() + ")";
                 Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had connected to the Limbo server!");
-
+                
                 player.playerInteractManager.update();
-
+                
                 PacketPlayOutDeclareCommands declare = DeclareCommands.getDeclareCommandsPacket(player);
                 if (declare != null) {
                     sendPacket(declare);
                 }
-
+                
                 PacketPlayOutSpawnPosition spawnPos = new PacketPlayOutSpawnPosition(BlockPosition.from(worldSpawn), worldSpawn.getPitch());
                 sendPacket(spawnPos);
-
-                PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(worldSpawn.getX(), worldSpawn.getY(), worldSpawn.getZ(), worldSpawn.getYaw(), worldSpawn.getPitch(), 1, false);
+                
+                PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(worldSpawn.getX(), worldSpawn.getY(), worldSpawn.getZ(), worldSpawn.getYaw(), worldSpawn.getPitch(), 1);
                 Limbo.getInstance().getUnsafe().a(player, new Location(world, worldSpawn.getX(), worldSpawn.getY(), worldSpawn.getZ(), worldSpawn.getYaw(), worldSpawn.getPitch()));
                 sendPacket(positionLook);
-
+                
                 player.getDataWatcher().update();
                 PacketPlayOutEntityMetadata show = new PacketPlayOutEntityMetadata(player, false, Player.class.getDeclaredField("skinLayers"));
                 sendPacket(show);
@@ -667,14 +667,14 @@ public class ClientConnection extends Thread {
                         CheckedBiConsumer<PlayerMoveEvent, Location, IOException> processMoveEvent = (event, originalTo) -> {
                             if (event.isCancelled()) {
                                 Location returnTo = event.getFrom();
-                                PacketPlayOutPositionAndLook cancel = new PacketPlayOutPositionAndLook(returnTo.getX(), returnTo.getY(), returnTo.getZ(), returnTo.getYaw(), returnTo.getPitch(), 1, false);
+                                PacketPlayOutPositionAndLook cancel = new PacketPlayOutPositionAndLook(returnTo.getX(), returnTo.getY(), returnTo.getZ(), returnTo.getYaw(), returnTo.getPitch(), 1);
                                 sendPacket(cancel);
                             } else {
                                 Location to = event.getTo();
                                 Limbo.getInstance().getUnsafe().a(player, to);
                                 // If an event handler used setTo, let's make sure we tell the player about it.
                                 if (!originalTo.equals(to)) {
-                                    PacketPlayOutPositionAndLook pos = new PacketPlayOutPositionAndLook(to.getX(), to.getY(), to.getZ(), to.getYaw(), to.getPitch(), 1, false);
+                                    PacketPlayOutPositionAndLook pos = new PacketPlayOutPositionAndLook(to.getX(), to.getY(), to.getZ(), to.getYaw(), to.getPitch(), 1);
                                     sendPacket(pos);
                                 }
                                 PacketPlayOutUpdateViewPosition response = new PacketPlayOutUpdateViewPosition((int) player.getLocation().getX() >> 4, (int) player.getLocation().getZ() >> 4);

@@ -99,10 +99,14 @@ public class Channel implements AutoCloseable {
         }
         packet = write.getPacket();
         byte[] packetByte = packet.serializePacket();
+        writePacketRaw(packetByte);
+        return true;
+    }
+
+    public void writePacketRaw(byte[] packetByte) throws IOException {
         DataTypeIO.writeVarInt(output, packetByte.length);
         output.write(packetByte);
         output.flush();
-        return true;
     }
 
     @Override

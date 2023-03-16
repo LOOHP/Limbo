@@ -70,9 +70,9 @@ public class PacketPlayOutPlayerAbilities extends PacketOut {
 		
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(Packet.getPlayOut().get(getClass()));
-		int value = 0;
+		byte value = 0;
 		for (PlayerAbilityFlags flag : flags) {
-			value = value | flag.getValue();
+			value = (byte) (value | flag.getValue());
 		}
 		
 		output.writeByte(value);

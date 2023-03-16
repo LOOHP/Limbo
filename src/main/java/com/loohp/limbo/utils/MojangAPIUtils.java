@@ -59,7 +59,7 @@ public class MojangAPIUtils {
             connection.addRequestProperty("Cache-Control", "no-cache, no-store, must-revalidate");
             connection.addRequestProperty("Pragma", "no-cache");
 	        if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
-	            String reply = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine();
+	            String reply = new BufferedReader(new InputStreamReader(connection.getInputStream())).lines().collect(Collectors.joining()).replace(" ", "");
 	            if (!reply.contains("\"error\":\"BadRequestException\"")) {
 	            	String uuid = reply.split("\"id\":\"")[1].split("\"")[0];
 		            return UUID.fromString(uuid.replaceFirst("([0-9a-fA-F]{8})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]{4})([0-9a-fA-F]+)", "$1-$2-$3-$4-$5"));
