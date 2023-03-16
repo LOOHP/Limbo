@@ -1,6 +1,6 @@
 # Limbo
 [![Build Status](http://ci.loohpjames.com/job/Limbo/badge/icon)](http://ci.loohpjames.com/job/Limbo/)
-## Standalone Limbo Minecraft Server (Currently 1.19.3)
+## Standalone Limbo Minecraft Server (Currently 1.19.4)
 
 ### Starting the server
 Use the following command lines to start the limbo server just like any other minecraft server
@@ -16,7 +16,7 @@ IP: mc.loohpjames.com
 ```
 ![Server Banner](https://api.loohpjames.com/serverbanner.png?ip=mc.loohpjames.com&width=918&name=IP:%20mc.loohpjames.com)
 ***
-### Downloads (1.17.1-1.19.3)
+### Downloads (1.17.1-1.19.4)
 - [Jenkins](http://ci.loohpjames.com/job/Limbo/)
 ***
 ### Maven
