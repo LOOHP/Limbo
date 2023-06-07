@@ -411,57 +411,6 @@
                     }
                   }
                 }
-              },
-              {
-                "name": {
-                  "type": "StringTag",
-                  "value": "minecraft:raw"
-                },
-                "id": {
-                  "type": "IntTag",
-                  "value": 7
-                },
-                "element": {
-                  "type": "CompoundTag",
-                  "value": {
-                    "chat": {
-                      "type": "CompoundTag",
-                      "value": {
-                        "translation_key": {
-                          "type": "StringTag",
-                          "value": "%s"
-                        },
-                        "parameters": {
-                          "type": "ListTag",
-                          "value": {
-                            "type": "StringTag",
-                            "list": [
-                              "content"
-                            ]
-                          }
-                        }
-                      }
-                    },
-                    "narration": {
-                      "type": "CompoundTag",
-                      "value": {
-                        "translation_key": {
-                          "type": "StringTag",
-                          "value": "%s"
-                        },
-                        "parameters": {
-                          "type": "ListTag",
-                          "value": {
-                            "type": "StringTag",
-                            "list": [
-                              "content"
-                            ]
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
               }
             ]
           }
@@ -579,11 +528,75 @@
               {
                 "name": {
                   "type": "StringTag",
-                  "value": "minecraft:rib"
+                  "value": "minecraft:host"
                 },
                 "id": {
                   "type": "IntTag",
                   "value": 3
+                },
+                "element": {
+                  "type": "CompoundTag",
+                  "value": {
+                    "template_item": {
+                      "type": "StringTag",
+                      "value": "minecraft:host_armor_trim_smithing_template"
+                    },
+                    "description": {
+                      "type": "CompoundTag",
+                      "value": {
+                        "translate": {
+                          "type": "StringTag",
+                          "value": "trim_pattern.minecraft.host"
+                        }
+                      }
+                    },
+                    "asset_id": {
+                      "type": "StringTag",
+                      "value": "minecraft:host"
+                    }
+                  }
+                }
+              },
+              {
+                "name": {
+                  "type": "StringTag",
+                  "value": "minecraft:raiser"
+                },
+                "id": {
+                  "type": "IntTag",
+                  "value": 4
+                },
+                "element": {
+                  "type": "CompoundTag",
+                  "value": {
+                    "template_item": {
+                      "type": "StringTag",
+                      "value": "minecraft:raiser_armor_trim_smithing_template"
+                    },
+                    "description": {
+                      "type": "CompoundTag",
+                      "value": {
+                        "translate": {
+                          "type": "StringTag",
+                          "value": "trim_pattern.minecraft.raiser"
+                        }
+                      }
+                    },
+                    "asset_id": {
+                      "type": "StringTag",
+                      "value": "minecraft:raiser"
+                    }
+                  }
+                }
+              },
+              {
+                "name": {
+                  "type": "StringTag",
+                  "value": "minecraft:rib"
+                },
+                "id": {
+                  "type": "IntTag",
+                  "value": 5
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -615,7 +628,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 4
+                  "value": 6
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -643,11 +656,75 @@
               {
                 "name": {
                   "type": "StringTag",
+                  "value": "minecraft:shaper"
+                },
+                "id": {
+                  "type": "IntTag",
+                  "value": 7
+                },
+                "element": {
+                  "type": "CompoundTag",
+                  "value": {
+                    "template_item": {
+                      "type": "StringTag",
+                      "value": "minecraft:shaper_armor_trim_smithing_template"
+                    },
+                    "description": {
+                      "type": "CompoundTag",
+                      "value": {
+                        "translate": {
+                          "type": "StringTag",
+                          "value": "trim_pattern.minecraft.shaper"
+                        }
+                      }
+                    },
+                    "asset_id": {
+                      "type": "StringTag",
+                      "value": "minecraft:shaper"
+                    }
+                  }
+                }
+              },
+              {
+                "name": {
+                  "type": "StringTag",
+                  "value": "minecraft:silence"
+                },
+                "id": {
+                  "type": "IntTag",
+                  "value": 8
+                },
+                "element": {
+                  "type": "CompoundTag",
+                  "value": {
+                    "template_item": {
+                      "type": "StringTag",
+                      "value": "minecraft:silence_armor_trim_smithing_template"
+                    },
+                    "description": {
+                      "type": "CompoundTag",
+                      "value": {
+                        "translate": {
+                          "type": "StringTag",
+                          "value": "trim_pattern.minecraft.silence"
+                        }
+                      }
+                    },
+                    "asset_id": {
+                      "type": "StringTag",
+                      "value": "minecraft:silence"
+                    }
+                  }
+                }
+              },
+              {
+                "name": {
+                  "type": "StringTag",
                   "value": "minecraft:snout"
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 5
+                  "value": 9
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -679,7 +756,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 6
+                  "value": 10
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -711,7 +788,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 7
+                  "value": 11
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -743,7 +820,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 8
+                  "value": 12
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -775,7 +852,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 9
+                  "value": 13
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -803,11 +880,43 @@
               {
                 "name": {
                   "type": "StringTag",
+                  "value": "minecraft:wayfinder"
+                },
+                "id": {
+                  "type": "IntTag",
+                  "value": 14
+                },
+                "element": {
+                  "type": "CompoundTag",
+                  "value": {
+                    "template_item": {
+                      "type": "StringTag",
+                      "value": "minecraft:wayfinder_armor_trim_smithing_template"
+                    },
+                    "description": {
+                      "type": "CompoundTag",
+                      "value": {
+                        "translate": {
+                          "type": "StringTag",
+                          "value": "trim_pattern.minecraft.wayfinder"
+                        }
+                      }
+                    },
+                    "asset_id": {
+                      "type": "StringTag",
+                      "value": "minecraft:wayfinder"
+                    }
+                  }
+                }
+              },
+              {
+                "name": {
+                  "type": "StringTag",
                   "value": "minecraft:wild"
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 10
+                  "value": 15
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -1415,6 +1524,10 @@
                       "type": "FloatTag",
                       "value": 0
                     },
+                    "effects": {
+                      "type": "StringTag",
+                      "value": "drowning"
+                    },
                     "scaling": {
                       "type": "StringTag",
                       "value": "when_caused_by_living_non_player"
@@ -1422,10 +1535,6 @@
                     "message_id": {
                       "type": "StringTag",
                       "value": "drown"
-                    },
-                    "effects": {
-                      "type": "StringTag",
-                      "value": "drowning"
                     }
                   }
                 }
@@ -1612,6 +1721,10 @@
                       "type": "FloatTag",
                       "value": 0.1
                     },
+                    "effects": {
+                      "type": "StringTag",
+                      "value": "burning"
+                    },
                     "scaling": {
                       "type": "StringTag",
                       "value": "when_caused_by_living_non_player"
@@ -1619,10 +1732,6 @@
                     "message_id": {
                       "type": "StringTag",
                       "value": "fireball"
-                    },
-                    "effects": {
-                      "type": "StringTag",
-                      "value": "burning"
                     }
                   }
                 }
@@ -1697,6 +1806,10 @@
                       "type": "FloatTag",
                       "value": 0
                     },
+                    "effects": {
+                      "type": "StringTag",
+                      "value": "freezing"
+                    },
                     "scaling": {
                       "type": "StringTag",
                       "value": "when_caused_by_living_non_player"
@@ -1704,10 +1817,6 @@
                     "message_id": {
                       "type": "StringTag",
                       "value": "freeze"
-                    },
-                    "effects": {
-                      "type": "StringTag",
-                      "value": "freezing"
                     }
                   }
                 }
@@ -1742,7 +1851,7 @@
               {
                 "name": {
                   "type": "StringTag",
-                  "value": "minecraft:hot_floor"
+                  "value": "minecraft:generic_kill"
                 },
                 "id": {
                   "type": "IntTag",
@@ -1753,7 +1862,7 @@
                   "value": {
                     "exhaustion": {
                       "type": "FloatTag",
-                      "value": 0.1
+                      "value": 0
                     },
                     "scaling": {
                       "type": "StringTag",
@@ -1761,11 +1870,7 @@
                     },
                     "message_id": {
                       "type": "StringTag",
-                      "value": "hotFloor"
-                    },
-                    "effects": {
-                      "type": "StringTag",
-                      "value": "burning"
+                      "value": "genericKill"
                     }
                   }
                 }
@@ -1773,7 +1878,7 @@
               {
                 "name": {
                   "type": "StringTag",
-                  "value": "minecraft:in_fire"
+                  "value": "minecraft:hot_floor"
                 },
                 "id": {
                   "type": "IntTag",
@@ -1786,6 +1891,41 @@
                       "type": "FloatTag",
                       "value": 0.1
                     },
+                    "effects": {
+                      "type": "StringTag",
+                      "value": "burning"
+                    },
+                    "scaling": {
+                      "type": "StringTag",
+                      "value": "when_caused_by_living_non_player"
+                    },
+                    "message_id": {
+                      "type": "StringTag",
+                      "value": "hotFloor"
+                    }
+                  }
+                }
+              },
+              {
+                "name": {
+                  "type": "StringTag",
+                  "value": "minecraft:in_fire"
+                },
+                "id": {
+                  "type": "IntTag",
+                  "value": 19
+                },
+                "element": {
+                  "type": "CompoundTag",
+                  "value": {
+                    "exhaustion": {
+                      "type": "FloatTag",
+                      "value": 0.1
+                    },
+                    "effects": {
+                      "type": "StringTag",
+                      "value": "burning"
+                    },
                     "scaling": {
                       "type": "StringTag",
                       "value": "when_caused_by_living_non_player"
@@ -1793,10 +1933,6 @@
                     "message_id": {
                       "type": "StringTag",
                       "value": "inFire"
-                    },
-                    "effects": {
-                      "type": "StringTag",
-                      "value": "burning"
                     }
                   }
                 }
@@ -1808,7 +1944,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 19
+                  "value": 20
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -1835,7 +1971,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 20
+                  "value": 21
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -1862,7 +1998,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 21
+                  "value": 22
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -1871,6 +2007,10 @@
                       "type": "FloatTag",
                       "value": 0.1
                     },
+                    "effects": {
+                      "type": "StringTag",
+                      "value": "burning"
+                    },
                     "scaling": {
                       "type": "StringTag",
                       "value": "when_caused_by_living_non_player"
@@ -1878,10 +2018,6 @@
                     "message_id": {
                       "type": "StringTag",
                       "value": "lava"
-                    },
-                    "effects": {
-                      "type": "StringTag",
-                      "value": "burning"
                     }
                   }
                 }
@@ -1893,7 +2029,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 22
+                  "value": 23
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -1920,7 +2056,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 23
+                  "value": 24
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -1947,7 +2083,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 24
+                  "value": 25
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -1974,7 +2110,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 25
+                  "value": 26
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -2001,7 +2137,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 26
+                  "value": 27
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -2028,7 +2164,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 27
+                  "value": 28
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -2037,6 +2173,10 @@
                       "type": "FloatTag",
                       "value": 0
                     },
+                    "effects": {
+                      "type": "StringTag",
+                      "value": "burning"
+                    },
                     "scaling": {
                       "type": "StringTag",
                       "value": "when_caused_by_living_non_player"
@@ -2044,10 +2184,6 @@
                     "message_id": {
                       "type": "StringTag",
                       "value": "onFire"
-                    },
-                    "effects": {
-                      "type": "StringTag",
-                      "value": "burning"
                     }
                   }
                 }
@@ -2059,7 +2195,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 28
+                  "value": 29
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -2082,11 +2218,38 @@
               {
                 "name": {
                   "type": "StringTag",
+                  "value": "minecraft:outside_border"
+                },
+                "id": {
+                  "type": "IntTag",
+                  "value": 30
+                },
+                "element": {
+                  "type": "CompoundTag",
+                  "value": {
+                    "exhaustion": {
+                      "type": "FloatTag",
+                      "value": 0
+                    },
+                    "scaling": {
+                      "type": "StringTag",
+                      "value": "when_caused_by_living_non_player"
+                    },
+                    "message_id": {
+                      "type": "StringTag",
+                      "value": "outsideBorder"
+                    }
+                  }
+                }
+              },
+              {
+                "name": {
+                  "type": "StringTag",
                   "value": "minecraft:player_attack"
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 29
+                  "value": 31
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -2113,7 +2276,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 30
+                  "value": 32
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -2140,7 +2303,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 31
+                  "value": 33
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -2167,7 +2330,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 32
+                  "value": 34
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -2194,7 +2357,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 33
+                  "value": 35
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -2221,7 +2384,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 34
+                  "value": 36
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -2248,7 +2411,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 35
+                  "value": 37
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -2257,6 +2420,10 @@
                       "type": "FloatTag",
                       "value": 0.1
                     },
+                    "effects": {
+                      "type": "StringTag",
+                      "value": "poking"
+                    },
                     "scaling": {
                       "type": "StringTag",
                       "value": "when_caused_by_living_non_player"
@@ -2264,10 +2431,6 @@
                     "message_id": {
                       "type": "StringTag",
                       "value": "sweetBerryBush"
-                    },
-                    "effects": {
-                      "type": "StringTag",
-                      "value": "poking"
                     }
                   }
                 }
@@ -2279,7 +2442,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 36
+                  "value": 38
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -2288,15 +2451,15 @@
                       "type": "FloatTag",
                       "value": 0.1
                     },
+                    "effects": {
+                      "type": "StringTag",
+                      "value": "thorns"
+                    },
                     "scaling": {
                       "type": "StringTag",
                       "value": "when_caused_by_living_non_player"
                     },
                     "message_id": {
-                      "type": "StringTag",
-                      "value": "thorns"
-                    },
-                    "effects": {
                       "type": "StringTag",
                       "value": "thorns"
                     }
@@ -2310,7 +2473,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 37
+                  "value": 39
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -2337,7 +2500,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 38
+                  "value": 40
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -2364,7 +2527,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 39
+                  "value": 41
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -2373,6 +2536,10 @@
                       "type": "FloatTag",
                       "value": 0.1
                     },
+                    "effects": {
+                      "type": "StringTag",
+                      "value": "burning"
+                    },
                     "scaling": {
                       "type": "StringTag",
                       "value": "when_caused_by_living_non_player"
@@ -2380,10 +2547,6 @@
                     "message_id": {
                       "type": "StringTag",
                       "value": "onFire"
-                    },
-                    "effects": {
-                      "type": "StringTag",
-                      "value": "burning"
                     }
                   }
                 }
@@ -2395,7 +2558,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 40
+                  "value": 42
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -2422,7 +2585,7 @@
                 },
                 "id": {
                   "type": "IntTag",
-                  "value": 41
+                  "value": 43
                 },
                 "element": {
                   "type": "CompoundTag",
@@ -2475,13 +2638,30 @@
                       "type": "FloatTag",
                       "value": 2
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
+                        "music": {
+                          "type": "CompoundTag",
+                          "value": {
+                            "replace_current_music": {
+                              "type": "ByteTag",
+                              "value": 0
+                            },
+                            "max_delay": {
+                              "type": "IntTag",
+                              "value": 24000
+                            },
+                            "sound": {
+                              "type": "StringTag",
+                              "value": "minecraft:music.overworld.badlands"
+                            },
+                            "min_delay": {
+                              "type": "IntTag",
+                              "value": 12000
+                            }
+                          }
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 7254527
@@ -2490,32 +2670,32 @@
                           "type": "IntTag",
                           "value": 9470285
                         },
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "foliage_color": {
                           "type": "IntTag",
                           "value": 10387789
                         },
-                        "water_color": {
+                        "water_fog_color": {
                           "type": "IntTag",
-                          "value": 4159204
+                          "value": 329011
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -2528,6 +2708,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -2552,17 +2736,9 @@
                       "type": "FloatTag",
                       "value": 0.95
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.9
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -2576,7 +2752,7 @@
                             },
                             "sound": {
                               "type": "StringTag",
-                              "value": "minecraft:music.overworld.jungle_and_forest"
+                              "value": "minecraft:music.overworld.bamboo_jungle"
                             },
                             "min_delay": {
                               "type": "IntTag",
@@ -2584,28 +2760,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 7842047
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -2618,6 +2798,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.9
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -2641,10 +2825,6 @@
                     "temperature": {
                       "type": "FloatTag",
                       "value": 2
-                    },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0
                     },
                     "effects": {
                       "type": "CompoundTag",
@@ -2713,24 +2893,24 @@
                           "type": "IntTag",
                           "value": 329011
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 6840176
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -2743,6 +2923,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -2767,10 +2951,6 @@
                       "type": "FloatTag",
                       "value": 0.8
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.4
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -2782,24 +2962,24 @@
                           "type": "IntTag",
                           "value": 7907327
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -2812,6 +2992,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.4
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -2836,17 +3020,9 @@
                       "type": "FloatTag",
                       "value": 0.6
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.6
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -2860,7 +3036,7 @@
                             },
                             "sound": {
                               "type": "StringTag",
-                              "value": "minecraft:music.overworld.jungle_and_forest"
+                              "value": "minecraft:music.overworld.forest"
                             },
                             "min_delay": {
                               "type": "IntTag",
@@ -2868,28 +3044,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 8037887
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -2902,6 +3082,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.6
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -2925,10 +3109,6 @@
                     "temperature": {
                       "type": "FloatTag",
                       "value": 0.5
-                    },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.8
                     },
                     "effects": {
                       "type": "CompoundTag",
@@ -2962,15 +3142,11 @@
                           "type": "IntTag",
                           "value": 11983713
                         },
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 6141935
-                        },
                         "foliage_color": {
                           "type": "IntTag",
                           "value": 11983713
                         },
-                        "water_color": {
+                        "water_fog_color": {
                           "type": "IntTag",
                           "value": 6141935
                         },
@@ -2978,16 +3154,20 @@
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 6141935
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -3000,6 +3180,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.8
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -3024,10 +3208,6 @@
                       "type": "FloatTag",
                       "value": 0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -3039,24 +3219,24 @@
                           "type": "IntTag",
                           "value": 8103167
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4020182
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4020182
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -3069,6 +3249,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -3092,10 +3276,6 @@
                     "temperature": {
                       "type": "FloatTag",
                       "value": 2
-                    },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0
                     },
                     "effects": {
                       "type": "CompoundTag",
@@ -3164,24 +3344,24 @@
                           "type": "IntTag",
                           "value": 329011
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 3343107
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -3194,6 +3374,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -3218,10 +3402,6 @@
                       "type": "FloatTag",
                       "value": 0.7
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.8
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -3242,7 +3422,7 @@
                             },
                             "sound": {
                               "type": "StringTag",
-                              "value": "minecraft:music.overworld.jungle_and_forest"
+                              "value": "minecraft:music.overworld.forest"
                             },
                             "min_delay": {
                               "type": "IntTag",
@@ -3258,24 +3438,24 @@
                           "type": "IntTag",
                           "value": 329011
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -3288,6 +3468,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.8
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -3312,10 +3496,6 @@
                       "type": "FloatTag",
                       "value": 0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -3327,24 +3507,24 @@
                           "type": "IntTag",
                           "value": 8103167
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4020182
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4020182
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -3357,6 +3537,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -3381,17 +3565,9 @@
                       "type": "FloatTag",
                       "value": 0.8
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.4
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -3413,28 +3589,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 7907327
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -3447,6 +3627,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.4
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -3471,10 +3655,6 @@
                       "type": "FloatTag",
                       "value": 0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -3486,24 +3666,24 @@
                           "type": "IntTag",
                           "value": 8103167
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 3750089
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 3750089
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -3516,6 +3696,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -3544,10 +3728,6 @@
                       "type": "FloatTag",
                       "value": 0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -3559,24 +3739,24 @@
                           "type": "IntTag",
                           "value": 8103167
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4566514
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4566514
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -3589,6 +3769,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -3613,10 +3797,6 @@
                       "type": "FloatTag",
                       "value": 0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -3628,24 +3808,24 @@
                           "type": "IntTag",
                           "value": 8103167
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -3658,6 +3838,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -3682,13 +3866,30 @@
                       "type": "FloatTag",
                       "value": 2
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
+                        "music": {
+                          "type": "CompoundTag",
+                          "value": {
+                            "replace_current_music": {
+                              "type": "ByteTag",
+                              "value": 0
+                            },
+                            "max_delay": {
+                              "type": "IntTag",
+                              "value": 24000
+                            },
+                            "sound": {
+                              "type": "StringTag",
+                              "value": "minecraft:music.overworld.desert"
+                            },
+                            "min_delay": {
+                              "type": "IntTag",
+                              "value": 12000
+                            }
+                          }
+                        },
                         "water_fog_color": {
                           "type": "IntTag",
                           "value": 329011
@@ -3697,24 +3898,24 @@
                           "type": "IntTag",
                           "value": 7254527
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -3727,6 +3928,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -3751,17 +3956,9 @@
                       "type": "FloatTag",
                       "value": 0.8
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.4
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -3783,28 +3980,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 7907327
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -3817,6 +4018,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.4
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -3841,10 +4046,6 @@
                       "type": "FloatTag",
                       "value": 0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -3856,24 +4057,24 @@
                           "type": "IntTag",
                           "value": 0
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 10518688
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -3886,6 +4087,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -3910,10 +4115,6 @@
                       "type": "FloatTag",
                       "value": 0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -3925,24 +4126,24 @@
                           "type": "IntTag",
                           "value": 0
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 10518688
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -3955,6 +4156,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -3979,10 +4184,6 @@
                       "type": "FloatTag",
                       "value": 0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -3994,24 +4195,24 @@
                           "type": "IntTag",
                           "value": 0
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 10518688
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -4024,6 +4225,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -4048,13 +4253,30 @@
                       "type": "FloatTag",
                       "value": 2
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
+                        "music": {
+                          "type": "CompoundTag",
+                          "value": {
+                            "replace_current_music": {
+                              "type": "ByteTag",
+                              "value": 0
+                            },
+                            "max_delay": {
+                              "type": "IntTag",
+                              "value": 24000
+                            },
+                            "sound": {
+                              "type": "StringTag",
+                              "value": "minecraft:music.overworld.badlands"
+                            },
+                            "min_delay": {
+                              "type": "IntTag",
+                              "value": 12000
+                            }
+                          }
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 7254527
@@ -4063,32 +4285,32 @@
                           "type": "IntTag",
                           "value": 9470285
                         },
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "foliage_color": {
                           "type": "IntTag",
                           "value": 10387789
                         },
-                        "water_color": {
+                        "water_fog_color": {
                           "type": "IntTag",
-                          "value": 4159204
+                          "value": 329011
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -4101,6 +4323,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -4125,17 +4351,9 @@
                       "type": "FloatTag",
                       "value": 0.7
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.8
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -4149,7 +4367,7 @@
                             },
                             "sound": {
                               "type": "StringTag",
-                              "value": "minecraft:music.overworld.jungle_and_forest"
+                              "value": "minecraft:music.overworld.flower_forest"
                             },
                             "min_delay": {
                               "type": "IntTag",
@@ -4157,28 +4375,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 7972607
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -4191,6 +4413,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.8
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -4215,17 +4441,9 @@
                       "type": "FloatTag",
                       "value": 0.7
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.8
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -4239,7 +4457,7 @@
                             },
                             "sound": {
                               "type": "StringTag",
-                              "value": "minecraft:music.overworld.jungle_and_forest"
+                              "value": "minecraft:music.overworld.forest"
                             },
                             "min_delay": {
                               "type": "IntTag",
@@ -4247,28 +4465,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 7972607
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -4281,6 +4503,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.8
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -4305,10 +4531,6 @@
                       "type": "FloatTag",
                       "value": 0
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -4320,24 +4542,24 @@
                           "type": "IntTag",
                           "value": 8364543
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 3750089
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 3750089
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -4350,6 +4572,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -4378,17 +4604,9 @@
                       "type": "FloatTag",
                       "value": -0.7
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.9
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -4410,28 +4628,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 8756735
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -4444,6 +4666,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.9
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -4468,10 +4694,6 @@
                       "type": "FloatTag",
                       "value": 0
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -4483,24 +4705,24 @@
                           "type": "IntTag",
                           "value": 8364543
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 3750089
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 3750089
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -4513,6 +4735,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -4537,17 +4763,9 @@
                       "type": "FloatTag",
                       "value": -0.2
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.8
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -4569,28 +4787,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 8495359
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -4603,6 +4825,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.8
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -4627,10 +4853,6 @@
                       "type": "FloatTag",
                       "value": 0
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -4642,24 +4864,24 @@
                           "type": "IntTag",
                           "value": 8364543
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -4672,6 +4894,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -4696,17 +4922,9 @@
                       "type": "FloatTag",
                       "value": -0.7
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.9
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -4728,28 +4946,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 8756735
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -4762,6 +4984,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.9
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -4786,17 +5012,9 @@
                       "type": "FloatTag",
                       "value": 0.95
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.9
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -4810,7 +5028,7 @@
                             },
                             "sound": {
                               "type": "StringTag",
-                              "value": "minecraft:music.overworld.jungle_and_forest"
+                              "value": "minecraft:music.overworld.jungle"
                             },
                             "min_delay": {
                               "type": "IntTag",
@@ -4818,28 +5036,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 7842047
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -4852,6 +5074,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.9
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -4876,10 +5102,6 @@
                       "type": "FloatTag",
                       "value": 0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -4891,24 +5113,24 @@
                           "type": "IntTag",
                           "value": 8103167
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4566514
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4566514
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -4921,6 +5143,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -4945,17 +5171,9 @@
                       "type": "FloatTag",
                       "value": 0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -4977,28 +5195,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 8103167
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -5011,6 +5233,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -5034,10 +5260,6 @@
                     "temperature": {
                       "type": "FloatTag",
                       "value": 0.8
-                    },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.9
                     },
                     "effects": {
                       "type": "CompoundTag",
@@ -5071,32 +5293,32 @@
                           "type": "IntTag",
                           "value": 7907327
                         },
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 5077600
-                        },
                         "foliage_color": {
                           "type": "IntTag",
                           "value": 9285927
                         },
-                        "water_color": {
+                        "water_fog_color": {
                           "type": "IntTag",
-                          "value": 3832426
+                          "value": 5077600
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 3832426
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -5109,6 +5331,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.9
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -5133,17 +5359,9 @@
                       "type": "FloatTag",
                       "value": 0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.8
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -5165,28 +5383,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 8103167
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 937679
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 937679
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -5199,6 +5421,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.8
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -5223,10 +5449,6 @@
                       "type": "FloatTag",
                       "value": 0.9
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 1
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -5238,24 +5460,24 @@
                           "type": "IntTag",
                           "value": 7842047
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -5268,6 +5490,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 1
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -5291,10 +5517,6 @@
                     "temperature": {
                       "type": "FloatTag",
                       "value": 2
-                    },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0
                     },
                     "effects": {
                       "type": "CompoundTag",
@@ -5345,24 +5567,24 @@
                           "type": "IntTag",
                           "value": 329011
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 3344392
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -5375,6 +5597,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -5399,10 +5625,6 @@
                       "type": "FloatTag",
                       "value": 0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -5414,24 +5636,24 @@
                           "type": "IntTag",
                           "value": 8103167
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -5444,6 +5666,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -5468,17 +5694,9 @@
                       "type": "FloatTag",
                       "value": 0.6
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.6
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -5492,7 +5710,7 @@
                             },
                             "sound": {
                               "type": "StringTag",
-                              "value": "minecraft:music.overworld.jungle_and_forest"
+                              "value": "minecraft:music.overworld.forest"
                             },
                             "min_delay": {
                               "type": "IntTag",
@@ -5500,28 +5718,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 8037887
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -5534,6 +5756,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.6
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -5558,17 +5784,9 @@
                       "type": "FloatTag",
                       "value": 0.3
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.8
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -5590,28 +5808,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 8168447
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -5624,6 +5846,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.8
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -5648,17 +5874,9 @@
                       "type": "FloatTag",
                       "value": 0.25
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.8
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -5680,28 +5898,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 8233983
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -5714,6 +5936,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.8
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -5738,10 +5964,6 @@
                       "type": "FloatTag",
                       "value": 0.8
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.4
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -5753,24 +5975,24 @@
                           "type": "IntTag",
                           "value": 7907327
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -5783,6 +6005,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.4
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -5807,10 +6033,6 @@
                       "type": "FloatTag",
                       "value": 0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -5822,24 +6044,24 @@
                           "type": "IntTag",
                           "value": 8103167
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -5852,6 +6074,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -5876,10 +6102,6 @@
                       "type": "FloatTag",
                       "value": 2
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -5891,24 +6113,24 @@
                           "type": "IntTag",
                           "value": 7254527
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -5921,6 +6143,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -5945,10 +6171,6 @@
                       "type": "FloatTag",
                       "value": 2
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -5960,24 +6182,24 @@
                           "type": "IntTag",
                           "value": 7254527
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -5990,6 +6212,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -6014,10 +6240,6 @@
                       "type": "FloatTag",
                       "value": 0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -6029,24 +6251,24 @@
                           "type": "IntTag",
                           "value": 0
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 10518688
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -6059,6 +6281,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -6083,10 +6309,6 @@
                       "type": "FloatTag",
                       "value": 0.05
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.3
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -6098,24 +6320,24 @@
                           "type": "IntTag",
                           "value": 8364543
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4020182
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4020182
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -6128,6 +6350,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.3
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -6152,10 +6378,6 @@
                       "type": "FloatTag",
                       "value": 0
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -6167,24 +6389,24 @@
                           "type": "IntTag",
                           "value": 8364543
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -6197,6 +6419,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -6221,17 +6447,9 @@
                       "type": "FloatTag",
                       "value": -0.3
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.9
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -6253,28 +6471,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 8560639
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -6287,6 +6509,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.9
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -6311,10 +6537,6 @@
                       "type": "FloatTag",
                       "value": -0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.4
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -6326,24 +6548,24 @@
                           "type": "IntTag",
                           "value": 8625919
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4020182
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4020182
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -6356,6 +6578,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.4
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -6379,10 +6605,6 @@
                     "temperature": {
                       "type": "FloatTag",
                       "value": 2
-                    },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0
                     },
                     "effects": {
                       "type": "CompoundTag",
@@ -6451,24 +6673,24 @@
                           "type": "IntTag",
                           "value": 329011
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 1787717
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -6481,6 +6703,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -6505,17 +6731,9 @@
                       "type": "FloatTag",
                       "value": 0.95
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.8
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -6529,7 +6747,7 @@
                             },
                             "sound": {
                               "type": "StringTag",
-                              "value": "minecraft:music.overworld.jungle_and_forest"
+                              "value": "minecraft:music.overworld.sparse_jungle"
                             },
                             "min_delay": {
                               "type": "IntTag",
@@ -6537,28 +6755,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 7842047
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -6571,6 +6793,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.8
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -6595,17 +6821,9 @@
                       "type": "FloatTag",
                       "value": 1
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.3
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "music": {
                           "type": "CompoundTag",
                           "value": {
@@ -6627,28 +6845,32 @@
                             }
                           }
                         },
+                        "water_fog_color": {
+                          "type": "IntTag",
+                          "value": 329011
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 7776511
-                        },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -6661,6 +6883,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.3
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -6685,10 +6911,6 @@
                       "type": "FloatTag",
                       "value": 0.2
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.3
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -6700,24 +6922,24 @@
                           "type": "IntTag",
                           "value": 8233727
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -6730,6 +6952,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.3
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -6754,10 +6980,6 @@
                       "type": "FloatTag",
                       "value": 0.8
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.4
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -6769,24 +6991,24 @@
                           "type": "IntTag",
                           "value": 7907327
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -6799,6 +7021,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.4
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -6822,10 +7048,6 @@
                     "temperature": {
                       "type": "FloatTag",
                       "value": 0.8
-                    },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.9
                     },
                     "effects": {
                       "type": "CompoundTag",
@@ -6859,32 +7081,32 @@
                           "type": "IntTag",
                           "value": 7907327
                         },
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 2302743
-                        },
                         "foliage_color": {
                           "type": "IntTag",
                           "value": 6975545
                         },
-                        "water_color": {
+                        "water_fog_color": {
                           "type": "IntTag",
-                          "value": 6388580
+                          "value": 2302743
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 6388580
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -6897,6 +7119,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.9
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -6921,10 +7147,6 @@
                       "type": "FloatTag",
                       "value": 0.25
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.8
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -6936,24 +7158,24 @@
                           "type": "IntTag",
                           "value": 8233983
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -6966,6 +7188,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.8
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -6990,10 +7216,6 @@
                       "type": "FloatTag",
                       "value": 0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -7005,24 +7227,24 @@
                           "type": "IntTag",
                           "value": 0
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 10518688
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -7035,6 +7257,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -7059,10 +7285,6 @@
                       "type": "FloatTag",
                       "value": 0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -7074,24 +7296,24 @@
                           "type": "IntTag",
                           "value": 8103167
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -7104,6 +7326,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -7128,10 +7354,6 @@
                       "type": "FloatTag",
                       "value": 0.5
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.5
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -7143,24 +7365,24 @@
                           "type": "IntTag",
                           "value": 8103167
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4445678
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4445678
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -7173,6 +7395,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.5
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -7196,10 +7422,6 @@
                     "temperature": {
                       "type": "FloatTag",
                       "value": 2
-                    },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0
                     },
                     "effects": {
                       "type": "CompoundTag",
@@ -7268,24 +7490,24 @@
                           "type": "IntTag",
                           "value": 329011
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 1705242
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -7298,6 +7520,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -7322,10 +7548,6 @@
                       "type": "FloatTag",
                       "value": 0.2
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.3
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -7337,24 +7559,24 @@
                           "type": "IntTag",
                           "value": 8233727
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -7367,6 +7589,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.3
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -7391,10 +7617,6 @@
                       "type": "FloatTag",
                       "value": 0.2
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.3
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -7406,24 +7628,24 @@
                           "type": "IntTag",
                           "value": 8233727
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -7436,6 +7658,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.3
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -7460,10 +7686,6 @@
                       "type": "FloatTag",
                       "value": 0.2
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0.3
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -7475,24 +7697,24 @@
                           "type": "IntTag",
                           "value": 8233727
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -7505,6 +7727,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0.3
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -7529,10 +7755,6 @@
                       "type": "FloatTag",
                       "value": 2
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
@@ -7544,24 +7766,24 @@
                           "type": "IntTag",
                           "value": 7254527
                         },
-                        "water_color": {
-                          "type": "IntTag",
-                          "value": 4159204
-                        },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -7574,6 +7796,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -7598,13 +7824,30 @@
                       "type": "FloatTag",
                       "value": 2
                     },
-                    "downfall": {
-                      "type": "FloatTag",
-                      "value": 0
-                    },
                     "effects": {
                       "type": "CompoundTag",
                       "value": {
+                        "music": {
+                          "type": "CompoundTag",
+                          "value": {
+                            "replace_current_music": {
+                              "type": "ByteTag",
+                              "value": 0
+                            },
+                            "max_delay": {
+                              "type": "IntTag",
+                              "value": 24000
+                            },
+                            "sound": {
+                              "type": "StringTag",
+                              "value": "minecraft:music.overworld.badlands"
+                            },
+                            "min_delay": {
+                              "type": "IntTag",
+                              "value": 12000
+                            }
+                          }
+                        },
                         "sky_color": {
                           "type": "IntTag",
                           "value": 7254527
@@ -7613,32 +7856,32 @@
                           "type": "IntTag",
                           "value": 9470285
                         },
-                        "water_fog_color": {
-                          "type": "IntTag",
-                          "value": 329011
-                        },
                         "foliage_color": {
                           "type": "IntTag",
                           "value": 10387789
                         },
-                        "water_color": {
+                        "water_fog_color": {
                           "type": "IntTag",
-                          "value": 4159204
+                          "value": 329011
                         },
                         "fog_color": {
                           "type": "IntTag",
                           "value": 12638463
                         },
+                        "water_color": {
+                          "type": "IntTag",
+                          "value": 4159204
+                        },
                         "mood_sound": {
                           "type": "CompoundTag",
                           "value": {
-                            "offset": {
-                              "type": "DoubleTag",
-                              "value": 2
-                            },
                             "tick_delay": {
                               "type": "IntTag",
                               "value": 6000
+                            },
+                            "offset": {
+                              "type": "DoubleTag",
+                              "value": 2
                             },
                             "block_search_extent": {
                               "type": "IntTag",
@@ -7651,6 +7894,10 @@
                           }
                         }
                       }
+                    },
+                    "downfall": {
+                      "type": "FloatTag",
+                      "value": 0
                     },
                     "has_precipitation": {
                       "type": "ByteTag",
@@ -7688,6 +7935,10 @@
                 "element": {
                   "type": "CompoundTag",
                   "value": {
+                    "item_model_index": {
+                      "type": "FloatTag",
+                      "value": 1
+                    },
                     "description": {
                       "type": "CompoundTag",
                       "value": {
@@ -7700,10 +7951,6 @@
                           "value": "trim_material.minecraft.amethyst"
                         }
                       }
-                    },
-                    "item_model_index": {
-                      "type": "FloatTag",
-                      "value": 1
                     },
                     "ingredient": {
                       "type": "StringTag",
@@ -7728,6 +7975,10 @@
                 "element": {
                   "type": "CompoundTag",
                   "value": {
+                    "item_model_index": {
+                      "type": "FloatTag",
+                      "value": 0.5
+                    },
                     "description": {
                       "type": "CompoundTag",
                       "value": {
@@ -7740,10 +7991,6 @@
                           "value": "trim_material.minecraft.copper"
                         }
                       }
-                    },
-                    "item_model_index": {
-                      "type": "FloatTag",
-                      "value": 0.5
                     },
                     "ingredient": {
                       "type": "StringTag",
@@ -7768,6 +8015,19 @@
                 "element": {
                   "type": "CompoundTag",
                   "value": {
+                    "override_armor_materials": {
+                      "type": "CompoundTag",
+                      "value": {
+                        "diamond": {
+                          "type": "StringTag",
+                          "value": "diamond_darker"
+                        }
+                      }
+                    },
+                    "item_model_index": {
+                      "type": "FloatTag",
+                      "value": 0.8
+                    },
                     "description": {
                       "type": "CompoundTag",
                       "value": {
@@ -7778,19 +8038,6 @@
                         "translate": {
                           "type": "StringTag",
                           "value": "trim_material.minecraft.diamond"
-                        }
-                      }
-                    },
-                    "item_model_index": {
-                      "type": "FloatTag",
-                      "value": 0.8
-                    },
-                    "override_armor_materials": {
-                      "type": "CompoundTag",
-                      "value": {
-                        "diamond": {
-                          "type": "StringTag",
-                          "value": "diamond_darker"
                         }
                       }
                     },
@@ -7817,6 +8064,10 @@
                 "element": {
                   "type": "CompoundTag",
                   "value": {
+                    "item_model_index": {
+                      "type": "FloatTag",
+                      "value": 0.7
+                    },
                     "description": {
                       "type": "CompoundTag",
                       "value": {
@@ -7829,10 +8080,6 @@
                           "value": "trim_material.minecraft.emerald"
                         }
                       }
-                    },
-                    "item_model_index": {
-                      "type": "FloatTag",
-                      "value": 0.7
                     },
                     "ingredient": {
                       "type": "StringTag",
@@ -7857,6 +8104,19 @@
                 "element": {
                   "type": "CompoundTag",
                   "value": {
+                    "override_armor_materials": {
+                      "type": "CompoundTag",
+                      "value": {
+                        "gold": {
+                          "type": "StringTag",
+                          "value": "gold_darker"
+                        }
+                      }
+                    },
+                    "item_model_index": {
+                      "type": "FloatTag",
+                      "value": 0.6
+                    },
                     "description": {
                       "type": "CompoundTag",
                       "value": {
@@ -7867,19 +8127,6 @@
                         "translate": {
                           "type": "StringTag",
                           "value": "trim_material.minecraft.gold"
-                        }
-                      }
-                    },
-                    "item_model_index": {
-                      "type": "FloatTag",
-                      "value": 0.6
-                    },
-                    "override_armor_materials": {
-                      "type": "CompoundTag",
-                      "value": {
-                        "gold": {
-                          "type": "StringTag",
-                          "value": "gold_darker"
                         }
                       }
                     },
@@ -7906,6 +8153,19 @@
                 "element": {
                   "type": "CompoundTag",
                   "value": {
+                    "override_armor_materials": {
+                      "type": "CompoundTag",
+                      "value": {
+                        "iron": {
+                          "type": "StringTag",
+                          "value": "iron_darker"
+                        }
+                      }
+                    },
+                    "item_model_index": {
+                      "type": "FloatTag",
+                      "value": 0.2
+                    },
                     "description": {
                       "type": "CompoundTag",
                       "value": {
@@ -7916,19 +8176,6 @@
                         "translate": {
                           "type": "StringTag",
                           "value": "trim_material.minecraft.iron"
-                        }
-                      }
-                    },
-                    "item_model_index": {
-                      "type": "FloatTag",
-                      "value": 0.2
-                    },
-                    "override_armor_materials": {
-                      "type": "CompoundTag",
-                      "value": {
-                        "iron": {
-                          "type": "StringTag",
-                          "value": "iron_darker"
                         }
                       }
                     },
@@ -7955,6 +8202,10 @@
                 "element": {
                   "type": "CompoundTag",
                   "value": {
+                    "item_model_index": {
+                      "type": "FloatTag",
+                      "value": 0.9
+                    },
                     "description": {
                       "type": "CompoundTag",
                       "value": {
@@ -7967,10 +8218,6 @@
                           "value": "trim_material.minecraft.lapis"
                         }
                       }
-                    },
-                    "item_model_index": {
-                      "type": "FloatTag",
-                      "value": 0.9
                     },
                     "ingredient": {
                       "type": "StringTag",
@@ -7995,6 +8242,19 @@
                 "element": {
                   "type": "CompoundTag",
                   "value": {
+                    "override_armor_materials": {
+                      "type": "CompoundTag",
+                      "value": {
+                        "netherite": {
+                          "type": "StringTag",
+                          "value": "netherite_darker"
+                        }
+                      }
+                    },
+                    "item_model_index": {
+                      "type": "FloatTag",
+                      "value": 0.3
+                    },
                     "description": {
                       "type": "CompoundTag",
                       "value": {
@@ -8005,19 +8265,6 @@
                         "translate": {
                           "type": "StringTag",
                           "value": "trim_material.minecraft.netherite"
-                        }
-                      }
-                    },
-                    "item_model_index": {
-                      "type": "FloatTag",
-                      "value": 0.3
-                    },
-                    "override_armor_materials": {
-                      "type": "CompoundTag",
-                      "value": {
-                        "netherite": {
-                          "type": "StringTag",
-                          "value": "netherite_darker"
                         }
                       }
                     },
@@ -8044,6 +8291,10 @@
                 "element": {
                   "type": "CompoundTag",
                   "value": {
+                    "item_model_index": {
+                      "type": "FloatTag",
+                      "value": 0.1
+                    },
                     "description": {
                       "type": "CompoundTag",
                       "value": {
@@ -8056,10 +8307,6 @@
                           "value": "trim_material.minecraft.quartz"
                         }
                       }
-                    },
-                    "item_model_index": {
-                      "type": "FloatTag",
-                      "value": 0.1
                     },
                     "ingredient": {
                       "type": "StringTag",
@@ -8084,6 +8331,10 @@
                 "element": {
                   "type": "CompoundTag",
                   "value": {
+                    "item_model_index": {
+                      "type": "FloatTag",
+                      "value": 0.4
+                    },
                     "description": {
                       "type": "CompoundTag",
                       "value": {
@@ -8096,10 +8347,6 @@
                           "value": "trim_material.minecraft.redstone"
                         }
                       }
-                    },
-                    "item_model_index": {
-                      "type": "FloatTag",
-                      "value": 0.4
                     },
                     "ingredient": {
                       "type": "StringTag",

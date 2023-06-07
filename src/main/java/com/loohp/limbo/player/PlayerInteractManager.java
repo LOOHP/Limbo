@@ -33,6 +33,7 @@ import net.querz.mca.Chunk;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -123,7 +124,7 @@ public class PlayerInteractManager {
 			if (!currentViewing.containsKey(chunkPos)) {
 				Chunk chunk = chunkPos.getWorld().getChunkAt(chunkPos.getChunkX(), chunkPos.getChunkZ());
 				if (chunk == null) {
-					ClientboundLevelChunkWithLightPacket chunkdata = new ClientboundLevelChunkWithLightPacket(chunkPos.getChunkX(), chunkPos.getChunkZ(), entry.getValue(), world.getEnvironment(), true, new ArrayList<>(), new ArrayList<>());
+					ClientboundLevelChunkWithLightPacket chunkdata = new ClientboundLevelChunkWithLightPacket(chunkPos.getChunkX(), chunkPos.getChunkZ(), entry.getValue(), world.getEnvironment(), Collections.emptyList(), Collections.emptyList());
 					player.clientConnection.sendPacket(chunkdata);
 				} else {
 					List<Byte[]> blockChunk = world.getLightEngineBlock().getBlockLightBitMask(chunkPos.getChunkX(), chunkPos.getChunkZ());
@@ -137,7 +138,7 @@ public class PlayerInteractManager {
 					if (skyChunk == null) {
 						skyChunk = new ArrayList<>();
 					}
-					ClientboundLevelChunkWithLightPacket chunkdata = new ClientboundLevelChunkWithLightPacket(chunkPos.getChunkX(), chunkPos.getChunkZ(), chunk, world.getEnvironment(), true, skyChunk, blockChunk);
+					ClientboundLevelChunkWithLightPacket chunkdata = new ClientboundLevelChunkWithLightPacket(chunkPos.getChunkX(), chunkPos.getChunkZ(), chunk, world.getEnvironment(), skyChunk, blockChunk);
 					player.clientConnection.sendPacket(chunkdata);
 				}
 			}

@@ -49,8 +49,9 @@ public class PacketPlayOutLogin extends PacketOut {
 	private boolean enableRespawnScreen;
 	private boolean isDebug;
 	private boolean isFlat;
+	private int portalCooldown;
 
-	public PacketPlayOutLogin(int entityId, boolean isHardcore, GameMode gamemode, List<World> worlds, CompoundTag dimensionCodec, World world, long hashedSeed, byte maxPlayers, int viewDistance, int simulationDistance, boolean reducedDebugInfo, boolean enableRespawnScreen, boolean isDebug, boolean isFlat) {
+	public PacketPlayOutLogin(int entityId, boolean isHardcore, GameMode gamemode, List<World> worlds, CompoundTag dimensionCodec, World world, long hashedSeed, byte maxPlayers, int viewDistance, int simulationDistance, boolean reducedDebugInfo, boolean enableRespawnScreen, boolean isDebug, boolean isFlat, int portalCooldown) {
 		this.entityId = entityId;
 		this.isHardcore = isHardcore;
 		this.gamemode = gamemode;
@@ -66,6 +67,7 @@ public class PacketPlayOutLogin extends PacketOut {
 		this.enableRespawnScreen = enableRespawnScreen;
 		this.isDebug = isDebug;
 		this.isFlat = isFlat;
+		this.portalCooldown = portalCooldown;
 	}
 
 	public int getEntityId() {
@@ -154,6 +156,7 @@ public class PacketPlayOutLogin extends PacketOut {
 		output.writeBoolean(isDebug);
 		output.writeBoolean(isFlat);
 		output.writeBoolean(false);
+		DataTypeIO.writeVarInt(output, portalCooldown);
 
 		return buffer.toByteArray();
 	}

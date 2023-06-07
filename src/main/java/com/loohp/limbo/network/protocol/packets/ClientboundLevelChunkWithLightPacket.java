@@ -44,7 +44,6 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 	private int chunkZ;
 	private Chunk chunk;
 	private Environment environment;
-	private boolean trustEdges;
 	private long[] skyLightBitMasks;
 	private long[] blockLightBitMasks;
 	private long[] skyLightBitMasksEmpty;
@@ -52,12 +51,11 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 	private List<Byte[]> skylightArrays;
 	private List<Byte[]> blocklightArrays;
 
-	public ClientboundLevelChunkWithLightPacket(int chunkX, int chunkZ, Chunk chunk, Environment environment, boolean trustEdges, List<Byte[]> skylightArrays, List<Byte[]> blocklightArrays) {
+	public ClientboundLevelChunkWithLightPacket(int chunkX, int chunkZ, Chunk chunk, Environment environment, List<Byte[]> skylightArrays, List<Byte[]> blocklightArrays) {
 		this.chunkX = chunkX;
 		this.chunkZ = chunkZ;
 		this.chunk = chunk;
 		this.environment = environment;
-		this.trustEdges = trustEdges;
 		this.skylightArrays = skylightArrays;
 		this.blocklightArrays = blocklightArrays;
 
@@ -94,10 +92,6 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 
 	public Environment getEnvironment() {
 		return environment;
-	}
-
-	public boolean isTrustEdges() {
-		return trustEdges;
 	}
 
 	public long[] getSkyLightBitMasks() {
@@ -258,7 +252,6 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 			DataTypeIO.writeCompoundTag(output, each);
 		}
 
-		output.writeBoolean(trustEdges);
 		DataTypeIO.writeVarInt(output, skyLightBitMasks.length);
 		for (long l : skyLightBitMasks) {
 			output.writeLong(l);

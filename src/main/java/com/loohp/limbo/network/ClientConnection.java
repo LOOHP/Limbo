@@ -572,11 +572,11 @@ public class ClientConnection extends Thread {
                 PlayerSpawnEvent spawnEvent = Limbo.getInstance().getEventsManager().callEvent(new PlayerSpawnEvent(player, worldSpawn));
                 worldSpawn = spawnEvent.getSpawnLocation();
                 World world = worldSpawn.getWorld();
-                
-                PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, properties.getDefaultGamemode(), Limbo.getInstance().getWorlds(), Limbo.getInstance().getDimensionRegistry().getCodec(), world, 0, (byte) properties.getMaxPlayers(), 8, 8, properties.isReducedDebugInfo(), true, false, true);
+
+                PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, properties.getDefaultGamemode(), Limbo.getInstance().getWorlds(), Limbo.getInstance().getDimensionRegistry().getCodec(), world, 0, (byte) properties.getMaxPlayers(), 8, 8, properties.isReducedDebugInfo(), true, false, true, 0);
                 sendPacket(join);
                 Limbo.getInstance().getUnsafe().a(player, properties.getDefaultGamemode());
-                
+
                 ByteArrayOutputStream brandOut = new ByteArrayOutputStream();
                 DataTypeIO.writeString(new DataOutputStream(brandOut), properties.getServerModName(), StandardCharsets.UTF_8);
                 sendPluginMessage(BRAND_ANNOUNCE_CHANNEL, brandOut.toByteArray());
@@ -598,9 +598,9 @@ public class ClientConnection extends Thread {
                 
                 String str = (properties.isLogPlayerIPAddresses() ? inetAddress.getHostName() : "<ip address withheld>") + ":" + clientSocket.getPort() + "|" + player.getName() + "(" + player.getUniqueId() + ")";
                 Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had connected to the Limbo server!");
-                
+
                 player.playerInteractManager.update();
-                
+
                 PacketPlayOutDeclareCommands declare = DeclareCommands.getDeclareCommandsPacket(player);
                 if (declare != null) {
                     sendPacket(declare);
