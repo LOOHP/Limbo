@@ -24,7 +24,6 @@ import com.loohp.limbo.utils.GameMode;
 import com.loohp.limbo.world.Environment;
 import com.loohp.limbo.world.World;
 import net.kyori.adventure.key.Key;
-import net.querz.nbt.tag.CompoundTag;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -34,37 +33,37 @@ import java.util.List;
 
 public class PacketPlayOutLogin extends PacketOut {
 	
-	private int entityId;
-	private boolean isHardcore;
-	private GameMode gamemode;
-	private List<World> worlds;
-	private CompoundTag dimensionCodec;
-	private Environment dimension;
-	private World world;
-	private long hashedSeed;
-	private byte maxPlayers;
-	private int viewDistance;
-	private int simulationDistance;
-	private boolean reducedDebugInfo;
-	private boolean enableRespawnScreen;
-	private boolean isDebug;
-	private boolean isFlat;
-	private int portalCooldown;
+	private final int entityId;
+	private final boolean isHardcore;
+	private final List<World> worlds;
+	private final byte maxPlayers;
+	private final int viewDistance;
+	private final int simulationDistance;
+	private final boolean reducedDebugInfo;
+	private final boolean enableRespawnScreen;
+	private final boolean doLimitedCrafting;
+	private final Environment dimension;
+	private final World world;
+	private final long hashedSeed;
+	private final GameMode gamemode;
+	private final boolean isDebug;
+	private final boolean isFlat;
+	private final int portalCooldown;
 
-	public PacketPlayOutLogin(int entityId, boolean isHardcore, GameMode gamemode, List<World> worlds, CompoundTag dimensionCodec, World world, long hashedSeed, byte maxPlayers, int viewDistance, int simulationDistance, boolean reducedDebugInfo, boolean enableRespawnScreen, boolean isDebug, boolean isFlat, int portalCooldown) {
+	public PacketPlayOutLogin(int entityId, boolean isHardcore, List<World> worlds, byte maxPlayers, int viewDistance, int simulationDistance, boolean reducedDebugInfo, boolean enableRespawnScreen, boolean doLimitedCrafting, Environment dimension, World world, long hashedSeed, GameMode gamemode, boolean isDebug, boolean isFlat, int portalCooldown) {
 		this.entityId = entityId;
 		this.isHardcore = isHardcore;
-		this.gamemode = gamemode;
 		this.worlds = worlds;
-		this.dimensionCodec = dimensionCodec;
-		this.dimension = world.getEnvironment();
-		this.world = world;
-		this.hashedSeed = hashedSeed;
 		this.maxPlayers = maxPlayers;
 		this.viewDistance = viewDistance;
 		this.simulationDistance = simulationDistance;
 		this.reducedDebugInfo = reducedDebugInfo;
 		this.enableRespawnScreen = enableRespawnScreen;
+		this.doLimitedCrafting = doLimitedCrafting;
+		this.dimension = dimension;
+		this.world = world;
+		this.hashedSeed = hashedSeed;
+		this.gamemode = gamemode;
 		this.isDebug = isDebug;
 		this.isFlat = isFlat;
 		this.portalCooldown = portalCooldown;
@@ -78,16 +77,32 @@ public class PacketPlayOutLogin extends PacketOut {
 		return isHardcore;
 	}
 
-	public GameMode getGamemode() {
-		return gamemode;
-	}
-
-	public List<World> getWorldsNames() {
+	public List<World> getWorlds() {
 		return worlds;
 	}
 
-	public CompoundTag getDimensionCodec() {
-		return dimensionCodec;
+	public byte getMaxPlayers() {
+		return maxPlayers;
+	}
+
+	public int getViewDistance() {
+		return viewDistance;
+	}
+
+	public int getSimulationDistance() {
+		return simulationDistance;
+	}
+
+	public boolean isReducedDebugInfo() {
+		return reducedDebugInfo;
+	}
+
+	public boolean isEnableRespawnScreen() {
+		return enableRespawnScreen;
+	}
+
+	public boolean isDoLimitedCrafting() {
+		return doLimitedCrafting;
 	}
 
 	public Environment getDimension() {
@@ -102,24 +117,8 @@ public class PacketPlayOutLogin extends PacketOut {
 		return hashedSeed;
 	}
 
-	public byte getMaxPlayers() {
-		return maxPlayers;
-	}
-
-	public int getViewDistance() {
-		return viewDistance;
-	}
-	
-	public int getSimulationDistance() {
-		return simulationDistance;
-	}
-
-	public boolean isReducedDebugInfo() {
-		return reducedDebugInfo;
-	}
-
-	public boolean isEnableRespawnScreen() {
-		return enableRespawnScreen;
+	public GameMode getGamemode() {
+		return gamemode;
 	}
 
 	public boolean isDebug() {
@@ -129,7 +128,11 @@ public class PacketPlayOutLogin extends PacketOut {
 	public boolean isFlat() {
 		return isFlat;
 	}
-	
+
+	public int getPortalCooldown() {
+		return portalCooldown;
+	}
+
 	@Override
 	public byte[] serializePacket() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -138,21 +141,21 @@ public class PacketPlayOutLogin extends PacketOut {
 		output.writeByte(Packet.getPlayOut().get(getClass()));
 		output.writeInt(entityId);
 		output.writeBoolean(isHardcore);
-        output.writeByte((byte) gamemode.getId());
-		output.writeByte(-1);
 		DataTypeIO.writeVarInt(output, worlds.size());
 		for (World world : worlds) {
 			DataTypeIO.writeString(output, Key.key(world.getName()).toString(), StandardCharsets.UTF_8);
 		}
-		DataTypeIO.writeCompoundTag(output, dimensionCodec);
-		DataTypeIO.writeString(output, world.getEnvironment().getKey().toString(), StandardCharsets.UTF_8);
-		DataTypeIO.writeString(output, Key.key(world.getName()).toString(), StandardCharsets.UTF_8);
-		output.writeLong(hashedSeed);
 		DataTypeIO.writeVarInt(output, maxPlayers);
 		DataTypeIO.writeVarInt(output, viewDistance);
 		DataTypeIO.writeVarInt(output, simulationDistance);
 		output.writeBoolean(reducedDebugInfo);
 		output.writeBoolean(enableRespawnScreen);
+		output.writeBoolean(doLimitedCrafting);
+		DataTypeIO.writeString(output, world.getEnvironment().getKey().toString(), StandardCharsets.UTF_8);
+		DataTypeIO.writeString(output, Key.key(world.getName()).toString(), StandardCharsets.UTF_8);
+		output.writeLong(hashedSeed);
+        output.writeByte((byte) gamemode.getId());
+		output.writeByte(-1);
 		output.writeBoolean(isDebug);
 		output.writeBoolean(isFlat);
 		output.writeBoolean(false);

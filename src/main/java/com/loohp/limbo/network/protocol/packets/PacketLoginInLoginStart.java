@@ -24,36 +24,27 @@ import com.loohp.limbo.utils.DataTypeIO;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 import java.util.UUID;
 
 public class PacketLoginInLoginStart extends PacketIn {
 	
-	private String username;
-	private Optional<UUID> uuid;
+	private final String username;
+	private final UUID uuid;
 	
-	public PacketLoginInLoginStart(String username) {
+	public PacketLoginInLoginStart(String username, UUID uuid) {
 		this.username = username;
+		this.uuid = uuid;
 	}
 	
 	public PacketLoginInLoginStart(DataInputStream in) throws IOException {
-		this.username = DataTypeIO.readString(in, StandardCharsets.UTF_8);
-		if (in.readBoolean()) {
-			this.uuid = Optional.of(DataTypeIO.readUUID(in));
-		} else {
-			this.uuid = Optional.empty();
-		}
+		this(DataTypeIO.readString(in, StandardCharsets.UTF_8), DataTypeIO.readUUID(in));
 	}
 
 	public String getUsername() {
 		return username;
 	}
 
-	public boolean hasUniqueId() {
-		return uuid.isPresent();
-	}
-
 	public UUID getUniqueId() {
-		return uuid.orElse(null);
+		return uuid;
 	}
 }

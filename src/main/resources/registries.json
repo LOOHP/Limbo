@@ -111,6 +111,9 @@
       "minecraft:generic.luck": {
         "protocol_id": 10
       },
+      "minecraft:generic.max_absorption": {
+        "protocol_id": 11
+      },
       "minecraft:generic.max_health": {
         "protocol_id": 0
       },
@@ -118,10 +121,10 @@
         "protocol_id": 3
       },
       "minecraft:horse.jump_strength": {
-        "protocol_id": 12
+        "protocol_id": 13
       },
       "minecraft:zombie.spawn_reinforcements": {
-        "protocol_id": 11
+        "protocol_id": 12
       }
     },
     "protocol_id": 20
@@ -4615,6 +4618,9 @@
       "minecraft:elytra_glide": {
         "protocol_id": 13
       },
+      "minecraft:entity_action": {
+        "protocol_id": 20
+      },
       "minecraft:entity_damage": {
         "protocol_id": 14
       },
@@ -4633,59 +4639,53 @@
       "minecraft:entity_place": {
         "protocol_id": 19
       },
-      "minecraft:entity_roar": {
-        "protocol_id": 20
-      },
-      "minecraft:entity_shake": {
+      "minecraft:equip": {
         "protocol_id": 21
       },
-      "minecraft:equip": {
+      "minecraft:explode": {
         "protocol_id": 22
       },
-      "minecraft:explode": {
+      "minecraft:flap": {
         "protocol_id": 23
       },
-      "minecraft:flap": {
+      "minecraft:fluid_pickup": {
         "protocol_id": 24
       },
-      "minecraft:fluid_pickup": {
+      "minecraft:fluid_place": {
         "protocol_id": 25
       },
-      "minecraft:fluid_place": {
+      "minecraft:hit_ground": {
         "protocol_id": 26
       },
-      "minecraft:hit_ground": {
+      "minecraft:instrument_play": {
         "protocol_id": 27
       },
-      "minecraft:instrument_play": {
+      "minecraft:item_interact_finish": {
         "protocol_id": 28
       },
-      "minecraft:item_interact_finish": {
+      "minecraft:item_interact_start": {
         "protocol_id": 29
       },
-      "minecraft:item_interact_start": {
+      "minecraft:jukebox_play": {
         "protocol_id": 30
       },
-      "minecraft:jukebox_play": {
+      "minecraft:jukebox_stop_play": {
         "protocol_id": 31
       },
-      "minecraft:jukebox_stop_play": {
+      "minecraft:lightning_strike": {
         "protocol_id": 32
       },
-      "minecraft:lightning_strike": {
+      "minecraft:note_block_play": {
         "protocol_id": 33
       },
-      "minecraft:note_block_play": {
+      "minecraft:prime_fuse": {
         "protocol_id": 34
       },
-      "minecraft:prime_fuse": {
+      "minecraft:projectile_land": {
         "protocol_id": 35
       },
-      "minecraft:projectile_land": {
-        "protocol_id": 36
-      },
       "minecraft:projectile_shoot": {
-        "protocol_id": 37
+        "protocol_id": 36
       },
       "minecraft:resonate_1": {
         "protocol_id": 45
@@ -4733,24 +4733,27 @@
         "protocol_id": 53
       },
       "minecraft:sculk_sensor_tendrils_clicking": {
-        "protocol_id": 38
+        "protocol_id": 37
       },
       "minecraft:shear": {
-        "protocol_id": 39
+        "protocol_id": 38
       },
       "minecraft:shriek": {
-        "protocol_id": 40
+        "protocol_id": 39
       },
       "minecraft:splash": {
-        "protocol_id": 41
+        "protocol_id": 40
       },
       "minecraft:step": {
-        "protocol_id": 42
+        "protocol_id": 41
       },
       "minecraft:swim": {
-        "protocol_id": 43
+        "protocol_id": 42
       },
       "minecraft:teleport": {
+        "protocol_id": 43
+      },
+      "minecraft:unequip": {
         "protocol_id": 44
       }
     },
@@ -8702,6 +8705,9 @@
       "minecraft:reference": {
         "protocol_id": 25
       },
+      "minecraft:sequence": {
+        "protocol_id": 26
+      },
       "minecraft:set_attributes": {
         "protocol_id": 8
       },
@@ -9189,103 +9195,103 @@
   "minecraft:mob_effect": {
     "entries": {
       "minecraft:absorption": {
-        "protocol_id": 22
-      },
-      "minecraft:bad_omen": {
-        "protocol_id": 31
-      },
-      "minecraft:blindness": {
-        "protocol_id": 15
-      },
-      "minecraft:conduit_power": {
-        "protocol_id": 29
-      },
-      "minecraft:darkness": {
-        "protocol_id": 33
-      },
-      "minecraft:dolphins_grace": {
-        "protocol_id": 30
-      },
-      "minecraft:fire_resistance": {
-        "protocol_id": 12
-      },
-      "minecraft:glowing": {
-        "protocol_id": 24
-      },
-      "minecraft:haste": {
-        "protocol_id": 3
-      },
-      "minecraft:health_boost": {
         "protocol_id": 21
       },
-      "minecraft:hero_of_the_village": {
-        "protocol_id": 32
+      "minecraft:bad_omen": {
+        "protocol_id": 30
       },
-      "minecraft:hunger": {
-        "protocol_id": 17
-      },
-      "minecraft:instant_damage": {
-        "protocol_id": 7
-      },
-      "minecraft:instant_health": {
-        "protocol_id": 6
-      },
-      "minecraft:invisibility": {
+      "minecraft:blindness": {
         "protocol_id": 14
       },
-      "minecraft:jump_boost": {
-        "protocol_id": 8
-      },
-      "minecraft:levitation": {
-        "protocol_id": 25
-      },
-      "minecraft:luck": {
-        "protocol_id": 26
-      },
-      "minecraft:mining_fatigue": {
-        "protocol_id": 4
-      },
-      "minecraft:nausea": {
-        "protocol_id": 9
-      },
-      "minecraft:night_vision": {
-        "protocol_id": 16
-      },
-      "minecraft:poison": {
-        "protocol_id": 19
-      },
-      "minecraft:regeneration": {
-        "protocol_id": 10
-      },
-      "minecraft:resistance": {
-        "protocol_id": 11
-      },
-      "minecraft:saturation": {
-        "protocol_id": 23
-      },
-      "minecraft:slow_falling": {
+      "minecraft:conduit_power": {
         "protocol_id": 28
       },
-      "minecraft:slowness": {
+      "minecraft:darkness": {
+        "protocol_id": 32
+      },
+      "minecraft:dolphins_grace": {
+        "protocol_id": 29
+      },
+      "minecraft:fire_resistance": {
+        "protocol_id": 11
+      },
+      "minecraft:glowing": {
+        "protocol_id": 23
+      },
+      "minecraft:haste": {
         "protocol_id": 2
       },
-      "minecraft:speed": {
-        "protocol_id": 1
+      "minecraft:health_boost": {
+        "protocol_id": 20
       },
-      "minecraft:strength": {
+      "minecraft:hero_of_the_village": {
+        "protocol_id": 31
+      },
+      "minecraft:hunger": {
+        "protocol_id": 16
+      },
+      "minecraft:instant_damage": {
+        "protocol_id": 6
+      },
+      "minecraft:instant_health": {
         "protocol_id": 5
       },
-      "minecraft:unluck": {
-        "protocol_id": 27
-      },
-      "minecraft:water_breathing": {
+      "minecraft:invisibility": {
         "protocol_id": 13
       },
-      "minecraft:weakness": {
+      "minecraft:jump_boost": {
+        "protocol_id": 7
+      },
+      "minecraft:levitation": {
+        "protocol_id": 24
+      },
+      "minecraft:luck": {
+        "protocol_id": 25
+      },
+      "minecraft:mining_fatigue": {
+        "protocol_id": 3
+      },
+      "minecraft:nausea": {
+        "protocol_id": 8
+      },
+      "minecraft:night_vision": {
+        "protocol_id": 15
+      },
+      "minecraft:poison": {
         "protocol_id": 18
       },
+      "minecraft:regeneration": {
+        "protocol_id": 9
+      },
+      "minecraft:resistance": {
+        "protocol_id": 10
+      },
+      "minecraft:saturation": {
+        "protocol_id": 22
+      },
+      "minecraft:slow_falling": {
+        "protocol_id": 27
+      },
+      "minecraft:slowness": {
+        "protocol_id": 1
+      },
+      "minecraft:speed": {
+        "protocol_id": 0
+      },
+      "minecraft:strength": {
+        "protocol_id": 4
+      },
+      "minecraft:unluck": {
+        "protocol_id": 26
+      },
+      "minecraft:water_breathing": {
+        "protocol_id": 12
+      },
+      "minecraft:weakness": {
+        "protocol_id": 17
+      },
       "minecraft:wither": {
-        "protocol_id": 20
+        "protocol_id": 19
       }
     },
     "protocol_id": 3
@@ -11129,7 +11135,7 @@
         "protocol_id": 700
       },
       "minecraft:block.lily_pad.place": {
-        "protocol_id": 1362
+        "protocol_id": 1368
       },
       "minecraft:block.lodestone.break": {
         "protocol_id": 714
@@ -11795,7 +11801,7 @@
         "protocol_id": 1150
       },
       "minecraft:block.sign.waxed_interact_fail": {
-        "protocol_id": 1393
+        "protocol_id": 1399
       },
       "minecraft:block.slime_block.break": {
         "protocol_id": 1183
@@ -11893,6 +11899,24 @@
       "minecraft:block.soul_soil.step": {
         "protocol_id": 1201
       },
+      "minecraft:block.sponge.absorb": {
+        "protocol_id": 1263
+      },
+      "minecraft:block.sponge.break": {
+        "protocol_id": 1258
+      },
+      "minecraft:block.sponge.fall": {
+        "protocol_id": 1259
+      },
+      "minecraft:block.sponge.hit": {
+        "protocol_id": 1260
+      },
+      "minecraft:block.sponge.place": {
+        "protocol_id": 1261
+      },
+      "minecraft:block.sponge.step": {
+        "protocol_id": 1262
+      },
       "minecraft:block.spore_blossom.break": {
         "protocol_id": 1206
       },
@@ -11924,31 +11948,31 @@
         "protocol_id": 860
       },
       "minecraft:block.stone.break": {
-        "protocol_id": 1264
-      },
-      "minecraft:block.stone.fall": {
-        "protocol_id": 1267
-      },
-      "minecraft:block.stone.hit": {
-        "protocol_id": 1268
-      },
-      "minecraft:block.stone.place": {
-        "protocol_id": 1269
-      },
-      "minecraft:block.stone.step": {
-        "protocol_id": 1272
-      },
-      "minecraft:block.stone_button.click_off": {
-        "protocol_id": 1265
-      },
-      "minecraft:block.stone_button.click_on": {
-        "protocol_id": 1266
-      },
-      "minecraft:block.stone_pressure_plate.click_off": {
         "protocol_id": 1270
       },
-      "minecraft:block.stone_pressure_plate.click_on": {
+      "minecraft:block.stone.fall": {
+        "protocol_id": 1273
+      },
+      "minecraft:block.stone.hit": {
+        "protocol_id": 1274
+      },
+      "minecraft:block.stone.place": {
+        "protocol_id": 1275
+      },
+      "minecraft:block.stone.step": {
+        "protocol_id": 1278
+      },
+      "minecraft:block.stone_button.click_off": {
         "protocol_id": 1271
+      },
+      "minecraft:block.stone_button.click_on": {
+        "protocol_id": 1272
+      },
+      "minecraft:block.stone_pressure_plate.click_off": {
+        "protocol_id": 1276
+      },
+      "minecraft:block.stone_pressure_plate.click_on": {
+        "protocol_id": 1277
       },
       "minecraft:block.suspicious_gravel.break": {
         "protocol_id": 482
@@ -11981,55 +12005,55 @@
         "protocol_id": 478
       },
       "minecraft:block.sweet_berry_bush.break": {
-        "protocol_id": 1277
+        "protocol_id": 1283
       },
       "minecraft:block.sweet_berry_bush.pick_berries": {
-        "protocol_id": 1279
+        "protocol_id": 1285
       },
       "minecraft:block.sweet_berry_bush.place": {
-        "protocol_id": 1278
+        "protocol_id": 1284
       },
       "minecraft:block.tripwire.attach": {
-        "protocol_id": 1295
+        "protocol_id": 1301
       },
       "minecraft:block.tripwire.click_off": {
-        "protocol_id": 1296
+        "protocol_id": 1302
       },
       "minecraft:block.tripwire.click_on": {
-        "protocol_id": 1297
-      },
-      "minecraft:block.tripwire.detach": {
-        "protocol_id": 1298
-      },
-      "minecraft:block.tuff.break": {
         "protocol_id": 1303
       },
-      "minecraft:block.tuff.fall": {
-        "protocol_id": 1307
-      },
-      "minecraft:block.tuff.hit": {
-        "protocol_id": 1306
-      },
-      "minecraft:block.tuff.place": {
-        "protocol_id": 1305
-      },
-      "minecraft:block.tuff.step": {
+      "minecraft:block.tripwire.detach": {
         "protocol_id": 1304
       },
+      "minecraft:block.tuff.break": {
+        "protocol_id": 1309
+      },
+      "minecraft:block.tuff.fall": {
+        "protocol_id": 1313
+      },
+      "minecraft:block.tuff.hit": {
+        "protocol_id": 1312
+      },
+      "minecraft:block.tuff.place": {
+        "protocol_id": 1311
+      },
+      "minecraft:block.tuff.step": {
+        "protocol_id": 1310
+      },
       "minecraft:block.vine.break": {
-        "protocol_id": 1357
+        "protocol_id": 1363
       },
       "minecraft:block.vine.fall": {
-        "protocol_id": 1358
+        "protocol_id": 1364
       },
       "minecraft:block.vine.hit": {
-        "protocol_id": 1359
+        "protocol_id": 1365
       },
       "minecraft:block.vine.place": {
-        "protocol_id": 1360
+        "protocol_id": 1366
       },
       "minecraft:block.vine.step": {
-        "protocol_id": 1361
+        "protocol_id": 1367
       },
       "minecraft:block.wart_block.break": {
         "protocol_id": 884
@@ -12047,7 +12071,7 @@
         "protocol_id": 885
       },
       "minecraft:block.water.ambient": {
-        "protocol_id": 1394
+        "protocol_id": 1400
       },
       "minecraft:block.weeping_vines.break": {
         "protocol_id": 879
@@ -12065,76 +12089,91 @@
         "protocol_id": 880
       },
       "minecraft:block.wet_grass.break": {
-        "protocol_id": 1397
+        "protocol_id": 1403
       },
       "minecraft:block.wet_grass.fall": {
-        "protocol_id": 1398
+        "protocol_id": 1404
       },
       "minecraft:block.wet_grass.hit": {
-        "protocol_id": 1399
+        "protocol_id": 1405
       },
       "minecraft:block.wet_grass.place": {
-        "protocol_id": 1400
+        "protocol_id": 1406
       },
       "minecraft:block.wet_grass.step": {
-        "protocol_id": 1401
+        "protocol_id": 1407
+      },
+      "minecraft:block.wet_sponge.break": {
+        "protocol_id": 1408
+      },
+      "minecraft:block.wet_sponge.fall": {
+        "protocol_id": 1409
+      },
+      "minecraft:block.wet_sponge.hit": {
+        "protocol_id": 1410
+      },
+      "minecraft:block.wet_sponge.place": {
+        "protocol_id": 1411
+      },
+      "minecraft:block.wet_sponge.step": {
+        "protocol_id": 1412
       },
       "minecraft:block.wood.break": {
-        "protocol_id": 1435
+        "protocol_id": 1446
       },
       "minecraft:block.wood.fall": {
-        "protocol_id": 1436
+        "protocol_id": 1447
       },
       "minecraft:block.wood.hit": {
-        "protocol_id": 1437
+        "protocol_id": 1448
       },
       "minecraft:block.wood.place": {
-        "protocol_id": 1438
+        "protocol_id": 1449
       },
       "minecraft:block.wood.step": {
-        "protocol_id": 1439
+        "protocol_id": 1450
       },
       "minecraft:block.wooden_button.click_off": {
-        "protocol_id": 1431
-      },
-      "minecraft:block.wooden_button.click_on": {
-        "protocol_id": 1432
-      },
-      "minecraft:block.wooden_door.close": {
-        "protocol_id": 1427
-      },
-      "minecraft:block.wooden_door.open": {
-        "protocol_id": 1428
-      },
-      "minecraft:block.wooden_pressure_plate.click_off": {
-        "protocol_id": 1433
-      },
-      "minecraft:block.wooden_pressure_plate.click_on": {
-        "protocol_id": 1434
-      },
-      "minecraft:block.wooden_trapdoor.close": {
-        "protocol_id": 1429
-      },
-      "minecraft:block.wooden_trapdoor.open": {
-        "protocol_id": 1430
-      },
-      "minecraft:block.wool.break": {
-        "protocol_id": 1440
-      },
-      "minecraft:block.wool.fall": {
-        "protocol_id": 1441
-      },
-      "minecraft:block.wool.hit": {
         "protocol_id": 1442
       },
-      "minecraft:block.wool.place": {
+      "minecraft:block.wooden_button.click_on": {
         "protocol_id": 1443
       },
-      "minecraft:block.wool.step": {
+      "minecraft:block.wooden_door.close": {
+        "protocol_id": 1438
+      },
+      "minecraft:block.wooden_door.open": {
+        "protocol_id": 1439
+      },
+      "minecraft:block.wooden_pressure_plate.click_off": {
         "protocol_id": 1444
       },
+      "minecraft:block.wooden_pressure_plate.click_on": {
+        "protocol_id": 1445
+      },
+      "minecraft:block.wooden_trapdoor.close": {
+        "protocol_id": 1440
+      },
+      "minecraft:block.wooden_trapdoor.open": {
+        "protocol_id": 1441
+      },
+      "minecraft:block.wool.break": {
+        "protocol_id": 1451
+      },
+      "minecraft:block.wool.fall": {
+        "protocol_id": 1452
+      },
+      "minecraft:block.wool.hit": {
+        "protocol_id": 1453
+      },
+      "minecraft:block.wool.place": {
+        "protocol_id": 1454
+      },
+      "minecraft:block.wool.step": {
+        "protocol_id": 1455
+      },
       "minecraft:enchant.thorns.hit": {
-        "protocol_id": 1284
+        "protocol_id": 1290
       },
       "minecraft:entity.allay.ambient_with_item": {
         "protocol_id": 0
@@ -13679,28 +13718,28 @@
         "protocol_id": 1257
       },
       "minecraft:entity.squid.ambient": {
-        "protocol_id": 1260
+        "protocol_id": 1266
       },
       "minecraft:entity.squid.death": {
-        "protocol_id": 1261
+        "protocol_id": 1267
       },
       "minecraft:entity.squid.hurt": {
-        "protocol_id": 1262
+        "protocol_id": 1268
       },
       "minecraft:entity.squid.squirt": {
-        "protocol_id": 1263
+        "protocol_id": 1269
       },
       "minecraft:entity.stray.ambient": {
-        "protocol_id": 1273
+        "protocol_id": 1279
       },
       "minecraft:entity.stray.death": {
-        "protocol_id": 1274
+        "protocol_id": 1280
       },
       "minecraft:entity.stray.hurt": {
-        "protocol_id": 1275
+        "protocol_id": 1281
       },
       "minecraft:entity.stray.step": {
-        "protocol_id": 1276
+        "protocol_id": 1282
       },
       "minecraft:entity.strider.ambient": {
         "protocol_id": 1211
@@ -13730,403 +13769,403 @@
         "protocol_id": 1217
       },
       "minecraft:entity.tadpole.death": {
-        "protocol_id": 1280
+        "protocol_id": 1286
       },
       "minecraft:entity.tadpole.flop": {
-        "protocol_id": 1281
+        "protocol_id": 1287
       },
       "minecraft:entity.tadpole.grow_up": {
-        "protocol_id": 1282
+        "protocol_id": 1288
       },
       "minecraft:entity.tadpole.hurt": {
-        "protocol_id": 1283
+        "protocol_id": 1289
       },
       "minecraft:entity.tnt.primed": {
-        "protocol_id": 1285
+        "protocol_id": 1291
       },
       "minecraft:entity.tropical_fish.ambient": {
-        "protocol_id": 1299
+        "protocol_id": 1305
       },
       "minecraft:entity.tropical_fish.death": {
-        "protocol_id": 1300
+        "protocol_id": 1306
       },
       "minecraft:entity.tropical_fish.flop": {
-        "protocol_id": 1301
+        "protocol_id": 1307
       },
       "minecraft:entity.tropical_fish.hurt": {
-        "protocol_id": 1302
-      },
-      "minecraft:entity.turtle.ambient_land": {
         "protocol_id": 1308
       },
-      "minecraft:entity.turtle.death": {
-        "protocol_id": 1309
-      },
-      "minecraft:entity.turtle.death_baby": {
-        "protocol_id": 1310
-      },
-      "minecraft:entity.turtle.egg_break": {
-        "protocol_id": 1311
-      },
-      "minecraft:entity.turtle.egg_crack": {
-        "protocol_id": 1312
-      },
-      "minecraft:entity.turtle.egg_hatch": {
-        "protocol_id": 1313
-      },
-      "minecraft:entity.turtle.hurt": {
+      "minecraft:entity.turtle.ambient_land": {
         "protocol_id": 1314
       },
-      "minecraft:entity.turtle.hurt_baby": {
+      "minecraft:entity.turtle.death": {
         "protocol_id": 1315
       },
-      "minecraft:entity.turtle.lay_egg": {
+      "minecraft:entity.turtle.death_baby": {
         "protocol_id": 1316
       },
-      "minecraft:entity.turtle.shamble": {
+      "minecraft:entity.turtle.egg_break": {
         "protocol_id": 1317
       },
-      "minecraft:entity.turtle.shamble_baby": {
+      "minecraft:entity.turtle.egg_crack": {
         "protocol_id": 1318
       },
-      "minecraft:entity.turtle.swim": {
+      "minecraft:entity.turtle.egg_hatch": {
         "protocol_id": 1319
       },
+      "minecraft:entity.turtle.hurt": {
+        "protocol_id": 1320
+      },
+      "minecraft:entity.turtle.hurt_baby": {
+        "protocol_id": 1321
+      },
+      "minecraft:entity.turtle.lay_egg": {
+        "protocol_id": 1322
+      },
+      "minecraft:entity.turtle.shamble": {
+        "protocol_id": 1323
+      },
+      "minecraft:entity.turtle.shamble_baby": {
+        "protocol_id": 1324
+      },
+      "minecraft:entity.turtle.swim": {
+        "protocol_id": 1325
+      },
       "minecraft:entity.vex.ambient": {
-        "protocol_id": 1329
-      },
-      "minecraft:entity.vex.charge": {
-        "protocol_id": 1330
-      },
-      "minecraft:entity.vex.death": {
-        "protocol_id": 1331
-      },
-      "minecraft:entity.vex.hurt": {
-        "protocol_id": 1332
-      },
-      "minecraft:entity.villager.ambient": {
-        "protocol_id": 1333
-      },
-      "minecraft:entity.villager.celebrate": {
-        "protocol_id": 1334
-      },
-      "minecraft:entity.villager.death": {
         "protocol_id": 1335
       },
-      "minecraft:entity.villager.hurt": {
+      "minecraft:entity.vex.charge": {
         "protocol_id": 1336
       },
-      "minecraft:entity.villager.no": {
+      "minecraft:entity.vex.death": {
         "protocol_id": 1337
       },
-      "minecraft:entity.villager.trade": {
+      "minecraft:entity.vex.hurt": {
         "protocol_id": 1338
       },
-      "minecraft:entity.villager.work_armorer": {
-        "protocol_id": 1340
-      },
-      "minecraft:entity.villager.work_butcher": {
-        "protocol_id": 1341
-      },
-      "minecraft:entity.villager.work_cartographer": {
-        "protocol_id": 1342
-      },
-      "minecraft:entity.villager.work_cleric": {
-        "protocol_id": 1343
-      },
-      "minecraft:entity.villager.work_farmer": {
-        "protocol_id": 1344
-      },
-      "minecraft:entity.villager.work_fisherman": {
-        "protocol_id": 1345
-      },
-      "minecraft:entity.villager.work_fletcher": {
-        "protocol_id": 1346
-      },
-      "minecraft:entity.villager.work_leatherworker": {
-        "protocol_id": 1347
-      },
-      "minecraft:entity.villager.work_librarian": {
-        "protocol_id": 1348
-      },
-      "minecraft:entity.villager.work_mason": {
-        "protocol_id": 1349
-      },
-      "minecraft:entity.villager.work_shepherd": {
-        "protocol_id": 1350
-      },
-      "minecraft:entity.villager.work_toolsmith": {
-        "protocol_id": 1351
-      },
-      "minecraft:entity.villager.work_weaponsmith": {
-        "protocol_id": 1352
-      },
-      "minecraft:entity.villager.yes": {
+      "minecraft:entity.villager.ambient": {
         "protocol_id": 1339
       },
-      "minecraft:entity.vindicator.ambient": {
+      "minecraft:entity.villager.celebrate": {
+        "protocol_id": 1340
+      },
+      "minecraft:entity.villager.death": {
+        "protocol_id": 1341
+      },
+      "minecraft:entity.villager.hurt": {
+        "protocol_id": 1342
+      },
+      "minecraft:entity.villager.no": {
+        "protocol_id": 1343
+      },
+      "minecraft:entity.villager.trade": {
+        "protocol_id": 1344
+      },
+      "minecraft:entity.villager.work_armorer": {
+        "protocol_id": 1346
+      },
+      "minecraft:entity.villager.work_butcher": {
+        "protocol_id": 1347
+      },
+      "minecraft:entity.villager.work_cartographer": {
+        "protocol_id": 1348
+      },
+      "minecraft:entity.villager.work_cleric": {
+        "protocol_id": 1349
+      },
+      "minecraft:entity.villager.work_farmer": {
+        "protocol_id": 1350
+      },
+      "minecraft:entity.villager.work_fisherman": {
+        "protocol_id": 1351
+      },
+      "minecraft:entity.villager.work_fletcher": {
+        "protocol_id": 1352
+      },
+      "minecraft:entity.villager.work_leatherworker": {
         "protocol_id": 1353
       },
-      "minecraft:entity.vindicator.celebrate": {
+      "minecraft:entity.villager.work_librarian": {
         "protocol_id": 1354
       },
-      "minecraft:entity.vindicator.death": {
+      "minecraft:entity.villager.work_mason": {
         "protocol_id": 1355
       },
-      "minecraft:entity.vindicator.hurt": {
+      "minecraft:entity.villager.work_shepherd": {
         "protocol_id": 1356
       },
+      "minecraft:entity.villager.work_toolsmith": {
+        "protocol_id": 1357
+      },
+      "minecraft:entity.villager.work_weaponsmith": {
+        "protocol_id": 1358
+      },
+      "minecraft:entity.villager.yes": {
+        "protocol_id": 1345
+      },
+      "minecraft:entity.vindicator.ambient": {
+        "protocol_id": 1359
+      },
+      "minecraft:entity.vindicator.celebrate": {
+        "protocol_id": 1360
+      },
+      "minecraft:entity.vindicator.death": {
+        "protocol_id": 1361
+      },
+      "minecraft:entity.vindicator.hurt": {
+        "protocol_id": 1362
+      },
       "minecraft:entity.wandering_trader.ambient": {
-        "protocol_id": 1363
-      },
-      "minecraft:entity.wandering_trader.death": {
-        "protocol_id": 1364
-      },
-      "minecraft:entity.wandering_trader.disappeared": {
-        "protocol_id": 1365
-      },
-      "minecraft:entity.wandering_trader.drink_milk": {
-        "protocol_id": 1366
-      },
-      "minecraft:entity.wandering_trader.drink_potion": {
-        "protocol_id": 1367
-      },
-      "minecraft:entity.wandering_trader.hurt": {
-        "protocol_id": 1368
-      },
-      "minecraft:entity.wandering_trader.no": {
         "protocol_id": 1369
       },
-      "minecraft:entity.wandering_trader.reappeared": {
+      "minecraft:entity.wandering_trader.death": {
         "protocol_id": 1370
       },
-      "minecraft:entity.wandering_trader.trade": {
+      "minecraft:entity.wandering_trader.disappeared": {
         "protocol_id": 1371
       },
-      "minecraft:entity.wandering_trader.yes": {
+      "minecraft:entity.wandering_trader.drink_milk": {
         "protocol_id": 1372
       },
-      "minecraft:entity.warden.agitated": {
+      "minecraft:entity.wandering_trader.drink_potion": {
         "protocol_id": 1373
       },
-      "minecraft:entity.warden.ambient": {
+      "minecraft:entity.wandering_trader.hurt": {
         "protocol_id": 1374
       },
-      "minecraft:entity.warden.angry": {
+      "minecraft:entity.wandering_trader.no": {
         "protocol_id": 1375
       },
-      "minecraft:entity.warden.attack_impact": {
+      "minecraft:entity.wandering_trader.reappeared": {
         "protocol_id": 1376
       },
-      "minecraft:entity.warden.death": {
+      "minecraft:entity.wandering_trader.trade": {
         "protocol_id": 1377
       },
-      "minecraft:entity.warden.dig": {
+      "minecraft:entity.wandering_trader.yes": {
         "protocol_id": 1378
       },
-      "minecraft:entity.warden.emerge": {
+      "minecraft:entity.warden.agitated": {
         "protocol_id": 1379
       },
-      "minecraft:entity.warden.heartbeat": {
+      "minecraft:entity.warden.ambient": {
         "protocol_id": 1380
       },
-      "minecraft:entity.warden.hurt": {
+      "minecraft:entity.warden.angry": {
         "protocol_id": 1381
       },
-      "minecraft:entity.warden.listening": {
+      "minecraft:entity.warden.attack_impact": {
         "protocol_id": 1382
       },
-      "minecraft:entity.warden.listening_angry": {
+      "minecraft:entity.warden.death": {
         "protocol_id": 1383
       },
-      "minecraft:entity.warden.nearby_close": {
+      "minecraft:entity.warden.dig": {
         "protocol_id": 1384
       },
-      "minecraft:entity.warden.nearby_closer": {
+      "minecraft:entity.warden.emerge": {
         "protocol_id": 1385
       },
-      "minecraft:entity.warden.nearby_closest": {
+      "minecraft:entity.warden.heartbeat": {
         "protocol_id": 1386
       },
-      "minecraft:entity.warden.roar": {
+      "minecraft:entity.warden.hurt": {
         "protocol_id": 1387
       },
-      "minecraft:entity.warden.sniff": {
+      "minecraft:entity.warden.listening": {
         "protocol_id": 1388
       },
-      "minecraft:entity.warden.sonic_boom": {
+      "minecraft:entity.warden.listening_angry": {
         "protocol_id": 1389
       },
-      "minecraft:entity.warden.sonic_charge": {
+      "minecraft:entity.warden.nearby_close": {
         "protocol_id": 1390
       },
-      "minecraft:entity.warden.step": {
+      "minecraft:entity.warden.nearby_closer": {
         "protocol_id": 1391
       },
-      "minecraft:entity.warden.tendril_clicks": {
+      "minecraft:entity.warden.nearby_closest": {
         "protocol_id": 1392
       },
+      "minecraft:entity.warden.roar": {
+        "protocol_id": 1393
+      },
+      "minecraft:entity.warden.sniff": {
+        "protocol_id": 1394
+      },
+      "minecraft:entity.warden.sonic_boom": {
+        "protocol_id": 1395
+      },
+      "minecraft:entity.warden.sonic_charge": {
+        "protocol_id": 1396
+      },
+      "minecraft:entity.warden.step": {
+        "protocol_id": 1397
+      },
+      "minecraft:entity.warden.tendril_clicks": {
+        "protocol_id": 1398
+      },
       "minecraft:entity.witch.ambient": {
-        "protocol_id": 1402
-      },
-      "minecraft:entity.witch.celebrate": {
-        "protocol_id": 1403
-      },
-      "minecraft:entity.witch.death": {
-        "protocol_id": 1404
-      },
-      "minecraft:entity.witch.drink": {
-        "protocol_id": 1405
-      },
-      "minecraft:entity.witch.hurt": {
-        "protocol_id": 1406
-      },
-      "minecraft:entity.witch.throw": {
-        "protocol_id": 1407
-      },
-      "minecraft:entity.wither.ambient": {
-        "protocol_id": 1408
-      },
-      "minecraft:entity.wither.break_block": {
-        "protocol_id": 1409
-      },
-      "minecraft:entity.wither.death": {
-        "protocol_id": 1410
-      },
-      "minecraft:entity.wither.hurt": {
-        "protocol_id": 1411
-      },
-      "minecraft:entity.wither.shoot": {
-        "protocol_id": 1412
-      },
-      "minecraft:entity.wither.spawn": {
-        "protocol_id": 1417
-      },
-      "minecraft:entity.wither_skeleton.ambient": {
         "protocol_id": 1413
       },
-      "minecraft:entity.wither_skeleton.death": {
+      "minecraft:entity.witch.celebrate": {
         "protocol_id": 1414
       },
-      "minecraft:entity.wither_skeleton.hurt": {
+      "minecraft:entity.witch.death": {
         "protocol_id": 1415
       },
-      "minecraft:entity.wither_skeleton.step": {
+      "minecraft:entity.witch.drink": {
         "protocol_id": 1416
       },
-      "minecraft:entity.wolf.ambient": {
+      "minecraft:entity.witch.hurt": {
+        "protocol_id": 1417
+      },
+      "minecraft:entity.witch.throw": {
         "protocol_id": 1418
       },
-      "minecraft:entity.wolf.death": {
+      "minecraft:entity.wither.ambient": {
         "protocol_id": 1419
       },
-      "minecraft:entity.wolf.growl": {
+      "minecraft:entity.wither.break_block": {
         "protocol_id": 1420
       },
-      "minecraft:entity.wolf.howl": {
+      "minecraft:entity.wither.death": {
         "protocol_id": 1421
       },
-      "minecraft:entity.wolf.hurt": {
+      "minecraft:entity.wither.hurt": {
         "protocol_id": 1422
       },
-      "minecraft:entity.wolf.pant": {
+      "minecraft:entity.wither.shoot": {
         "protocol_id": 1423
       },
-      "minecraft:entity.wolf.shake": {
+      "minecraft:entity.wither.spawn": {
+        "protocol_id": 1428
+      },
+      "minecraft:entity.wither_skeleton.ambient": {
         "protocol_id": 1424
       },
-      "minecraft:entity.wolf.step": {
+      "minecraft:entity.wither_skeleton.death": {
         "protocol_id": 1425
       },
-      "minecraft:entity.wolf.whine": {
+      "minecraft:entity.wither_skeleton.hurt": {
         "protocol_id": 1426
       },
+      "minecraft:entity.wither_skeleton.step": {
+        "protocol_id": 1427
+      },
+      "minecraft:entity.wolf.ambient": {
+        "protocol_id": 1429
+      },
+      "minecraft:entity.wolf.death": {
+        "protocol_id": 1430
+      },
+      "minecraft:entity.wolf.growl": {
+        "protocol_id": 1431
+      },
+      "minecraft:entity.wolf.howl": {
+        "protocol_id": 1432
+      },
+      "minecraft:entity.wolf.hurt": {
+        "protocol_id": 1433
+      },
+      "minecraft:entity.wolf.pant": {
+        "protocol_id": 1434
+      },
+      "minecraft:entity.wolf.shake": {
+        "protocol_id": 1435
+      },
+      "minecraft:entity.wolf.step": {
+        "protocol_id": 1436
+      },
+      "minecraft:entity.wolf.whine": {
+        "protocol_id": 1437
+      },
       "minecraft:entity.zoglin.ambient": {
-        "protocol_id": 1445
-      },
-      "minecraft:entity.zoglin.angry": {
-        "protocol_id": 1446
-      },
-      "minecraft:entity.zoglin.attack": {
-        "protocol_id": 1447
-      },
-      "minecraft:entity.zoglin.death": {
-        "protocol_id": 1448
-      },
-      "minecraft:entity.zoglin.hurt": {
-        "protocol_id": 1449
-      },
-      "minecraft:entity.zoglin.step": {
-        "protocol_id": 1450
-      },
-      "minecraft:entity.zombie.ambient": {
-        "protocol_id": 1451
-      },
-      "minecraft:entity.zombie.attack_iron_door": {
-        "protocol_id": 1453
-      },
-      "minecraft:entity.zombie.attack_wooden_door": {
-        "protocol_id": 1452
-      },
-      "minecraft:entity.zombie.break_wooden_door": {
-        "protocol_id": 1454
-      },
-      "minecraft:entity.zombie.converted_to_drowned": {
-        "protocol_id": 1455
-      },
-      "minecraft:entity.zombie.death": {
         "protocol_id": 1456
       },
-      "minecraft:entity.zombie.destroy_egg": {
+      "minecraft:entity.zoglin.angry": {
         "protocol_id": 1457
       },
-      "minecraft:entity.zombie.hurt": {
-        "protocol_id": 1461
-      },
-      "minecraft:entity.zombie.infect": {
-        "protocol_id": 1462
-      },
-      "minecraft:entity.zombie.step": {
-        "protocol_id": 1467
-      },
-      "minecraft:entity.zombie_horse.ambient": {
+      "minecraft:entity.zoglin.attack": {
         "protocol_id": 1458
       },
-      "minecraft:entity.zombie_horse.death": {
+      "minecraft:entity.zoglin.death": {
         "protocol_id": 1459
       },
-      "minecraft:entity.zombie_horse.hurt": {
+      "minecraft:entity.zoglin.hurt": {
         "protocol_id": 1460
       },
-      "minecraft:entity.zombie_villager.ambient": {
-        "protocol_id": 1468
+      "minecraft:entity.zoglin.step": {
+        "protocol_id": 1461
       },
-      "minecraft:entity.zombie_villager.converted": {
-        "protocol_id": 1469
+      "minecraft:entity.zombie.ambient": {
+        "protocol_id": 1462
       },
-      "minecraft:entity.zombie_villager.cure": {
-        "protocol_id": 1470
-      },
-      "minecraft:entity.zombie_villager.death": {
-        "protocol_id": 1471
-      },
-      "minecraft:entity.zombie_villager.hurt": {
-        "protocol_id": 1472
-      },
-      "minecraft:entity.zombie_villager.step": {
-        "protocol_id": 1473
-      },
-      "minecraft:entity.zombified_piglin.ambient": {
-        "protocol_id": 1463
-      },
-      "minecraft:entity.zombified_piglin.angry": {
+      "minecraft:entity.zombie.attack_iron_door": {
         "protocol_id": 1464
       },
-      "minecraft:entity.zombified_piglin.death": {
+      "minecraft:entity.zombie.attack_wooden_door": {
+        "protocol_id": 1463
+      },
+      "minecraft:entity.zombie.break_wooden_door": {
         "protocol_id": 1465
       },
-      "minecraft:entity.zombified_piglin.hurt": {
+      "minecraft:entity.zombie.converted_to_drowned": {
         "protocol_id": 1466
+      },
+      "minecraft:entity.zombie.death": {
+        "protocol_id": 1467
+      },
+      "minecraft:entity.zombie.destroy_egg": {
+        "protocol_id": 1468
+      },
+      "minecraft:entity.zombie.hurt": {
+        "protocol_id": 1472
+      },
+      "minecraft:entity.zombie.infect": {
+        "protocol_id": 1473
+      },
+      "minecraft:entity.zombie.step": {
+        "protocol_id": 1478
+      },
+      "minecraft:entity.zombie_horse.ambient": {
+        "protocol_id": 1469
+      },
+      "minecraft:entity.zombie_horse.death": {
+        "protocol_id": 1470
+      },
+      "minecraft:entity.zombie_horse.hurt": {
+        "protocol_id": 1471
+      },
+      "minecraft:entity.zombie_villager.ambient": {
+        "protocol_id": 1479
+      },
+      "minecraft:entity.zombie_villager.converted": {
+        "protocol_id": 1480
+      },
+      "minecraft:entity.zombie_villager.cure": {
+        "protocol_id": 1481
+      },
+      "minecraft:entity.zombie_villager.death": {
+        "protocol_id": 1482
+      },
+      "minecraft:entity.zombie_villager.hurt": {
+        "protocol_id": 1483
+      },
+      "minecraft:entity.zombie_villager.step": {
+        "protocol_id": 1484
+      },
+      "minecraft:entity.zombified_piglin.ambient": {
+        "protocol_id": 1474
+      },
+      "minecraft:entity.zombified_piglin.angry": {
+        "protocol_id": 1475
+      },
+      "minecraft:entity.zombified_piglin.death": {
+        "protocol_id": 1476
+      },
+      "minecraft:entity.zombified_piglin.hurt": {
+        "protocol_id": 1477
       },
       "minecraft:event.raid.horn": {
         "protocol_id": 1061
@@ -14348,37 +14387,37 @@
         "protocol_id": 1147
       },
       "minecraft:item.spyglass.stop_using": {
-        "protocol_id": 1259
+        "protocol_id": 1265
       },
       "minecraft:item.spyglass.use": {
-        "protocol_id": 1258
+        "protocol_id": 1264
       },
       "minecraft:item.totem.use": {
-        "protocol_id": 1286
-      },
-      "minecraft:item.trident.hit": {
-        "protocol_id": 1287
-      },
-      "minecraft:item.trident.hit_ground": {
-        "protocol_id": 1288
-      },
-      "minecraft:item.trident.return": {
-        "protocol_id": 1289
-      },
-      "minecraft:item.trident.riptide_1": {
-        "protocol_id": 1290
-      },
-      "minecraft:item.trident.riptide_2": {
-        "protocol_id": 1291
-      },
-      "minecraft:item.trident.riptide_3": {
         "protocol_id": 1292
       },
-      "minecraft:item.trident.throw": {
+      "minecraft:item.trident.hit": {
         "protocol_id": 1293
       },
-      "minecraft:item.trident.thunder": {
+      "minecraft:item.trident.hit_ground": {
         "protocol_id": 1294
+      },
+      "minecraft:item.trident.return": {
+        "protocol_id": 1295
+      },
+      "minecraft:item.trident.riptide_1": {
+        "protocol_id": 1296
+      },
+      "minecraft:item.trident.riptide_2": {
+        "protocol_id": 1297
+      },
+      "minecraft:item.trident.riptide_3": {
+        "protocol_id": 1298
+      },
+      "minecraft:item.trident.throw": {
+        "protocol_id": 1299
+      },
+      "minecraft:item.trident.thunder": {
+        "protocol_id": 1300
       },
       "minecraft:music.creative": {
         "protocol_id": 784
@@ -14525,37 +14564,37 @@
         "protocol_id": 1205
       },
       "minecraft:ui.button.click": {
-        "protocol_id": 1320
-      },
-      "minecraft:ui.cartography_table.take_result": {
-        "protocol_id": 1323
-      },
-      "minecraft:ui.loom.select_pattern": {
-        "protocol_id": 1321
-      },
-      "minecraft:ui.loom.take_result": {
-        "protocol_id": 1322
-      },
-      "minecraft:ui.stonecutter.select_recipe": {
-        "protocol_id": 1325
-      },
-      "minecraft:ui.stonecutter.take_result": {
-        "protocol_id": 1324
-      },
-      "minecraft:ui.toast.challenge_complete": {
         "protocol_id": 1326
       },
-      "minecraft:ui.toast.in": {
+      "minecraft:ui.cartography_table.take_result": {
+        "protocol_id": 1329
+      },
+      "minecraft:ui.loom.select_pattern": {
         "protocol_id": 1327
       },
-      "minecraft:ui.toast.out": {
+      "minecraft:ui.loom.take_result": {
         "protocol_id": 1328
       },
+      "minecraft:ui.stonecutter.select_recipe": {
+        "protocol_id": 1331
+      },
+      "minecraft:ui.stonecutter.take_result": {
+        "protocol_id": 1330
+      },
+      "minecraft:ui.toast.challenge_complete": {
+        "protocol_id": 1332
+      },
+      "minecraft:ui.toast.in": {
+        "protocol_id": 1333
+      },
+      "minecraft:ui.toast.out": {
+        "protocol_id": 1334
+      },
       "minecraft:weather.rain": {
-        "protocol_id": 1395
+        "protocol_id": 1401
       },
       "minecraft:weather.rain.above": {
-        "protocol_id": 1396
+        "protocol_id": 1402
       }
     },
     "protocol_id": 1

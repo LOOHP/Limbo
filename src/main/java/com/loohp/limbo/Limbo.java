@@ -139,8 +139,8 @@ public final class Limbo {
 	
 	//===========================
 	
-	public final String SERVER_IMPLEMENTATION_VERSION = "1.20.1";
-	public final int SERVER_IMPLEMENTATION_PROTOCOL = 763;
+	public final String SERVER_IMPLEMENTATION_VERSION = "1.20.2";
+	public final int SERVER_IMPLEMENTATION_PROTOCOL = 764;
 	public final String LIMBO_IMPLEMENTATION_VERSION;
 	
 	private final AtomicBoolean isRunning;
@@ -236,7 +236,7 @@ public final class Limbo {
 		Map<Integer, Class<? extends PacketIn>> HandshakeIn = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("HandshakeIn")).keySet()) {
 			int packetId = Integer.decode((String) key);
-			HandshakeIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + (String) ((JSONObject) json.get("HandshakeIn")).get(key)));
+			HandshakeIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + ((JSONObject) json.get("HandshakeIn")).get(key)));
 		}
 		Packet.setHandshakeIn(HandshakeIn);
 		mappingsCount += HandshakeIn.size();
@@ -244,14 +244,14 @@ public final class Limbo {
 		Map<Integer, Class<? extends PacketIn>> StatusIn = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("StatusIn")).keySet()) {
 			int packetId = Integer.decode((String) key);
-			StatusIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + (String) ((JSONObject) json.get("StatusIn")).get(key)));
+			StatusIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + ((JSONObject) json.get("StatusIn")).get(key)));
 		}
 		Packet.setStatusIn(StatusIn);
 		mappingsCount += StatusIn.size();
 		
 		Map<Class<? extends PacketOut>, Integer> StatusOut = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("StatusOut")).keySet()) {
-			Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + (String) key);
+			Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + key);
 			StatusOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("StatusOut")).get(key)));
 		}
 		Packet.setStatusOut(StatusOut);
@@ -260,30 +260,46 @@ public final class Limbo {
 		Map<Integer, Class<? extends PacketIn>> LoginIn = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("LoginIn")).keySet()) {
 			int packetId = Integer.decode((String) key);
-			LoginIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + (String) ((JSONObject) json.get("LoginIn")).get(key)));
+			LoginIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + ((JSONObject) json.get("LoginIn")).get(key)));
 		}
 		Packet.setLoginIn(LoginIn);
 		mappingsCount += LoginIn.size();
 		
 		Map<Class<? extends PacketOut>, Integer> LoginOut = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("LoginOut")).keySet()) {
-			Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + (String) key);
+			Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + key);
 			LoginOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("LoginOut")).get(key)));
 		}
 		Packet.setLoginOut(LoginOut);
 		mappingsCount += LoginOut.size();
+
+		Map<Integer, Class<? extends PacketIn>> ConfigurationIn = new HashMap<>();
+		for (Object key : ((JSONObject) json.get("ConfigurationIn")).keySet()) {
+			int packetId = Integer.decode((String) key);
+			ConfigurationIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + ((JSONObject) json.get("ConfigurationIn")).get(key)));
+		}
+		Packet.setConfigurationIn(ConfigurationIn);
+		mappingsCount += ConfigurationIn.size();
+
+		Map<Class<? extends PacketOut>, Integer> ConfigurationOut = new HashMap<>();
+		for (Object key : ((JSONObject) json.get("ConfigurationOut")).keySet()) {
+			Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + key);
+			ConfigurationOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("ConfigurationOut")).get(key)));
+		}
+		Packet.setConfigurationOut(ConfigurationOut);
+		mappingsCount += ConfigurationOut.size();
 		
 		Map<Integer, Class<? extends PacketIn>> PlayIn = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("PlayIn")).keySet()) {
 			int packetId = Integer.decode((String) key);
-			PlayIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + (String) ((JSONObject) json.get("PlayIn")).get(key)));
+			PlayIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + ((JSONObject) json.get("PlayIn")).get(key)));
 		}
 		Packet.setPlayIn(PlayIn);
 		mappingsCount += PlayIn.size();
 		
 		Map<Class<? extends PacketOut>, Integer> PlayOut = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("PlayOut")).keySet()) {
-			Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + (String) key);
+			Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + key);
 			PlayOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("PlayOut")).get(key)));
 		}
 		Packet.setPlayOut(PlayOut);

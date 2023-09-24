@@ -34,12 +34,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Channel implements AutoCloseable {
 
+    private final ClientConnection client;
     private final List<Pair<Key, ChannelPacketHandler>> handlers;
     private final AtomicBoolean valid;
     protected final DataInputStream input;
     protected final DataOutputStream output;
 
-    public Channel(DataInputStream input, DataOutputStream output) {
+    public Channel(ClientConnection client, DataInputStream input, DataOutputStream output) {
+        this.client = client;
         this.input = input;
         this.output = output;
         this.handlers = new CopyOnWriteArrayList<>();
@@ -89,7 +91,13 @@ public class Channel implements AutoCloseable {
     }
 
     protected boolean writePacket(PacketOut packet) throws IOException {
+        if (client.getClientState() == ClientConnection.ClientState.DISCONNECTED) {
+            return false;
+        }
         ensureOpen();
+        if (packet.getPacketState() != client.getClientState()) {
+            return false;
+        }
         ChannelPacketWrite write = new ChannelPacketWrite(packet);
         for (Pair<Key, ChannelPacketHandler> pair : handlers) {
             write = pair.getSecond().write(write);

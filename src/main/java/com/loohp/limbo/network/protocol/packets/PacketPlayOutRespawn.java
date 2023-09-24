@@ -100,7 +100,7 @@ public class PacketPlayOutRespawn extends PacketOut {
 				break;
 			}
 		}
-		DataTypeIO.writeCompoundTag(output, tag != null ? tag : list.get(0));
+		DataTypeIO.writeTag(output, tag != null ? tag : list.get(0));
 		DataTypeIO.writeString(output, worldName, StandardCharsets.UTF_8);
 		output.writeLong(hashedSeed);
         output.writeByte((byte) gamemode.getId());

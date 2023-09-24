@@ -119,7 +119,7 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 
 		output.writeInt(chunkX);
 		output.writeInt(chunkZ);
-		DataTypeIO.writeCompoundTag(output, chunk.getHeightMaps());
+		DataTypeIO.writeTag(output, chunk.getHeightMaps());
 
 		ByteArrayOutputStream dataBuffer = new ByteArrayOutputStream();
 		DataOutputStream dataOut = new DataOutputStream(dataBuffer);
@@ -222,13 +222,13 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 			}
 			int biome;
 			if (environment.equals(Environment.END)) {
-				biome = 9; //the_end
+				biome = 55; //the_end
 			} else if (environment.equals(Environment.NETHER)) {
-				biome = 8; //nether_waste
+				biome = 34; //nether_waste
 			} else if (environment.equals(Environment.NORMAL)) {
-				biome = 1; //plains
+				biome = 39; //plains
 			} else {
-				biome = 1; //plains
+				biome = 39; //plains
 			}
 			dataOut.writeByte(0);
 			DataTypeIO.writeVarInt(dataOut, biome);
@@ -249,7 +249,7 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 			output.writeShort(y);
 			Integer id = Registry.BLOCK_ENTITY_TYPE.getId(Key.key(chunk.getBlockStateAt(x, y, z).getString("Name")));
 			DataTypeIO.writeVarInt(output, id == null ? -1 : id);
-			DataTypeIO.writeCompoundTag(output, each);
+			DataTypeIO.writeTag(output, each);
 		}
 
 		DataTypeIO.writeVarInt(output, skyLightBitMasks.length);

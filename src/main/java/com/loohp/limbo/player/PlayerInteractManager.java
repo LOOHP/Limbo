@@ -22,6 +22,9 @@ package com.loohp.limbo.player;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.entity.Entity;
 import com.loohp.limbo.location.Location;
+import com.loohp.limbo.network.ClientConnection;
+import com.loohp.limbo.network.protocol.packets.ClientboundChunkBatchFinishedPacket;
+import com.loohp.limbo.network.protocol.packets.ClientboundChunkBatchStartPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundLevelChunkWithLightPacket;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutEntityDestroy;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutEntityMetadata;
@@ -68,6 +71,10 @@ public class PlayerInteractManager {
 	}
 	
 	public void update() throws IOException {
+		if (player.clientConnection.getClientState() != ClientConnection.ClientState.PLAY) {
+			return;
+		}
+
 		int viewDistanceChunks = Limbo.getInstance().getServerProperties().getViewDistance();
 		int viewDistanceBlocks = viewDistanceChunks << 4;
 		Location location = player.getLocation();
@@ -119,6 +126,9 @@ public class PlayerInteractManager {
 			}
 		}
 
+		int counter = 0;
+		ClientboundChunkBatchStartPacket chunkBatchStartPacket = new ClientboundChunkBatchStartPacket();
+		player.clientConnection.sendPacket(chunkBatchStartPacket);
 		for (Entry<ChunkPosition, Chunk> entry : chunksInRange.entrySet()) {
 			ChunkPosition chunkPos = entry.getKey();
 			if (!currentViewing.containsKey(chunkPos)) {
@@ -126,7 +136,7 @@ public class PlayerInteractManager {
 				if (chunk == null) {
 					ClientboundLevelChunkWithLightPacket chunkdata = new ClientboundLevelChunkWithLightPacket(chunkPos.getChunkX(), chunkPos.getChunkZ(), entry.getValue(), world.getEnvironment(), Collections.emptyList(), Collections.emptyList());
 					player.clientConnection.sendPacket(chunkdata);
-				} else {
+                } else {
 					List<Byte[]> blockChunk = world.getLightEngineBlock().getBlockLightBitMask(chunkPos.getChunkX(), chunkPos.getChunkZ());
 					if (blockChunk == null) {
 						blockChunk = new ArrayList<>();
@@ -140,9 +150,12 @@ public class PlayerInteractManager {
 					}
 					ClientboundLevelChunkWithLightPacket chunkdata = new ClientboundLevelChunkWithLightPacket(chunkPos.getChunkX(), chunkPos.getChunkZ(), chunk, world.getEnvironment(), skyChunk, blockChunk);
 					player.clientConnection.sendPacket(chunkdata);
-				}
-			}
+                }
+                counter++;
+            }
 		}
+		ClientboundChunkBatchFinishedPacket chunkBatchFinishedPacket = new ClientboundChunkBatchFinishedPacket(counter);
+		player.clientConnection.sendPacket(chunkBatchFinishedPacket);
 
 		currentViewing = chunksInRange;
 	}

@@ -29,6 +29,7 @@ import net.kyori.adventure.key.Key;
 import net.querz.nbt.io.NBTInputStream;
 import net.querz.nbt.io.NBTOutputStream;
 import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.EndTag;
 import net.querz.nbt.tag.Tag;
 
 import java.io.ByteArrayOutputStream;
@@ -51,7 +52,7 @@ public class DataTypeIO {
 			out.writeBoolean(true);
 			writeVarInt(out, Registry.ITEM_REGISTRY.getId(itemstack.type()));
 			out.writeByte(itemstack.amount());
-			writeCompoundTag(out, itemstack.nbt());
+			writeTag(out, itemstack.nbt());
 		}
 	}
 
@@ -61,7 +62,7 @@ public class DataTypeIO {
 		} else {
 			Key key = Registry.ITEM_REGISTRY.fromId(readVarInt(in));
 			byte amount = in.readByte();
-			CompoundTag nbt = readCompoundTag(in);
+			CompoundTag nbt = readTag(in, CompoundTag.class);
 			return new ItemStack(key, amount, nbt);
 		}
 	}
@@ -152,22 +153,25 @@ public class DataTypeIO {
 		return new UUID(in.readLong(), in.readLong());
 	}
 	
-	public static void writeCompoundTag(DataOutputStream out, CompoundTag tag) throws IOException {
+	public static void writeTag(DataOutputStream out, Tag<?> tag) throws IOException {
 		if (tag == null) {
-			out.writeByte(0);
-		} else {
-			new NBTOutputStream(out).writeTag(tag, Tag.DEFAULT_MAX_DEPTH);
+			tag = EndTag.INSTANCE;
+		}
+		out.writeByte(tag.getID());
+		if (tag.getID() != 0) {
+			new NBTOutputStream(out).writeRawTag(tag, Tag.DEFAULT_MAX_DEPTH);
 		}
 	}
 
-	public static CompoundTag readCompoundTag(DataInputStream in) throws IOException {
+	@SuppressWarnings("unchecked")
+	public static <T extends Tag<?>> T readTag(DataInputStream in, Class<T> type) throws IOException {
 		byte b = in.readByte();
 		if (b == 0) {
-			return null;
+			return type.isInstance(EndTag.INSTANCE) ? (T) EndTag.INSTANCE : null;
 		}
 		PushbackInputStream buffered = new PushbackInputStream(in);
 		buffered.unread(b);
-		return (CompoundTag) new NBTInputStream(buffered).readTag(Tag.DEFAULT_MAX_DEPTH).getTag();
+		return (T) new NBTInputStream(buffered).readRawTag(Tag.DEFAULT_MAX_DEPTH);
 	}
 	
 	public static String readString(DataInputStream in, Charset charset) throws IOException {

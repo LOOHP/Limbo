@@ -41,6 +41,8 @@ import com.loohp.limbo.inventory.AnvilInventory;
 import com.loohp.limbo.inventory.Inventory;
 import com.loohp.limbo.inventory.ItemStack;
 import com.loohp.limbo.location.Location;
+import com.loohp.limbo.network.protocol.packets.ClientboundFinishConfigurationPacket;
+import com.loohp.limbo.network.protocol.packets.ClientboundRegistryDataPacket;
 import com.loohp.limbo.network.protocol.packets.Packet;
 import com.loohp.limbo.network.protocol.packets.PacketHandshakingIn;
 import com.loohp.limbo.network.protocol.packets.PacketIn;
@@ -92,6 +94,7 @@ import com.loohp.limbo.network.protocol.packets.PacketStatusInRequest;
 import com.loohp.limbo.network.protocol.packets.PacketStatusOutPong;
 import com.loohp.limbo.network.protocol.packets.PacketStatusOutResponse;
 import com.loohp.limbo.network.protocol.packets.ServerboundChatCommandPacket;
+import com.loohp.limbo.network.protocol.packets.ServerboundFinishConfigurationPacket;
 import com.loohp.limbo.player.Player;
 import com.loohp.limbo.player.PlayerInteractManager;
 import com.loohp.limbo.player.PlayerInventory;
@@ -155,7 +158,7 @@ public class ClientConnection extends Thread {
     private final Socket clientSocket;
     protected Channel channel;
     private boolean running;
-    private ClientState state;
+    private volatile ClientState state;
 
     private Player player;
     private TimerTask keepAliveTask;
@@ -271,7 +274,7 @@ public class ClientConnection extends Thread {
     }
 
     private void setChannel(DataInputStream input, DataOutputStream output) {
-        this.channel = new Channel(input, output);
+        this.channel = new Channel(this, input, output);
 
         this.channel.addHandlerBefore(DEFAULT_HANDLER_NAMESPACE, new ChannelPacketHandler() {
             @Override
@@ -293,6 +296,9 @@ public class ClientConnection extends Thread {
                             break;
                         case LOGIN:
                             packetType = Packet.getLoginIn().get(packetId);
+                            break;
+                        case CONFIGURATION:
+                            packetType = Packet.getConfigurationIn().get(packetId);
                             break;
                         case PLAY:
                             packetType = Packet.getPlayIn().get(packetId);
@@ -498,7 +504,7 @@ public class ClientConnection extends Thread {
                                 continue;
                             }
 
-                            UUID uuid = isBungeecord || isBungeeGuard ? bungeeUUID : (start.hasUniqueId() ? start.getUniqueId() : null);
+                            UUID uuid = isBungeecord || isBungeeGuard ? bungeeUUID : start.getUniqueId();
                             if (uuid == null) {
                                 uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
                             }
@@ -511,11 +517,10 @@ public class ClientConnection extends Thread {
                             PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(uuid, username);
                             sendPacket(success);
 
-                            state = ClientState.PLAY;
+                            state = ClientState.CONFIGURATION;
 
                             player = new Player(this, username, uuid, Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
                             player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
-                            Limbo.getInstance().getUnsafe().a(player);
                             break;
                         } else if (packetIn instanceof PacketLoginInPluginMessaging) {
                             PacketLoginInPluginMessaging response = (PacketLoginInPluginMessaging) packetIn;
@@ -539,12 +544,10 @@ public class ClientConnection extends Thread {
                             PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(data.getUuid(), data.getUsername());
                             sendPacket(success);
 
-                            state = ClientState.PLAY;
+                            state = ClientState.CONFIGURATION;
 
                             player = new Player(this, data.getUsername(), data.getUuid(), Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
                             player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
-                            Limbo.getInstance().getUnsafe().a(player);
-
                             break;
                         }
                     }
@@ -562,7 +565,20 @@ public class ClientConnection extends Thread {
                 state = ClientState.DISCONNECTED;
             }
 
-            if (state == ClientState.PLAY) {
+            if (state == ClientState.CONFIGURATION) {
+
+                TimeUnit.MILLISECONDS.sleep(500);
+
+                ClientboundRegistryDataPacket registryDataPacket = new ClientboundRegistryDataPacket(Limbo.getInstance().getDimensionRegistry().getCodec());
+                sendPacket(registryDataPacket);
+
+                ClientboundFinishConfigurationPacket clientboundFinishConfigurationPacket = new ClientboundFinishConfigurationPacket();
+                sendPacket(clientboundFinishConfigurationPacket);
+
+                ServerboundFinishConfigurationPacket serverboundFinishConfigurationPacket = (ServerboundFinishConfigurationPacket) channel.readPacket();
+
+                state = ClientState.PLAY;
+                Limbo.getInstance().getUnsafe().a(player);
 
                 TimeUnit.MILLISECONDS.sleep(500);
 
@@ -573,7 +589,7 @@ public class ClientConnection extends Thread {
                 worldSpawn = spawnEvent.getSpawnLocation();
                 World world = worldSpawn.getWorld();
 
-                PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, properties.getDefaultGamemode(), Limbo.getInstance().getWorlds(), Limbo.getInstance().getDimensionRegistry().getCodec(), world, 0, (byte) properties.getMaxPlayers(), 8, 8, properties.isReducedDebugInfo(), true, false, true, 0);
+                PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, Limbo.getInstance().getWorlds(), (byte) properties.getMaxPlayers(), 8, 8, properties.isReducedDebugInfo(), true, false, world.getEnvironment(), world, 0, properties.getDefaultGamemode(), false, true, 0);
                 sendPacket(join);
                 Limbo.getInstance().getUnsafe().a(player, properties.getDefaultGamemode());
 
@@ -877,6 +893,7 @@ public class ClientConnection extends Thread {
         HANDSHAKE,
         STATUS,
         LOGIN,
+        CONFIGURATION,
         PLAY,
         DISCONNECTED;
     }
