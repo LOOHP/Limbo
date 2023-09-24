@@ -139,8 +139,8 @@ public final class Limbo {
 	
 	//===========================
 	
-	public final String SERVER_IMPLEMENTATION_VERSION = "1.20.1";
-	public final int SERVER_IMPLEMENTATION_PROTOCOL = 763;
+	public final String SERVER_IMPLEMENTATION_VERSION = "1.20.2";
+	public final int SERVER_IMPLEMENTATION_PROTOCOL = 764;
 	public final String LIMBO_IMPLEMENTATION_VERSION;
 	
 	private final AtomicBoolean isRunning;
