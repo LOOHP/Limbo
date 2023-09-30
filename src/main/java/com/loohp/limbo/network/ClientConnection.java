@@ -95,6 +95,7 @@ import com.loohp.limbo.network.protocol.packets.PacketStatusOutPong;
 import com.loohp.limbo.network.protocol.packets.PacketStatusOutResponse;
 import com.loohp.limbo.network.protocol.packets.ServerboundChatCommandPacket;
 import com.loohp.limbo.network.protocol.packets.ServerboundFinishConfigurationPacket;
+import com.loohp.limbo.network.protocol.packets.ServerboundLoginAcknowledgedPacket;
 import com.loohp.limbo.player.Player;
 import com.loohp.limbo.player.PlayerInteractManager;
 import com.loohp.limbo.player.PlayerInventory;
@@ -517,11 +518,8 @@ public class ClientConnection extends Thread {
                             PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(uuid, username);
                             sendPacket(success);
 
-                            state = ClientState.CONFIGURATION;
-
                             player = new Player(this, username, uuid, Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
                             player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
-                            break;
                         } else if (packetIn instanceof PacketLoginInPluginMessaging) {
                             PacketLoginInPluginMessaging response = (PacketLoginInPluginMessaging) packetIn;
                             if (response.getMessageId() != messageId) {
@@ -544,10 +542,10 @@ public class ClientConnection extends Thread {
                             PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(data.getUuid(), data.getUsername());
                             sendPacket(success);
 
-                            state = ClientState.CONFIGURATION;
-
                             player = new Player(this, data.getUsername(), data.getUuid(), Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
                             player.setSkinLayers((byte) (0x01 | 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40));
+                        } else if (packetIn instanceof ServerboundLoginAcknowledgedPacket) {
+                            state = ClientState.CONFIGURATION;
                             break;
                         }
                     }
