@@ -25,8 +25,8 @@ import java.io.IOException;
 
 public class PacketPlayOutGameState extends PacketOut {
 
-	private int reason;
-	private float value;
+	private final int reason;
+	private final float value;
 
 	public PacketPlayOutGameState(int reason, float value) {
 		this.reason = reason;

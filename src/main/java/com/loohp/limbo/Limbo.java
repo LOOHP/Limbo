@@ -139,8 +139,8 @@ public final class Limbo {
 	
 	//===========================
 	
-	public final String SERVER_IMPLEMENTATION_VERSION = "1.20.2";
-	public final int SERVER_IMPLEMENTATION_PROTOCOL = 764;
+	public final String SERVER_IMPLEMENTATION_VERSION = "1.20.4";
+	public final int SERVER_IMPLEMENTATION_PROTOCOL = 765;
 	public final String LIMBO_IMPLEMENTATION_VERSION;
 	
 	private final AtomicBoolean isRunning;
@@ -555,7 +555,7 @@ public final class Limbo {
 		json.put("modinfo", modInfoJson);
 		
 		
-		TreeMap<String, Object> treeMap = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
+		TreeMap<String, Object> treeMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     	treeMap.putAll(json);
     	
     	Gson g = new GsonBuilder().create();

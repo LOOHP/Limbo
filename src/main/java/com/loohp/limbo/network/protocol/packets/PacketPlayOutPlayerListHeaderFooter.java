@@ -21,12 +21,10 @@ package com.loohp.limbo.network.protocol.packets;
 
 import com.loohp.limbo.utils.DataTypeIO;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 public class PacketPlayOutPlayerListHeaderFooter extends PacketOut{
 	
@@ -53,8 +51,8 @@ public class PacketPlayOutPlayerListHeaderFooter extends PacketOut{
 		
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(Packet.getPlayOut().get(getClass()));
-		DataTypeIO.writeString(output, GsonComponentSerializer.gson().serialize(header), StandardCharsets.UTF_8);
-		DataTypeIO.writeString(output, GsonComponentSerializer.gson().serialize(footer), StandardCharsets.UTF_8);
+		DataTypeIO.writeComponent(output, header);
+		DataTypeIO.writeComponent(output, footer);
 		return buffer.toByteArray();
 	}
 

@@ -51,7 +51,7 @@ import com.loohp.limbo.network.protocol.packets.PacketPlayOutNamedSoundEffect;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutOpenWindow;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerListHeaderFooter;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutPositionAndLook;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutResourcePackSend;
+import com.loohp.limbo.network.protocol.packets.ClientboundResourcePackPushPacket;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutRespawn;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutStopSound;
 import com.loohp.limbo.sounds.SoundEffect;
@@ -369,7 +369,7 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 	
 	public void setResourcePack(String url, String hash, boolean forced, Component promptmessage) {
 		try {
-			PacketPlayOutResourcePackSend packsend = new PacketPlayOutResourcePackSend(url, hash, forced, promptmessage != null, promptmessage);
+			ClientboundResourcePackPushPacket packsend = new ClientboundResourcePackPushPacket(UUID.randomUUID(), url, hash, forced, promptmessage);
 			clientConnection.sendPacket(packsend);
 		} catch (IOException e) {
 			e.printStackTrace();

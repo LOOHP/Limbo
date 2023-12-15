@@ -19,19 +19,19 @@
 
 package com.loohp.limbo.events.player;
 
-import com.loohp.limbo.network.protocol.packets.PacketPlayInResourcePackStatus.EnumResourcePackStatus;
+import com.loohp.limbo.network.protocol.packets.ServerboundResourcePackPacket.Action;
 import com.loohp.limbo.player.Player;
 
 public class PlayerResourcePackStatusEvent extends PlayerEvent {
 
-	private EnumResourcePackStatus status;
+	private Action status;
 	
-	public PlayerResourcePackStatusEvent(Player player, EnumResourcePackStatus status) {
+	public PlayerResourcePackStatusEvent(Player player, Action status) {
 		super(player);
 		this.status = status;
 	}
 	
-	public EnumResourcePackStatus getStatus() {
+	public Action getStatus() {
 		return status;
 	}
 }

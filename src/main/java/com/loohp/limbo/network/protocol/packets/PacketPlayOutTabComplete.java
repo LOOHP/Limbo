@@ -21,7 +21,6 @@ package com.loohp.limbo.network.protocol.packets;
 
 import com.loohp.limbo.utils.DataTypeIO;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -74,7 +73,7 @@ public class PacketPlayOutTabComplete extends PacketOut {
 			DataTypeIO.writeString(output, match.getMatch(), StandardCharsets.UTF_8);
 			if (match.getTooltip().isPresent()) {
 				output.writeBoolean(true);
-				DataTypeIO.writeString(output, GsonComponentSerializer.gson().serialize(match.getTooltip().get()), StandardCharsets.UTF_8);
+				DataTypeIO.writeComponent(output, match.getTooltip().get());
 			} else {
 				output.writeBoolean(false);
 			}

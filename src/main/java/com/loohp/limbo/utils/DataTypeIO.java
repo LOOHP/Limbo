@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.utils;
 
+import com.google.gson.JsonElement;
 import com.loohp.limbo.inventory.ItemStack;
 import com.loohp.limbo.location.BlockFace;
 import com.loohp.limbo.location.MovingObjectPositionBlock;
@@ -26,6 +27,8 @@ import com.loohp.limbo.location.Vector;
 import com.loohp.limbo.registry.Registry;
 import com.loohp.limbo.world.BlockPosition;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.querz.nbt.io.NBTInputStream;
 import net.querz.nbt.io.NBTOutputStream;
 import net.querz.nbt.tag.CompoundTag;
@@ -270,6 +273,22 @@ public class DataTypeIO {
 	        }
 	        out.writeByte(temp);
 	    } while (value != 0);
+	}
+
+	public static Component readComponent(DataInputStream in) throws IOException {
+		// Do not use CompoundTag, as Mojang serializes a plaintext component as just a single StringTag
+		Tag<?> tag = readTag(in, Tag.class);
+		if (tag == null || tag instanceof EndTag) {
+			throw new IllegalArgumentException("Got end-tag when trying to read Component");
+		}
+		JsonElement json = NbtComponentSerializer.tagComponentToJson(tag);
+		return GsonComponentSerializer.gson().deserializeFromTree(json);
+	}
+
+	public static void writeComponent(DataOutputStream out, Component component) throws IOException {
+		JsonElement json = GsonComponentSerializer.gson().serializeToTree(component);
+		Tag<?> tag = NbtComponentSerializer.jsonComponentToTag(json);
+		writeTag(out, tag);
 	}
 
 }

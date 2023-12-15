@@ -22,12 +22,10 @@ package com.loohp.limbo.network.protocol.packets;
 import com.loohp.limbo.bossbar.KeyedBossBar;
 import com.loohp.limbo.utils.DataTypeIO;
 import net.kyori.adventure.bossbar.BossBar;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 public class PacketPlayOutBoss extends PacketOut {
 
@@ -83,7 +81,7 @@ public class PacketPlayOutBoss extends PacketOut {
         BossBar properties = bossBar.getProperties();
         switch (action) {
             case ADD: {
-                DataTypeIO.writeString(output, GsonComponentSerializer.gson().serialize(properties.name()), StandardCharsets.UTF_8);
+                DataTypeIO.writeComponent(output, properties.name());
                 output.writeFloat(properties.progress());
                 DataTypeIO.writeVarInt(output, properties.color().ordinal());
                 DataTypeIO.writeVarInt(output, properties.overlay().ordinal());
@@ -98,7 +96,7 @@ public class PacketPlayOutBoss extends PacketOut {
                 break;
             }
             case UPDATE_NAME: {
-                DataTypeIO.writeString(output, GsonComponentSerializer.gson().serialize(properties.name()), StandardCharsets.UTF_8);
+                DataTypeIO.writeComponent(output, properties.name());
                 break;
             }
             case UPDATE_STYLE: {

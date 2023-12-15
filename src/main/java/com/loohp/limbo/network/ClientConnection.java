@@ -63,8 +63,8 @@ import com.loohp.limbo.network.protocol.packets.PacketPlayInPickItem;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInPluginMessaging;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInPosition;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInPositionAndLook;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInResourcePackStatus;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInResourcePackStatus.EnumResourcePackStatus;
+import com.loohp.limbo.network.protocol.packets.ServerboundResourcePackPacket;
+import com.loohp.limbo.network.protocol.packets.ServerboundResourcePackPacket.Action;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInRotation;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInSetCreativeSlot;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInTabComplete;
@@ -765,11 +765,11 @@ public class ClientConnection extends Thread {
                                 Limbo.getInstance().getUnsafe().a(player, event.getSlot());
                             }
 
-                        } else if (packetIn instanceof PacketPlayInResourcePackStatus) {
-                            PacketPlayInResourcePackStatus rpcheck = (PacketPlayInResourcePackStatus) packetIn;
+                        } else if (packetIn instanceof ServerboundResourcePackPacket) {
+                            ServerboundResourcePackPacket rpcheck = (ServerboundResourcePackPacket) packetIn;
                             // Pass on result to the events
-                            Limbo.getInstance().getEventsManager().callEvent(new PlayerResourcePackStatusEvent(player, rpcheck.getLoadedValue()));
-                            if (rpcheck.getLoadedValue().equals(EnumResourcePackStatus.DECLINED) && properties.getResourcePackRequired()) {
+                            Limbo.getInstance().getEventsManager().callEvent(new PlayerResourcePackStatusEvent(player, rpcheck.getAction()));
+                            if (rpcheck.getAction().equals(Action.DECLINED) && properties.getResourcePackRequired()) {
                                 player.disconnect(new TranslatableComponent("multiplayer.requiredTexturePrompt.disconnect"));
                             }
                         } else if (packetIn instanceof PacketPlayInPluginMessaging) {

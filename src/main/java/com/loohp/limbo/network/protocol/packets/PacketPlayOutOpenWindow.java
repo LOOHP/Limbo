@@ -23,12 +23,10 @@ import com.loohp.limbo.registry.Registry;
 import com.loohp.limbo.utils.DataTypeIO;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 public class PacketPlayOutOpenWindow extends PacketOut {
 
@@ -63,7 +61,7 @@ public class PacketPlayOutOpenWindow extends PacketOut {
 
         DataTypeIO.writeVarInt(output, containerId);
         DataTypeIO.writeVarInt(output, Registry.MENU_REGISTRY.getId(type));
-        DataTypeIO.writeString(output, GsonComponentSerializer.gson().serialize(title), StandardCharsets.UTF_8);
+        DataTypeIO.writeComponent(output, title);
 
         return buffer.toByteArray();
     }

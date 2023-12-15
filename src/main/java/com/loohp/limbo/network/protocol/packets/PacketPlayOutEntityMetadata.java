@@ -27,7 +27,6 @@ import com.loohp.limbo.utils.DataTypeIO;
 import com.loohp.limbo.utils.Rotation3f;
 import com.loohp.limbo.world.BlockPosition;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -129,7 +128,7 @@ public class PacketPlayOutEntityMetadata extends PacketOut {
 					output.writeByte((byte) watch.getValue());
 					break;
 				case CHAT:
-					DataTypeIO.writeString(output, GsonComponentSerializer.gson().serialize((Component) watch.getValue()), StandardCharsets.UTF_8);
+					DataTypeIO.writeComponent(output, (Component) watch.getValue());
 					break;
 				//case DIRECTION:
 				//	break;
