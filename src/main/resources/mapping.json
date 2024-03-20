@@ -43,6 +43,7 @@
     "PacketPlayOutLogin": "0x29",
     "PacketPlayOutPositionAndLook": "0x3E",
     "PacketPlayOutSpawnPosition": "0x54",
+    "PacketPlayOutGameEvent": "0x20",
     "ClientboundSystemChatPacket": "0x69",
     "PacketPlayOutPlayerAbilities": "0x36",
     "ClientboundLevelChunkWithLightPacket": "0x25",
