@@ -102,7 +102,7 @@ public final class Limbo {
 
 	private static Limbo instance;
 	public static boolean noGui = false;
-	
+
 	public static void main(String args[]) throws IOException, ParseException, NumberFormatException, ClassNotFoundException, InterruptedException {
 		for (String flag : args) {
 			if (flag.equals("--nogui") || flag.equals("nogui")) {
@@ -129,57 +129,57 @@ public final class Limbo {
 			});
 			t1.start();
 		}
-		
+
 		new Limbo();
 	}
-	
+
 	public static Limbo getInstance() {
 		return instance;
 	}
-	
+
 	//===========================
-	
+
 	public final String SERVER_IMPLEMENTATION_VERSION = "1.20.4";
 	public final int SERVER_IMPLEMENTATION_PROTOCOL = 765;
 	public final String LIMBO_IMPLEMENTATION_VERSION;
-	
+
 	private final AtomicBoolean isRunning;
-	
+
 	private final ServerConnection server;
 	private final Console console;
-	
+
 	private final List<World> worlds = new CopyOnWriteArrayList<>();
 	final Map<String, Player> playersByName = new ConcurrentHashMap<>();
 	final Map<UUID, Player> playersByUUID = new ConcurrentHashMap<>();
 	private final Map<Key, KeyedBossBar> bossBars = new ConcurrentHashMap<>();
-	
+
 	private final ServerProperties properties;
-	
+
 	private final PluginManager pluginManager;
 	private final EventsManager eventsManager;
 	private final PermissionsManager permissionManager;
 	private final File pluginFolder;
-	
+
 	private final File internalDataFolder;
-	
+
 	private final DimensionRegistry dimensionRegistry;
-	
+
 	private final Tick tick;
 	private final LimboScheduler scheduler;
-	
+
 	private final Metrics metrics;
-	
+
 	public final AtomicInteger entityIdCount = new AtomicInteger();
-	
+
 	@SuppressWarnings("deprecation")
 	private Unsafe unsafe;
-	
+
 	@SuppressWarnings("unchecked")
 	public Limbo() throws IOException, ParseException, NumberFormatException, ClassNotFoundException, InterruptedException {
 		instance = this;
 		unsafe = new Unsafe(this);
 		isRunning = new AtomicBoolean(true);
-		
+
 		if (!noGui) {
 			while (!GUI.loadFinish) {
 				TimeUnit.MILLISECONDS.sleep(500);
@@ -188,10 +188,10 @@ public final class Limbo {
 		} else {
 			console = new Console(System.in, System.out, System.err);
 		}
-				
+
 		LIMBO_IMPLEMENTATION_VERSION = getLimboVersion();
 		console.sendMessage("Loading Limbo Version " + LIMBO_IMPLEMENTATION_VERSION + " on Minecraft " + SERVER_IMPLEMENTATION_VERSION);
-		
+
 		String spName = "server.properties";
         File sp = new File(spName);
         if (!sp.exists()) {
@@ -202,37 +202,33 @@ public final class Limbo {
             }
         }
         properties = new ServerProperties(sp);
-        
+
         if (!properties.isBungeecord()) {
         	console.sendMessage("If you are using bungeecord, consider turning that on in the settings!");
         } else {
         	console.sendMessage("Starting Limbo server in bungeecord mode!");
         }
-        
+
         internalDataFolder = new File("internal_data");
         if (!internalDataFolder.exists()) {
         	internalDataFolder.mkdirs();
         }
-		
-        String mappingName = "mapping.json";
-        File mappingFile = new File(internalDataFolder, mappingName);
-        if (!mappingFile.exists()) {
-        	try (InputStream in = getClass().getClassLoader().getResourceAsStream(mappingName)) {
-                Files.copy(in, mappingFile.toPath());
-            } catch (IOException e) {
-            	e.printStackTrace();
-            }
-        }
-        
+
         console.sendMessage("Loading packet id mappings from mapping.json ...");
-        
-        InputStreamReader reader = new InputStreamReader(Files.newInputStream(mappingFile.toPath()), StandardCharsets.UTF_8);
+
+		InputStream mappingStream = getClass().getClassLoader().getResourceAsStream("mapping.json");
+		if (mappingStream == null) {
+			console.sendMessage("Failed to load mapping.json from jar!");
+			System.exit(1);
+		}
+
+        InputStreamReader reader = new InputStreamReader(mappingStream, StandardCharsets.UTF_8);
         JSONObject json = (JSONObject) new JSONParser().parse(reader);
         reader.close();
-        
+
         String classPrefix = Packet.class.getName().substring(0, Packet.class.getName().lastIndexOf(".") + 1);
         int mappingsCount = 0;
-        
+
 		Map<Integer, Class<? extends PacketIn>> HandshakeIn = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("HandshakeIn")).keySet()) {
 			int packetId = Integer.decode((String) key);
@@ -240,7 +236,7 @@ public final class Limbo {
 		}
 		Packet.setHandshakeIn(HandshakeIn);
 		mappingsCount += HandshakeIn.size();
-		
+
 		Map<Integer, Class<? extends PacketIn>> StatusIn = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("StatusIn")).keySet()) {
 			int packetId = Integer.decode((String) key);
@@ -248,7 +244,7 @@ public final class Limbo {
 		}
 		Packet.setStatusIn(StatusIn);
 		mappingsCount += StatusIn.size();
-		
+
 		Map<Class<? extends PacketOut>, Integer> StatusOut = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("StatusOut")).keySet()) {
 			Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + key);
@@ -256,7 +252,7 @@ public final class Limbo {
 		}
 		Packet.setStatusOut(StatusOut);
 		mappingsCount += StatusOut.size();
-		
+
 		Map<Integer, Class<? extends PacketIn>> LoginIn = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("LoginIn")).keySet()) {
 			int packetId = Integer.decode((String) key);
@@ -264,7 +260,7 @@ public final class Limbo {
 		}
 		Packet.setLoginIn(LoginIn);
 		mappingsCount += LoginIn.size();
-		
+
 		Map<Class<? extends PacketOut>, Integer> LoginOut = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("LoginOut")).keySet()) {
 			Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + key);
@@ -288,7 +284,7 @@ public final class Limbo {
 		}
 		Packet.setConfigurationOut(ConfigurationOut);
 		mappingsCount += ConfigurationOut.size();
-		
+
 		Map<Integer, Class<? extends PacketIn>> PlayIn = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("PlayIn")).keySet()) {
 			int packetId = Integer.decode((String) key);
@@ -296,7 +292,7 @@ public final class Limbo {
 		}
 		Packet.setPlayIn(PlayIn);
 		mappingsCount += PlayIn.size();
-		
+
 		Map<Class<? extends PacketOut>, Integer> PlayOut = new HashMap<>();
 		for (Object key : ((JSONObject) json.get("PlayOut")).keySet()) {
 			Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + key);
@@ -304,15 +300,15 @@ public final class Limbo {
 		}
 		Packet.setPlayOut(PlayOut);
 		mappingsCount += PlayOut.size();
-		
+
 		console.sendMessage("Loaded all " + mappingsCount + " packet id mappings!");
-		
+
 		dimensionRegistry = new DimensionRegistry();
-		
+
 		worlds.add(loadDefaultWorld());
 		Location spawn = properties.getWorldSpawn();
 		properties.setWorldSpawn(new Location(getWorld(properties.getLevelName().value()), spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch()));
-		
+
 		if (!NetworkUtils.available(properties.getServerPort())) {
 			console.sendMessage("");
 			console.sendMessage("*****FAILED TO BIND PORT [" + properties.getServerPort() + "]*****");
@@ -321,7 +317,7 @@ public final class Limbo {
 			console.sendMessage("");
 			System.exit(2);
 		}
-		
+
 		String permissionName = "permission.yml";
         File permissionFile = new File(permissionName);
         if (!permissionFile.exists()) {
@@ -334,15 +330,15 @@ public final class Limbo {
 
         scheduler = new LimboScheduler();
 		tick = new Tick(this);
-        
+
         permissionManager = new PermissionsManager();
-        permissionManager.loadDefaultPermissionFile(permissionFile);     
-        
+        permissionManager.loadDefaultPermissionFile(permissionFile);
+
         eventsManager = new EventsManager();
-        
+
         pluginFolder = new File("plugins");
         pluginFolder.mkdirs();
-		
+
 	    pluginManager = new PluginManager(new DefaultCommands(), pluginFolder);
 	    try {
 			Method loadPluginsMethod = PluginManager.class.getDeclaredMethod("loadPlugins");
@@ -352,7 +348,7 @@ public final class Limbo {
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		
+
 		for (LimboPlugin plugin : Limbo.getInstance().getPluginManager().getPlugins()) {
 			try {
 				console.sendMessage("Enabling plugin " + plugin.getName() + " " + plugin.getInfo().getVersion());
@@ -361,11 +357,11 @@ public final class Limbo {
 				new RuntimeException("Error while enabling " + plugin.getName() + " " + plugin.getInfo().getVersion(), e).printStackTrace();
 			}
 		}
-		
+
 		server = new ServerConnection(properties.getServerIp(), properties.getServerPort());
-		
+
 		metrics = new Metrics();
-		
+
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			Limbo.getInstance().terminate();
 		}));
@@ -377,11 +373,11 @@ public final class Limbo {
 	public Unsafe getUnsafe() {
 		return unsafe;
 	}
-	
+
 	public Tick getHeartBeat() {
 		return tick;
 	}
-	
+
 	public LimboScheduler getScheduler() {
 		return scheduler;
 	}
@@ -401,20 +397,20 @@ public final class Limbo {
 	public EventsManager getEventsManager() {
 		return eventsManager;
 	}
-	
+
 	public File getPluginFolder() {
 		return pluginFolder;
 	}
-	
+
 	public PluginManager getPluginManager() {
 		return pluginManager;
 	}
 
 	private World loadDefaultWorld() throws IOException {
 		console.sendMessage("Loading world " + properties.getLevelName() + " with the schematic file " + properties.getSchemFileName() + " ...");
-		
+
 		File schem = new File(properties.getSchemFileName());
-		
+
 		if (!schem.exists()) {
 			console.sendMessage("Schemetic file " + properties.getSchemFileName() + " for world " + properties.getLevelName() + " not found!");
 			console.sendMessage("Creating default world...");
@@ -424,10 +420,10 @@ public final class Limbo {
 	        	e.printStackTrace();
 	        }
 		}
-		
+
 		try {
 			World world = Schematic.toWorld(properties.getLevelName().value(), Environment.fromKey(properties.getLevelDimension()), (CompoundTag) NBTUtil.read(schem).getTag());
-			console.sendMessage("Loaded world " + properties.getLevelName() + "!");		
+			console.sendMessage("Loaded world " + properties.getLevelName() + "!");
 			return world;
 		} catch (Throwable e) {
 			console.sendMessage("Unable to load world " + properties.getSchemFileName() + "!");
@@ -437,7 +433,7 @@ public final class Limbo {
 			return null;
 		}
 	}
-	
+
 	public void registerWorld(World world) {
 		if (!worlds.contains(world)) {
 			worlds.add(world);
@@ -445,7 +441,7 @@ public final class Limbo {
 			throw new RuntimeException("World already registered");
 		}
 	}
-	
+
 	public void unregisterWorld(World world) {
 		if (worlds.indexOf(world) == 0) {
 			throw new RuntimeException("World already registered");
@@ -486,7 +482,7 @@ public final class Limbo {
 	public ServerProperties getServerProperties() {
 		return properties;
 	}
-	
+
 	public ServerConnection getServerConnection() {
 		return server;
 	}
@@ -494,7 +490,7 @@ public final class Limbo {
 	public Console getConsole() {
 		return console;
 	}
-	
+
 	public Metrics getMetrics() {
 		return metrics;
 	}
@@ -502,19 +498,19 @@ public final class Limbo {
 	public Set<Player> getPlayers() {
 		return new HashSet<>(playersByUUID.values());
 	}
-	
+
 	public Player getPlayer(String name) {
 		return playersByName.get(name);
 	}
-	
+
 	public Player getPlayer(UUID uuid) {
 		return playersByUUID.get(uuid);
 	}
-	
+
 	public List<World> getWorlds() {
 		return new ArrayList<>(worlds);
 	}
-	
+
 	public World getWorld(String name) {
 		for (World world : worlds) {
 			if (world.getName().equalsIgnoreCase(name)) {
@@ -523,7 +519,7 @@ public final class Limbo {
 		}
 		return null;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public String buildServerListResponseJson(String version, int protocol, Component motd, int maxPlayers, int playersOnline, BufferedImage favicon) throws IOException {
 		JSONObject json = new JSONObject();
@@ -532,14 +528,14 @@ public final class Limbo {
 		versionJson.put("name", version);
 		versionJson.put("protocol", protocol);
 		json.put("version", versionJson);
-		
+
 		JSONObject playersJson = new JSONObject();
 		playersJson.put("max", maxPlayers);
 		playersJson.put("online", playersOnline);
 		json.put("players", playersJson);
-		
+
 		json.put("description", "%MOTD%");
-		
+
 		if (favicon != null) {
 			if (favicon.getWidth() == 64 && favicon.getHeight() == 64) {
 				String base64 = "data:image/png;base64," + ImageUtils.imgToBase64String(favicon, "png");
@@ -548,30 +544,30 @@ public final class Limbo {
 				console.sendMessage("Server List Favicon must be 64 x 64 in size!");
 			}
 		}
-		
+
 		JSONObject modInfoJson = new JSONObject();
 		modInfoJson.put("type", "FML");
 		modInfoJson.put("modList", new JSONArray());
 		json.put("modinfo", modInfoJson);
-		
-		
+
+
 		TreeMap<String, Object> treeMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     	treeMap.putAll(json);
-    	
+
     	Gson g = new GsonBuilder().create();
 
     	return g.toJson(treeMap).replace("\"%MOTD%\"", GsonComponentSerializer.gson().serialize(motd));
 	}
-	
+
 	public String buildLegacyPingResponse(String version, Component motd, int maxPlayers, int playersOnline) {
 		String begin = "�1";
 		return String.join("\00", begin, "127", version, String.join("", Arrays.asList(motd).stream().map(each -> LegacyComponentSerializer.legacySection().serialize(each)).collect(Collectors.toList())), String.valueOf(playersOnline), String.valueOf(maxPlayers));
 	}
-	
+
 	protected void terminate() {
 		isRunning.set(false);
 		console.sendMessage("Stopping Server...");
-		
+
 		for (LimboPlugin plugin : Limbo.getInstance().getPluginManager().getPlugins()) {
 			try {
 				console.sendMessage("Disabling plugin " + plugin.getName() + " " + plugin.getInfo().getVersion());
@@ -580,9 +576,9 @@ public final class Limbo {
 				new RuntimeException("Error while disabling " + plugin.getName() + " " + plugin.getInfo().getVersion(), e).printStackTrace();
 			}
 		}
-		
+
 		tick.waitAndKillThreads(5000);
-		
+
 		for (Player player : getPlayers()) {
 			player.disconnect("Server closed");
 		}
@@ -593,23 +589,23 @@ public final class Limbo {
 				e.printStackTrace();
 			}
 		}
-		
+
 		console.sendMessage("Server closed");
 		console.logs.close();
 	}
-	
+
 	public void stopServer() {
 		System.exit(0);
 	}
-	
+
 	public boolean isRunning() {
 		return isRunning.get();
 	}
-	
+
 	public int getNextEntityId() {
 		return entityIdCount.getAndUpdate(i -> i == Integer.MAX_VALUE ? 0 : ++i);
 	}
-	
+
 	public void dispatchCommand(CommandSender sender, String str) {
 		String[] command;
 		if (str.startsWith("/")) {
@@ -619,7 +615,7 @@ public final class Limbo {
 		}
 		dispatchCommand(sender, command);
 	}
-	
+
 	public void dispatchCommand(CommandSender sender, String... args) {
 		try {
 			Limbo.getInstance().getPluginManager().fireExecutors(sender, args);
@@ -627,7 +623,7 @@ public final class Limbo {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private String getLimboVersion() throws IOException {
 		Enumeration<URL> manifests = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
 		while (manifests.hasMoreElements()) {
