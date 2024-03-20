@@ -25,31 +25,31 @@ import java.io.IOException;
 
 public class PacketPlayOutGameEvent extends PacketOut {
 
-	private byte event;
-	private float value;
+    private byte event;
+    private float value;
 
-	public PacketPlayOutGameEvent(byte event, float value) {
-		this.event = event;
-		this.value = value;
-	}
+    public PacketPlayOutGameEvent(byte event, float value) {
+        this.event = event;
+        this.value = value;
+    }
 
-	public int getEvent() {
-		return event;
-	}
-	
-	public float getValue() {
-		return value;
-	}
-	
-	public byte[] serializePacket() throws IOException {
-		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-		
-		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getPlayOut().get(getClass()));
-		output.writeByte(Byte.toUnsignedInt(event));
-		output.writeFloat(value);
+    public int getEvent() {
+        return event;
+    }
 
-		return buffer.toByteArray();
-	}
+    public float getValue() {
+        return value;
+    }
+
+    public byte[] serializePacket() throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+        DataOutputStream output = new DataOutputStream(buffer);
+        output.writeByte(Packet.getPlayOut().get(getClass()));
+        output.writeByte(Byte.toUnsignedInt(event));
+        output.writeFloat(value);
+
+        return buffer.toByteArray();
+    }
 
 }

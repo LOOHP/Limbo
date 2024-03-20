@@ -98,129 +98,130 @@ import java.util.stream.Collectors;
 
 public final class Limbo {
 
-	public static final String LIMBO_BRAND = "Limbo";
+    public static final String LIMBO_BRAND = "Limbo";
 
-	private static Limbo instance;
-	public static boolean noGui = false;
+    private static Limbo instance;
+    public static boolean noGui = false;
 
-	public static void main(String args[]) throws IOException, ParseException, NumberFormatException, ClassNotFoundException, InterruptedException {
-		for (String flag : args) {
-			if (flag.equals("--nogui") || flag.equals("nogui")) {
-				noGui = true;
-			} else if (flag.equals("--help")) {
-				System.out.println("Accepted flags:");
-				System.out.println(" --nogui <- Disable the GUI");
-				System.exit(0);
-			} else {
-				System.out.println("Unknown flag: \"" + flag + "\". Ignoring...");
-			}
-		}
-		if (GraphicsEnvironment.isHeadless()) {
-			noGui = true;
-		}
-		if (!noGui) {
-			System.out.println("Launching Server GUI.. Add \"--nogui\" in launch arguments to disable");
-			Thread t1 = new Thread(() -> {
-				try {
-					GUI.main();
-				} catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			});
-			t1.start();
-		}
+    public static void main(String args[]) throws IOException, ParseException, NumberFormatException, ClassNotFoundException, InterruptedException {
+        for (String flag : args) {
+            if (flag.equals("--nogui") || flag.equals("nogui")) {
+                noGui = true;
+            } else if (flag.equals("--help")) {
+                System.out.println("Accepted flags:");
+                System.out.println(" --nogui <- Disable the GUI");
+                System.exit(0);
+            } else {
+                System.out.println("Unknown flag: \"" + flag + "\". Ignoring...");
+            }
+        }
+        if (GraphicsEnvironment.isHeadless()) {
+            noGui = true;
+        }
+        if (!noGui) {
+            System.out.println("Launching Server GUI.. Add \"--nogui\" in launch arguments to disable");
+            Thread t1 = new Thread(() -> {
+                try {
+                    GUI.main();
+                } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException |
+                         IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            });
+            t1.start();
+        }
 
-		new Limbo();
-	}
+        new Limbo();
+    }
 
-	public static Limbo getInstance() {
-		return instance;
-	}
+    public static Limbo getInstance() {
+        return instance;
+    }
 
-	//===========================
+    //===========================
 
-	public final String SERVER_IMPLEMENTATION_VERSION = "1.20.4";
-	public final int SERVER_IMPLEMENTATION_PROTOCOL = 765;
-	public final String LIMBO_IMPLEMENTATION_VERSION;
+    public final String SERVER_IMPLEMENTATION_VERSION = "1.20.4";
+    public final int SERVER_IMPLEMENTATION_PROTOCOL = 765;
+    public final String LIMBO_IMPLEMENTATION_VERSION;
 
-	private final AtomicBoolean isRunning;
+    private final AtomicBoolean isRunning;
 
-	private final ServerConnection server;
-	private final Console console;
+    private final ServerConnection server;
+    private final Console console;
 
-	private final List<World> worlds = new CopyOnWriteArrayList<>();
-	final Map<String, Player> playersByName = new ConcurrentHashMap<>();
-	final Map<UUID, Player> playersByUUID = new ConcurrentHashMap<>();
-	private final Map<Key, KeyedBossBar> bossBars = new ConcurrentHashMap<>();
+    private final List<World> worlds = new CopyOnWriteArrayList<>();
+    final Map<String, Player> playersByName = new ConcurrentHashMap<>();
+    final Map<UUID, Player> playersByUUID = new ConcurrentHashMap<>();
+    private final Map<Key, KeyedBossBar> bossBars = new ConcurrentHashMap<>();
 
-	private final ServerProperties properties;
+    private final ServerProperties properties;
 
-	private final PluginManager pluginManager;
-	private final EventsManager eventsManager;
-	private final PermissionsManager permissionManager;
-	private final File pluginFolder;
+    private final PluginManager pluginManager;
+    private final EventsManager eventsManager;
+    private final PermissionsManager permissionManager;
+    private final File pluginFolder;
 
-	private final File internalDataFolder;
+    private final File internalDataFolder;
 
-	private final DimensionRegistry dimensionRegistry;
+    private final DimensionRegistry dimensionRegistry;
 
-	private final Tick tick;
-	private final LimboScheduler scheduler;
+    private final Tick tick;
+    private final LimboScheduler scheduler;
 
-	private final Metrics metrics;
+    private final Metrics metrics;
 
-	public final AtomicInteger entityIdCount = new AtomicInteger();
+    public final AtomicInteger entityIdCount = new AtomicInteger();
 
-	@SuppressWarnings("deprecation")
-	private Unsafe unsafe;
+    @SuppressWarnings("deprecation")
+    private Unsafe unsafe;
 
-	@SuppressWarnings("unchecked")
-	public Limbo() throws IOException, ParseException, NumberFormatException, ClassNotFoundException, InterruptedException {
-		instance = this;
-		unsafe = new Unsafe(this);
-		isRunning = new AtomicBoolean(true);
+    @SuppressWarnings("unchecked")
+    public Limbo() throws IOException, ParseException, NumberFormatException, ClassNotFoundException, InterruptedException {
+        instance = this;
+        unsafe = new Unsafe(this);
+        isRunning = new AtomicBoolean(true);
 
-		if (!noGui) {
-			while (!GUI.loadFinish) {
-				TimeUnit.MILLISECONDS.sleep(500);
-			}
-			console = new Console(null, System.out, System.err);
-		} else {
-			console = new Console(System.in, System.out, System.err);
-		}
+        if (!noGui) {
+            while (!GUI.loadFinish) {
+                TimeUnit.MILLISECONDS.sleep(500);
+            }
+            console = new Console(null, System.out, System.err);
+        } else {
+            console = new Console(System.in, System.out, System.err);
+        }
 
-		LIMBO_IMPLEMENTATION_VERSION = getLimboVersion();
-		console.sendMessage("Loading Limbo Version " + LIMBO_IMPLEMENTATION_VERSION + " on Minecraft " + SERVER_IMPLEMENTATION_VERSION);
+        LIMBO_IMPLEMENTATION_VERSION = getLimboVersion();
+        console.sendMessage("Loading Limbo Version " + LIMBO_IMPLEMENTATION_VERSION + " on Minecraft " + SERVER_IMPLEMENTATION_VERSION);
 
-		String spName = "server.properties";
+        String spName = "server.properties";
         File sp = new File(spName);
         if (!sp.exists()) {
-        	try (InputStream in = getClass().getClassLoader().getResourceAsStream(spName)) {
+            try (InputStream in = getClass().getClassLoader().getResourceAsStream(spName)) {
                 Files.copy(in, sp.toPath());
             } catch (IOException e) {
-            	e.printStackTrace();
+                e.printStackTrace();
             }
         }
         properties = new ServerProperties(sp);
 
         if (!properties.isBungeecord()) {
-        	console.sendMessage("If you are using bungeecord, consider turning that on in the settings!");
+            console.sendMessage("If you are using bungeecord, consider turning that on in the settings!");
         } else {
-        	console.sendMessage("Starting Limbo server in bungeecord mode!");
+            console.sendMessage("Starting Limbo server in bungeecord mode!");
         }
 
         internalDataFolder = new File("internal_data");
         if (!internalDataFolder.exists()) {
-        	internalDataFolder.mkdirs();
+            internalDataFolder.mkdirs();
         }
 
         console.sendMessage("Loading packet id mappings from mapping.json ...");
 
-		InputStream mappingStream = getClass().getClassLoader().getResourceAsStream("mapping.json");
-		if (mappingStream == null) {
-			console.sendMessage("Failed to load mapping.json from jar!");
-			System.exit(1);
-		}
+        InputStream mappingStream = getClass().getClassLoader().getResourceAsStream("mapping.json");
+        if (mappingStream == null) {
+            console.sendMessage("Failed to load mapping.json from jar!");
+            System.exit(1);
+        }
 
         InputStreamReader reader = new InputStreamReader(mappingStream, StandardCharsets.UTF_8);
         JSONObject json = (JSONObject) new JSONParser().parse(reader);
@@ -229,107 +230,107 @@ public final class Limbo {
         String classPrefix = Packet.class.getName().substring(0, Packet.class.getName().lastIndexOf(".") + 1);
         int mappingsCount = 0;
 
-		Map<Integer, Class<? extends PacketIn>> HandshakeIn = new HashMap<>();
-		for (Object key : ((JSONObject) json.get("HandshakeIn")).keySet()) {
-			int packetId = Integer.decode((String) key);
-			HandshakeIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + ((JSONObject) json.get("HandshakeIn")).get(key)));
-		}
-		Packet.setHandshakeIn(HandshakeIn);
-		mappingsCount += HandshakeIn.size();
+        Map<Integer, Class<? extends PacketIn>> HandshakeIn = new HashMap<>();
+        for (Object key : ((JSONObject) json.get("HandshakeIn")).keySet()) {
+            int packetId = Integer.decode((String) key);
+            HandshakeIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + ((JSONObject) json.get("HandshakeIn")).get(key)));
+        }
+        Packet.setHandshakeIn(HandshakeIn);
+        mappingsCount += HandshakeIn.size();
 
-		Map<Integer, Class<? extends PacketIn>> StatusIn = new HashMap<>();
-		for (Object key : ((JSONObject) json.get("StatusIn")).keySet()) {
-			int packetId = Integer.decode((String) key);
-			StatusIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + ((JSONObject) json.get("StatusIn")).get(key)));
-		}
-		Packet.setStatusIn(StatusIn);
-		mappingsCount += StatusIn.size();
+        Map<Integer, Class<? extends PacketIn>> StatusIn = new HashMap<>();
+        for (Object key : ((JSONObject) json.get("StatusIn")).keySet()) {
+            int packetId = Integer.decode((String) key);
+            StatusIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + ((JSONObject) json.get("StatusIn")).get(key)));
+        }
+        Packet.setStatusIn(StatusIn);
+        mappingsCount += StatusIn.size();
 
-		Map<Class<? extends PacketOut>, Integer> StatusOut = new HashMap<>();
-		for (Object key : ((JSONObject) json.get("StatusOut")).keySet()) {
-			Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + key);
-			StatusOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("StatusOut")).get(key)));
-		}
-		Packet.setStatusOut(StatusOut);
-		mappingsCount += StatusOut.size();
+        Map<Class<? extends PacketOut>, Integer> StatusOut = new HashMap<>();
+        for (Object key : ((JSONObject) json.get("StatusOut")).keySet()) {
+            Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + key);
+            StatusOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("StatusOut")).get(key)));
+        }
+        Packet.setStatusOut(StatusOut);
+        mappingsCount += StatusOut.size();
 
-		Map<Integer, Class<? extends PacketIn>> LoginIn = new HashMap<>();
-		for (Object key : ((JSONObject) json.get("LoginIn")).keySet()) {
-			int packetId = Integer.decode((String) key);
-			LoginIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + ((JSONObject) json.get("LoginIn")).get(key)));
-		}
-		Packet.setLoginIn(LoginIn);
-		mappingsCount += LoginIn.size();
+        Map<Integer, Class<? extends PacketIn>> LoginIn = new HashMap<>();
+        for (Object key : ((JSONObject) json.get("LoginIn")).keySet()) {
+            int packetId = Integer.decode((String) key);
+            LoginIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + ((JSONObject) json.get("LoginIn")).get(key)));
+        }
+        Packet.setLoginIn(LoginIn);
+        mappingsCount += LoginIn.size();
 
-		Map<Class<? extends PacketOut>, Integer> LoginOut = new HashMap<>();
-		for (Object key : ((JSONObject) json.get("LoginOut")).keySet()) {
-			Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + key);
-			LoginOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("LoginOut")).get(key)));
-		}
-		Packet.setLoginOut(LoginOut);
-		mappingsCount += LoginOut.size();
+        Map<Class<? extends PacketOut>, Integer> LoginOut = new HashMap<>();
+        for (Object key : ((JSONObject) json.get("LoginOut")).keySet()) {
+            Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + key);
+            LoginOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("LoginOut")).get(key)));
+        }
+        Packet.setLoginOut(LoginOut);
+        mappingsCount += LoginOut.size();
 
-		Map<Integer, Class<? extends PacketIn>> ConfigurationIn = new HashMap<>();
-		for (Object key : ((JSONObject) json.get("ConfigurationIn")).keySet()) {
-			int packetId = Integer.decode((String) key);
-			ConfigurationIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + ((JSONObject) json.get("ConfigurationIn")).get(key)));
-		}
-		Packet.setConfigurationIn(ConfigurationIn);
-		mappingsCount += ConfigurationIn.size();
+        Map<Integer, Class<? extends PacketIn>> ConfigurationIn = new HashMap<>();
+        for (Object key : ((JSONObject) json.get("ConfigurationIn")).keySet()) {
+            int packetId = Integer.decode((String) key);
+            ConfigurationIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + ((JSONObject) json.get("ConfigurationIn")).get(key)));
+        }
+        Packet.setConfigurationIn(ConfigurationIn);
+        mappingsCount += ConfigurationIn.size();
 
-		Map<Class<? extends PacketOut>, Integer> ConfigurationOut = new HashMap<>();
-		for (Object key : ((JSONObject) json.get("ConfigurationOut")).keySet()) {
-			Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + key);
-			ConfigurationOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("ConfigurationOut")).get(key)));
-		}
-		Packet.setConfigurationOut(ConfigurationOut);
-		mappingsCount += ConfigurationOut.size();
+        Map<Class<? extends PacketOut>, Integer> ConfigurationOut = new HashMap<>();
+        for (Object key : ((JSONObject) json.get("ConfigurationOut")).keySet()) {
+            Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + key);
+            ConfigurationOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("ConfigurationOut")).get(key)));
+        }
+        Packet.setConfigurationOut(ConfigurationOut);
+        mappingsCount += ConfigurationOut.size();
 
-		Map<Integer, Class<? extends PacketIn>> PlayIn = new HashMap<>();
-		for (Object key : ((JSONObject) json.get("PlayIn")).keySet()) {
-			int packetId = Integer.decode((String) key);
-			PlayIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + ((JSONObject) json.get("PlayIn")).get(key)));
-		}
-		Packet.setPlayIn(PlayIn);
-		mappingsCount += PlayIn.size();
+        Map<Integer, Class<? extends PacketIn>> PlayIn = new HashMap<>();
+        for (Object key : ((JSONObject) json.get("PlayIn")).keySet()) {
+            int packetId = Integer.decode((String) key);
+            PlayIn.put(packetId, (Class<? extends PacketIn>) Class.forName(classPrefix + ((JSONObject) json.get("PlayIn")).get(key)));
+        }
+        Packet.setPlayIn(PlayIn);
+        mappingsCount += PlayIn.size();
 
-		Map<Class<? extends PacketOut>, Integer> PlayOut = new HashMap<>();
-		for (Object key : ((JSONObject) json.get("PlayOut")).keySet()) {
-			Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + key);
-			PlayOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("PlayOut")).get(key)));
-		}
-		Packet.setPlayOut(PlayOut);
-		mappingsCount += PlayOut.size();
+        Map<Class<? extends PacketOut>, Integer> PlayOut = new HashMap<>();
+        for (Object key : ((JSONObject) json.get("PlayOut")).keySet()) {
+            Class<? extends PacketOut> packetClass = (Class<? extends PacketOut>) Class.forName(classPrefix + key);
+            PlayOut.put(packetClass, Integer.decode((String) ((JSONObject) json.get("PlayOut")).get(key)));
+        }
+        Packet.setPlayOut(PlayOut);
+        mappingsCount += PlayOut.size();
 
-		console.sendMessage("Loaded all " + mappingsCount + " packet id mappings!");
+        console.sendMessage("Loaded all " + mappingsCount + " packet id mappings!");
 
-		dimensionRegistry = new DimensionRegistry();
+        dimensionRegistry = new DimensionRegistry();
 
-		worlds.add(loadDefaultWorld());
-		Location spawn = properties.getWorldSpawn();
-		properties.setWorldSpawn(new Location(getWorld(properties.getLevelName().value()), spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch()));
+        worlds.add(loadDefaultWorld());
+        Location spawn = properties.getWorldSpawn();
+        properties.setWorldSpawn(new Location(getWorld(properties.getLevelName().value()), spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getYaw(), spawn.getPitch()));
 
-		if (!NetworkUtils.available(properties.getServerPort())) {
-			console.sendMessage("");
-			console.sendMessage("*****FAILED TO BIND PORT [" + properties.getServerPort() + "]*****");
-			console.sendMessage("*****PORT ALREADY IN USE*****");
-			console.sendMessage("*****PERHAPS ANOTHER INSTANCE OF THE SERVER IS ALREADY RUNNING?*****");
-			console.sendMessage("");
-			System.exit(2);
-		}
+        if (!NetworkUtils.available(properties.getServerPort())) {
+            console.sendMessage("");
+            console.sendMessage("*****FAILED TO BIND PORT [" + properties.getServerPort() + "]*****");
+            console.sendMessage("*****PORT ALREADY IN USE*****");
+            console.sendMessage("*****PERHAPS ANOTHER INSTANCE OF THE SERVER IS ALREADY RUNNING?*****");
+            console.sendMessage("");
+            System.exit(2);
+        }
 
-		String permissionName = "permission.yml";
+        String permissionName = "permission.yml";
         File permissionFile = new File(permissionName);
         if (!permissionFile.exists()) {
-        	try (InputStream in = getClass().getClassLoader().getResourceAsStream(permissionName)) {
+            try (InputStream in = getClass().getClassLoader().getResourceAsStream(permissionName)) {
                 Files.copy(in, permissionFile.toPath());
             } catch (IOException e) {
-            	e.printStackTrace();
+                e.printStackTrace();
             }
         }
 
         scheduler = new LimboScheduler();
-		tick = new Tick(this);
+        tick = new Tick(this);
 
         permissionManager = new PermissionsManager();
         permissionManager.loadDefaultPermissionFile(permissionFile);
@@ -339,323 +340,324 @@ public final class Limbo {
         pluginFolder = new File("plugins");
         pluginFolder.mkdirs();
 
-	    pluginManager = new PluginManager(new DefaultCommands(), pluginFolder);
-	    try {
-			Method loadPluginsMethod = PluginManager.class.getDeclaredMethod("loadPlugins");
-			loadPluginsMethod.setAccessible(true);
-			loadPluginsMethod.invoke(pluginManager);
-			loadPluginsMethod.setAccessible(false);
-		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			e.printStackTrace();
-		}
+        pluginManager = new PluginManager(new DefaultCommands(), pluginFolder);
+        try {
+            Method loadPluginsMethod = PluginManager.class.getDeclaredMethod("loadPlugins");
+            loadPluginsMethod.setAccessible(true);
+            loadPluginsMethod.invoke(pluginManager);
+            loadPluginsMethod.setAccessible(false);
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException |
+                 InvocationTargetException e) {
+            e.printStackTrace();
+        }
 
-		for (LimboPlugin plugin : Limbo.getInstance().getPluginManager().getPlugins()) {
-			try {
-				console.sendMessage("Enabling plugin " + plugin.getName() + " " + plugin.getInfo().getVersion());
-				plugin.onEnable();
-			} catch (Throwable e) {
-				new RuntimeException("Error while enabling " + plugin.getName() + " " + plugin.getInfo().getVersion(), e).printStackTrace();
-			}
-		}
+        for (LimboPlugin plugin : Limbo.getInstance().getPluginManager().getPlugins()) {
+            try {
+                console.sendMessage("Enabling plugin " + plugin.getName() + " " + plugin.getInfo().getVersion());
+                plugin.onEnable();
+            } catch (Throwable e) {
+                new RuntimeException("Error while enabling " + plugin.getName() + " " + plugin.getInfo().getVersion(), e).printStackTrace();
+            }
+        }
 
-		server = new ServerConnection(properties.getServerIp(), properties.getServerPort());
+        server = new ServerConnection(properties.getServerIp(), properties.getServerPort());
 
-		metrics = new Metrics();
+        metrics = new Metrics();
 
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			Limbo.getInstance().terminate();
-		}));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            Limbo.getInstance().terminate();
+        }));
 
-		console.run();
-	}
+        console.run();
+    }
 
-	@Deprecated
-	public Unsafe getUnsafe() {
-		return unsafe;
-	}
+    @Deprecated
+    public Unsafe getUnsafe() {
+        return unsafe;
+    }
 
-	public Tick getHeartBeat() {
-		return tick;
-	}
+    public Tick getHeartBeat() {
+        return tick;
+    }
 
-	public LimboScheduler getScheduler() {
-		return scheduler;
-	}
+    public LimboScheduler getScheduler() {
+        return scheduler;
+    }
 
-	public DimensionRegistry getDimensionRegistry() {
-		return dimensionRegistry;
-	}
+    public DimensionRegistry getDimensionRegistry() {
+        return dimensionRegistry;
+    }
 
-	public PermissionsManager getPermissionsManager() {
-		return permissionManager;
-	}
+    public PermissionsManager getPermissionsManager() {
+        return permissionManager;
+    }
 
-	public File getInternalDataFolder() {
-		return internalDataFolder;
-	}
+    public File getInternalDataFolder() {
+        return internalDataFolder;
+    }
 
-	public EventsManager getEventsManager() {
-		return eventsManager;
-	}
+    public EventsManager getEventsManager() {
+        return eventsManager;
+    }
 
-	public File getPluginFolder() {
-		return pluginFolder;
-	}
+    public File getPluginFolder() {
+        return pluginFolder;
+    }
 
-	public PluginManager getPluginManager() {
-		return pluginManager;
-	}
+    public PluginManager getPluginManager() {
+        return pluginManager;
+    }
 
-	private World loadDefaultWorld() throws IOException {
-		console.sendMessage("Loading world " + properties.getLevelName() + " with the schematic file " + properties.getSchemFileName() + " ...");
+    private World loadDefaultWorld() throws IOException {
+        console.sendMessage("Loading world " + properties.getLevelName() + " with the schematic file " + properties.getSchemFileName() + " ...");
 
-		File schem = new File(properties.getSchemFileName());
+        File schem = new File(properties.getSchemFileName());
 
-		if (!schem.exists()) {
-			console.sendMessage("Schemetic file " + properties.getSchemFileName() + " for world " + properties.getLevelName() + " not found!");
-			console.sendMessage("Creating default world...");
-	        try (InputStream in = Limbo.class.getClassLoader().getResourceAsStream("spawn.schem")) {
-	        	Files.copy(in, schem.toPath());
-	        } catch (IOException e) {
-	        	e.printStackTrace();
-	        }
-		}
+        if (!schem.exists()) {
+            console.sendMessage("Schemetic file " + properties.getSchemFileName() + " for world " + properties.getLevelName() + " not found!");
+            console.sendMessage("Creating default world...");
+            try (InputStream in = Limbo.class.getClassLoader().getResourceAsStream("spawn.schem")) {
+                Files.copy(in, schem.toPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
-		try {
-			World world = Schematic.toWorld(properties.getLevelName().value(), Environment.fromKey(properties.getLevelDimension()), (CompoundTag) NBTUtil.read(schem).getTag());
-			console.sendMessage("Loaded world " + properties.getLevelName() + "!");
-			return world;
-		} catch (Throwable e) {
-			console.sendMessage("Unable to load world " + properties.getSchemFileName() + "!");
-			e.printStackTrace();
-			console.sendMessage("Server will exit!");
-			System.exit(1);
-			return null;
-		}
-	}
+        try {
+            World world = Schematic.toWorld(properties.getLevelName().value(), Environment.fromKey(properties.getLevelDimension()), (CompoundTag) NBTUtil.read(schem).getTag());
+            console.sendMessage("Loaded world " + properties.getLevelName() + "!");
+            return world;
+        } catch (Throwable e) {
+            console.sendMessage("Unable to load world " + properties.getSchemFileName() + "!");
+            e.printStackTrace();
+            console.sendMessage("Server will exit!");
+            System.exit(1);
+            return null;
+        }
+    }
 
-	public void registerWorld(World world) {
-		if (!worlds.contains(world)) {
-			worlds.add(world);
-		} else {
-			throw new RuntimeException("World already registered");
-		}
-	}
+    public void registerWorld(World world) {
+        if (!worlds.contains(world)) {
+            worlds.add(world);
+        } else {
+            throw new RuntimeException("World already registered");
+        }
+    }
 
-	public void unregisterWorld(World world) {
-		if (worlds.indexOf(world) == 0) {
-			throw new RuntimeException("World already registered");
-		} else if (!worlds.contains(world)) {
-			throw new RuntimeException("World not registered");
-		} else {
-			for (Player player : world.getPlayers()) {
-				player.teleport(properties.getWorldSpawn());
-			}
-			worlds.remove(world);
-		}
-	}
+    public void unregisterWorld(World world) {
+        if (worlds.indexOf(world) == 0) {
+            throw new RuntimeException("World already registered");
+        } else if (!worlds.contains(world)) {
+            throw new RuntimeException("World not registered");
+        } else {
+            for (Player player : world.getPlayers()) {
+                player.teleport(properties.getWorldSpawn());
+            }
+            worlds.remove(world);
+        }
+    }
 
-	public KeyedBossBar createBossBar(Key Key, Component name, float progress, BossBar.Color color, BossBar.Overlay overlay, BossBar.Flag... flags) {
-		KeyedBossBar keyedBossBar = com.loohp.limbo.bossbar.Unsafe.a(Key, BossBar.bossBar(name, progress, color, overlay, new HashSet<>(Arrays.asList(flags))));
-		bossBars.put(Key, keyedBossBar);
-		return keyedBossBar;
-	}
+    public KeyedBossBar createBossBar(Key Key, Component name, float progress, BossBar.Color color, BossBar.Overlay overlay, BossBar.Flag... flags) {
+        KeyedBossBar keyedBossBar = com.loohp.limbo.bossbar.Unsafe.a(Key, BossBar.bossBar(name, progress, color, overlay, new HashSet<>(Arrays.asList(flags))));
+        bossBars.put(Key, keyedBossBar);
+        return keyedBossBar;
+    }
 
-	public void removeBossBar(Key Key) {
-		KeyedBossBar keyedBossBar = bossBars.remove(Key);
-		keyedBossBar.getProperties().removeListener(keyedBossBar.getUnsafe().a());
-		keyedBossBar.getUnsafe().b();
-		PacketPlayOutBoss packetPlayOutBoss = new PacketPlayOutBoss(keyedBossBar, PacketPlayOutBoss.BossBarAction.REMOVE);
-		for (Player player : keyedBossBar.getPlayers()) {
-			try {
-				player.clientConnection.sendPacket(packetPlayOutBoss);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+    public void removeBossBar(Key Key) {
+        KeyedBossBar keyedBossBar = bossBars.remove(Key);
+        keyedBossBar.getProperties().removeListener(keyedBossBar.getUnsafe().a());
+        keyedBossBar.getUnsafe().b();
+        PacketPlayOutBoss packetPlayOutBoss = new PacketPlayOutBoss(keyedBossBar, PacketPlayOutBoss.BossBarAction.REMOVE);
+        for (Player player : keyedBossBar.getPlayers()) {
+            try {
+                player.clientConnection.sendPacket(packetPlayOutBoss);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-	public Map<Key, KeyedBossBar> getBossBars() {
-		return Collections.unmodifiableMap(bossBars);
-	}
+    public Map<Key, KeyedBossBar> getBossBars() {
+        return Collections.unmodifiableMap(bossBars);
+    }
 
-	public ServerProperties getServerProperties() {
-		return properties;
-	}
+    public ServerProperties getServerProperties() {
+        return properties;
+    }
 
-	public ServerConnection getServerConnection() {
-		return server;
-	}
+    public ServerConnection getServerConnection() {
+        return server;
+    }
 
-	public Console getConsole() {
-		return console;
-	}
+    public Console getConsole() {
+        return console;
+    }
 
-	public Metrics getMetrics() {
-		return metrics;
-	}
+    public Metrics getMetrics() {
+        return metrics;
+    }
 
-	public Set<Player> getPlayers() {
-		return new HashSet<>(playersByUUID.values());
-	}
+    public Set<Player> getPlayers() {
+        return new HashSet<>(playersByUUID.values());
+    }
 
-	public Player getPlayer(String name) {
-		return playersByName.get(name);
-	}
+    public Player getPlayer(String name) {
+        return playersByName.get(name);
+    }
 
-	public Player getPlayer(UUID uuid) {
-		return playersByUUID.get(uuid);
-	}
+    public Player getPlayer(UUID uuid) {
+        return playersByUUID.get(uuid);
+    }
 
-	public List<World> getWorlds() {
-		return new ArrayList<>(worlds);
-	}
+    public List<World> getWorlds() {
+        return new ArrayList<>(worlds);
+    }
 
-	public World getWorld(String name) {
-		for (World world : worlds) {
-			if (world.getName().equalsIgnoreCase(name)) {
-				return world;
-			}
-		}
-		return null;
-	}
+    public World getWorld(String name) {
+        for (World world : worlds) {
+            if (world.getName().equalsIgnoreCase(name)) {
+                return world;
+            }
+        }
+        return null;
+    }
 
-	@SuppressWarnings("unchecked")
-	public String buildServerListResponseJson(String version, int protocol, Component motd, int maxPlayers, int playersOnline, BufferedImage favicon) throws IOException {
-		JSONObject json = new JSONObject();
+    @SuppressWarnings("unchecked")
+    public String buildServerListResponseJson(String version, int protocol, Component motd, int maxPlayers, int playersOnline, BufferedImage favicon) throws IOException {
+        JSONObject json = new JSONObject();
 
-		JSONObject versionJson = new JSONObject();
-		versionJson.put("name", version);
-		versionJson.put("protocol", protocol);
-		json.put("version", versionJson);
+        JSONObject versionJson = new JSONObject();
+        versionJson.put("name", version);
+        versionJson.put("protocol", protocol);
+        json.put("version", versionJson);
 
-		JSONObject playersJson = new JSONObject();
-		playersJson.put("max", maxPlayers);
-		playersJson.put("online", playersOnline);
-		json.put("players", playersJson);
+        JSONObject playersJson = new JSONObject();
+        playersJson.put("max", maxPlayers);
+        playersJson.put("online", playersOnline);
+        json.put("players", playersJson);
 
-		json.put("description", "%MOTD%");
+        json.put("description", "%MOTD%");
 
-		if (favicon != null) {
-			if (favicon.getWidth() == 64 && favicon.getHeight() == 64) {
-				String base64 = "data:image/png;base64," + ImageUtils.imgToBase64String(favicon, "png");
-				json.put("favicon", base64);
-			} else {
-				console.sendMessage("Server List Favicon must be 64 x 64 in size!");
-			}
-		}
+        if (favicon != null) {
+            if (favicon.getWidth() == 64 && favicon.getHeight() == 64) {
+                String base64 = "data:image/png;base64," + ImageUtils.imgToBase64String(favicon, "png");
+                json.put("favicon", base64);
+            } else {
+                console.sendMessage("Server List Favicon must be 64 x 64 in size!");
+            }
+        }
 
-		JSONObject modInfoJson = new JSONObject();
-		modInfoJson.put("type", "FML");
-		modInfoJson.put("modList", new JSONArray());
-		json.put("modinfo", modInfoJson);
+        JSONObject modInfoJson = new JSONObject();
+        modInfoJson.put("type", "FML");
+        modInfoJson.put("modList", new JSONArray());
+        json.put("modinfo", modInfoJson);
 
 
-		TreeMap<String, Object> treeMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    	treeMap.putAll(json);
+        TreeMap<String, Object> treeMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        treeMap.putAll(json);
 
-    	Gson g = new GsonBuilder().create();
+        Gson g = new GsonBuilder().create();
 
-    	return g.toJson(treeMap).replace("\"%MOTD%\"", GsonComponentSerializer.gson().serialize(motd));
-	}
+        return g.toJson(treeMap).replace("\"%MOTD%\"", GsonComponentSerializer.gson().serialize(motd));
+    }
 
-	public String buildLegacyPingResponse(String version, Component motd, int maxPlayers, int playersOnline) {
-		String begin = "�1";
-		return String.join("\00", begin, "127", version, String.join("", Arrays.asList(motd).stream().map(each -> LegacyComponentSerializer.legacySection().serialize(each)).collect(Collectors.toList())), String.valueOf(playersOnline), String.valueOf(maxPlayers));
-	}
+    public String buildLegacyPingResponse(String version, Component motd, int maxPlayers, int playersOnline) {
+        String begin = "�1";
+        return String.join("\00", begin, "127", version, String.join("", Arrays.asList(motd).stream().map(each -> LegacyComponentSerializer.legacySection().serialize(each)).collect(Collectors.toList())), String.valueOf(playersOnline), String.valueOf(maxPlayers));
+    }
 
-	protected void terminate() {
-		isRunning.set(false);
-		console.sendMessage("Stopping Server...");
+    protected void terminate() {
+        isRunning.set(false);
+        console.sendMessage("Stopping Server...");
 
-		for (LimboPlugin plugin : Limbo.getInstance().getPluginManager().getPlugins()) {
-			try {
-				console.sendMessage("Disabling plugin " + plugin.getName() + " " + plugin.getInfo().getVersion());
-				plugin.onDisable();
-			} catch (Throwable e) {
-				new RuntimeException("Error while disabling " + plugin.getName() + " " + plugin.getInfo().getVersion(), e).printStackTrace();
-			}
-		}
+        for (LimboPlugin plugin : Limbo.getInstance().getPluginManager().getPlugins()) {
+            try {
+                console.sendMessage("Disabling plugin " + plugin.getName() + " " + plugin.getInfo().getVersion());
+                plugin.onDisable();
+            } catch (Throwable e) {
+                new RuntimeException("Error while disabling " + plugin.getName() + " " + plugin.getInfo().getVersion(), e).printStackTrace();
+            }
+        }
 
-		tick.waitAndKillThreads(5000);
+        tick.waitAndKillThreads(5000);
 
-		for (Player player : getPlayers()) {
-			player.disconnect("Server closed");
-		}
-		while (!getPlayers().isEmpty()) {
-			try {
-				TimeUnit.MILLISECONDS.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+        for (Player player : getPlayers()) {
+            player.disconnect("Server closed");
+        }
+        while (!getPlayers().isEmpty()) {
+            try {
+                TimeUnit.MILLISECONDS.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
-		console.sendMessage("Server closed");
-		console.logs.close();
-	}
+        console.sendMessage("Server closed");
+        console.logs.close();
+    }
 
-	public void stopServer() {
-		System.exit(0);
-	}
+    public void stopServer() {
+        System.exit(0);
+    }
 
-	public boolean isRunning() {
-		return isRunning.get();
-	}
+    public boolean isRunning() {
+        return isRunning.get();
+    }
 
-	public int getNextEntityId() {
-		return entityIdCount.getAndUpdate(i -> i == Integer.MAX_VALUE ? 0 : ++i);
-	}
+    public int getNextEntityId() {
+        return entityIdCount.getAndUpdate(i -> i == Integer.MAX_VALUE ? 0 : ++i);
+    }
 
-	public void dispatchCommand(CommandSender sender, String str) {
-		String[] command;
-		if (str.startsWith("/")) {
-			command = CustomStringUtils.splitStringToArgs(str.substring(1));
-		} else {
-			command = CustomStringUtils.splitStringToArgs(str);
-		}
-		dispatchCommand(sender, command);
-	}
+    public void dispatchCommand(CommandSender sender, String str) {
+        String[] command;
+        if (str.startsWith("/")) {
+            command = CustomStringUtils.splitStringToArgs(str.substring(1));
+        } else {
+            command = CustomStringUtils.splitStringToArgs(str);
+        }
+        dispatchCommand(sender, command);
+    }
 
-	public void dispatchCommand(CommandSender sender, String... args) {
-		try {
-			Limbo.getInstance().getPluginManager().fireExecutors(sender, args);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    public void dispatchCommand(CommandSender sender, String... args) {
+        try {
+            Limbo.getInstance().getPluginManager().fireExecutors(sender, args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	private String getLimboVersion() throws IOException {
-		Enumeration<URL> manifests = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
-		while (manifests.hasMoreElements()) {
-			URL url = manifests.nextElement();
-			try (BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()))) {
-				Optional<String> line = br.lines().filter(each -> each.startsWith("Limbo-Version:")).findFirst();
-				if (line.isPresent()) {
-					return line.get().substring(14).trim();
-				}
-			}
-		}
-		return "Unknown";
-	}
+    private String getLimboVersion() throws IOException {
+        Enumeration<URL> manifests = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
+        while (manifests.hasMoreElements()) {
+            URL url = manifests.nextElement();
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()))) {
+                Optional<String> line = br.lines().filter(each -> each.startsWith("Limbo-Version:")).findFirst();
+                if (line.isPresent()) {
+                    return line.get().substring(14).trim();
+                }
+            }
+        }
+        return "Unknown";
+    }
 
-	public Inventory createInventory(Component title, int slots, InventoryHolder holder) {
-		return CustomInventory.create(title, slots, holder);
-	}
+    public Inventory createInventory(Component title, int slots, InventoryHolder holder) {
+        return CustomInventory.create(title, slots, holder);
+    }
 
-	public Inventory createInventory(InventoryType type, InventoryHolder holder) {
-		return createInventory(null, type, holder);
-	}
+    public Inventory createInventory(InventoryType type, InventoryHolder holder) {
+        return createInventory(null, type, holder);
+    }
 
-	public Inventory createInventory(Component title, InventoryType type, InventoryHolder holder) {
-		if (!type.isCreatable()) {
-			throw new UnsupportedOperationException("This InventoryType cannot be created.");
-		}
-		switch (type) {
-			case ANVIL:
-				return new AnvilInventory(title, holder);
-			default:
-				throw new UnsupportedOperationException("This InventoryType has not been implemented yet.");
-		}
-	}
+    public Inventory createInventory(Component title, InventoryType type, InventoryHolder holder) {
+        if (!type.isCreatable()) {
+            throw new UnsupportedOperationException("This InventoryType cannot be created.");
+        }
+        switch (type) {
+            case ANVIL:
+                return new AnvilInventory(title, holder);
+            default:
+                throw new UnsupportedOperationException("This InventoryType has not been implemented yet.");
+        }
+    }
 
 }

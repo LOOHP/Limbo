@@ -141,26 +141,26 @@ public class PlayerInteractManager {
         player.clientConnection.sendPacket(chunkBatchStartPacket);
         for (Entry<ChunkPosition, Chunk> entry : chunksInRange.entrySet()) {
             ChunkPosition chunkPos = entry.getKey();
-			Chunk chunk = chunkPos.getWorld().getChunkAt(chunkPos.getChunkX(), chunkPos.getChunkZ());
-			if (chunk == null) {
-				ClientboundLevelChunkWithLightPacket chunkdata = new ClientboundLevelChunkWithLightPacket(chunkPos.getChunkX(), chunkPos.getChunkZ(), entry.getValue(), world.getEnvironment(), Collections.emptyList(), Collections.emptyList());
-				player.clientConnection.sendPacket(chunkdata);
-			} else {
-				List<Byte[]> blockChunk = world.getLightEngineBlock().getBlockLightBitMask(chunkPos.getChunkX(), chunkPos.getChunkZ());
-				if (blockChunk == null) {
-					blockChunk = new ArrayList<>();
-				}
-				List<Byte[]> skyChunk = null;
-				if (world.hasSkyLight()) {
-					skyChunk = world.getLightEngineSky().getSkyLightBitMask(chunkPos.getChunkX(), chunkPos.getChunkZ());
-				}
-				if (skyChunk == null) {
-					skyChunk = new ArrayList<>();
-				}
-				ClientboundLevelChunkWithLightPacket chunkdata = new ClientboundLevelChunkWithLightPacket(chunkPos.getChunkX(), chunkPos.getChunkZ(), chunk, world.getEnvironment(), skyChunk, blockChunk);
-				player.clientConnection.sendPacket(chunkdata);
-			}
-			counter++;
+            Chunk chunk = chunkPos.getWorld().getChunkAt(chunkPos.getChunkX(), chunkPos.getChunkZ());
+            if (chunk == null) {
+                ClientboundLevelChunkWithLightPacket chunkdata = new ClientboundLevelChunkWithLightPacket(chunkPos.getChunkX(), chunkPos.getChunkZ(), entry.getValue(), world.getEnvironment(), Collections.emptyList(), Collections.emptyList());
+                player.clientConnection.sendPacket(chunkdata);
+            } else {
+                List<Byte[]> blockChunk = world.getLightEngineBlock().getBlockLightBitMask(chunkPos.getChunkX(), chunkPos.getChunkZ());
+                if (blockChunk == null) {
+                    blockChunk = new ArrayList<>();
+                }
+                List<Byte[]> skyChunk = null;
+                if (world.hasSkyLight()) {
+                    skyChunk = world.getLightEngineSky().getSkyLightBitMask(chunkPos.getChunkX(), chunkPos.getChunkZ());
+                }
+                if (skyChunk == null) {
+                    skyChunk = new ArrayList<>();
+                }
+                ClientboundLevelChunkWithLightPacket chunkdata = new ClientboundLevelChunkWithLightPacket(chunkPos.getChunkX(), chunkPos.getChunkZ(), chunk, world.getEnvironment(), skyChunk, blockChunk);
+                player.clientConnection.sendPacket(chunkdata);
+            }
+            counter++;
         }
         ClientboundChunkBatchFinishedPacket chunkBatchFinishedPacket = new ClientboundChunkBatchFinishedPacket(counter);
         player.clientConnection.sendPacket(chunkBatchFinishedPacket);
