@@ -52,11 +52,13 @@ public class PlayerInteractManager {
 
     private Set<Entity> entities;
     private Map<ChunkPosition, Chunk> currentViewing;
+    private final Map<ChunkPosition, Chunk> chunkUpdates;
 
     public PlayerInteractManager() {
         this.player = null;
         this.entities = new HashSet<>();
         this.currentViewing = new HashMap<>();
+        this.chunkUpdates = new HashMap<>();
     }
 
     protected void setPlayer(Player player) {
@@ -126,20 +128,24 @@ public class PlayerInteractManager {
             }
         }
 
-        // blocks cannot be broken, so don't send chunks to the client
+        // add chunk candidates for updating
+        chunkUpdates.clear();
+        chunkUpdates.putAll(chunksInRange);
+
+        // blocks cannot be broken, so once we've sent all of them, don't update them anymore
         if (getPlayer().getGamemode() == GameMode.ADVENTURE) {
-            for (ChunkPosition chunkPos : chunksInRange.keySet()) {
-                currentViewing.remove(chunkPos);
+            for (ChunkPosition chunkPos : currentViewing.keySet()) {
+                chunkUpdates.remove(chunkPos);
             }
         }
 
         // if we don't have any chunk updates, don't send any packets
-        if (chunksInRange.isEmpty()) return;
+        if (chunkUpdates.isEmpty()) return;
 
         int counter = 0;
         ClientboundChunkBatchStartPacket chunkBatchStartPacket = new ClientboundChunkBatchStartPacket();
         player.clientConnection.sendPacket(chunkBatchStartPacket);
-        for (Entry<ChunkPosition, Chunk> entry : chunksInRange.entrySet()) {
+        for (Entry<ChunkPosition, Chunk> entry : chunkUpdates.entrySet()) {
             ChunkPosition chunkPos = entry.getKey();
             Chunk chunk = chunkPos.getWorld().getChunkAt(chunkPos.getChunkX(), chunkPos.getChunkZ());
             if (chunk == null) {
