@@ -37,24 +37,16 @@ public class DimensionRegistry {
 	
 	private CompoundTag defaultTag;
 	private CompoundTag codec;
-	private File reg;
 	
 	public DimensionRegistry() {
 		this.defaultTag = new CompoundTag();
-		
 		String name = "dimension_registry.json";
-        File file = new File(Limbo.getInstance().getInternalDataFolder(), name);
-        if (!file.exists()) {
-        	try (InputStream in = Limbo.class.getClassLoader().getResourceAsStream(name)) {
-                Files.copy(in, file.toPath());
-            } catch (IOException e) {
-            	e.printStackTrace();
-            }
-        }
-        
-        this.reg = file;
-        
-        try (InputStreamReader reader = new InputStreamReader(Files.newInputStream(reg.toPath()), StandardCharsets.UTF_8)) {
+
+		InputStream inputStream = Limbo.class.getClassLoader().getResourceAsStream(name);
+		if (inputStream == null) {
+			throw new RuntimeException("Failed to load " + name + " from jar!");
+		}
+		try (InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
 			JSONObject json = (JSONObject) new JSONParser().parse(reader);
 			CompoundTag tag = CustomNBTUtils.getCompoundTagFromJson((JSONObject) json.get("value"));
 			defaultTag = tag;
@@ -62,10 +54,6 @@ public class DimensionRegistry {
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public File getFile() {
-		return reg;
 	}
 	
 	public void resetCodec() {

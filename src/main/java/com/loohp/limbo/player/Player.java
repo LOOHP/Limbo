@@ -45,7 +45,7 @@ import com.loohp.limbo.network.protocol.packets.ClientboundSetTitlesAnimationPac
 import com.loohp.limbo.network.protocol.packets.ClientboundSystemChatPacket;
 import com.loohp.limbo.network.protocol.packets.PacketOut;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutCloseWindow;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutGameState;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutGameStateChange;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutHeldItemChange;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutNamedSoundEffect;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutOpenWindow;
@@ -151,7 +151,7 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 	public void setGamemode(GameMode gamemode) {
 		if (!this.gamemode.equals(gamemode)) {
 			try {
-				PacketPlayOutGameState state = new PacketPlayOutGameState(3, gamemode.getId());
+				PacketPlayOutGameStateChange state = new PacketPlayOutGameStateChange(PacketPlayOutGameStateChange.GameStateChangeEvent.CHANGE_GAME_MODE, gamemode.getId());
 				clientConnection.sendPacket(state);
 			} catch (IOException e) {
 				e.printStackTrace();

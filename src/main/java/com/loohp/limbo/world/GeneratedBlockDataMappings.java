@@ -30,6 +30,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,17 +43,12 @@ public class GeneratedBlockDataMappings {
 	
 	static {
 		String block = "blocks.json";
-        File file = new File(Limbo.getInstance().getInternalDataFolder(), block);
-        if (!file.exists()) {
-        	try (InputStream in = Limbo.class.getClassLoader().getResourceAsStream(block)) {
-                Files.copy(in, file.toPath());
-            } catch (IOException e) {
-            	e.printStackTrace();
-            }
-        }
-        
-        try {
-        	globalPalette = (JSONObject) new JSONParser().parse(new FileReader(file));
+		InputStream inputStream = Limbo.class.getClassLoader().getResourceAsStream(block);
+		if (inputStream == null) {
+			throw new RuntimeException("Failed to load " + block + " from jar!");
+		}
+        try (InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+        	globalPalette = (JSONObject) new JSONParser().parse(reader);
 		} catch (IOException | ParseException e) {
 			e.printStackTrace();
 		}		

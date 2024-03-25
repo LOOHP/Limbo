@@ -160,8 +160,6 @@ public final class Limbo {
 	private final PermissionsManager permissionManager;
 	private final File pluginFolder;
 	
-	private final File internalDataFolder;
-	
 	private final DimensionRegistry dimensionRegistry;
 	
 	private final Tick tick;
@@ -208,25 +206,16 @@ public final class Limbo {
         } else {
         	console.sendMessage("Starting Limbo server in bungeecord mode!");
         }
-        
-        internalDataFolder = new File("internal_data");
-        if (!internalDataFolder.exists()) {
-        	internalDataFolder.mkdirs();
-        }
 		
         String mappingName = "mapping.json";
-        File mappingFile = new File(internalDataFolder, mappingName);
-        if (!mappingFile.exists()) {
-        	try (InputStream in = getClass().getClassLoader().getResourceAsStream(mappingName)) {
-                Files.copy(in, mappingFile.toPath());
-            } catch (IOException e) {
-            	e.printStackTrace();
-            }
-        }
+		InputStream mappingStream = getClass().getClassLoader().getResourceAsStream(mappingName);
+		if (mappingStream == null) {
+			throw new RuntimeException("Failed to load " + mappingName + " from jar!");
+		}
         
-        console.sendMessage("Loading packet id mappings from mapping.json ...");
-        
-        InputStreamReader reader = new InputStreamReader(Files.newInputStream(mappingFile.toPath()), StandardCharsets.UTF_8);
+        console.sendMessage("Loading packet id mappings...");
+
+		InputStreamReader reader = new InputStreamReader(mappingStream, StandardCharsets.UTF_8);
         JSONObject json = (JSONObject) new JSONParser().parse(reader);
         reader.close();
         
@@ -392,10 +381,6 @@ public final class Limbo {
 
 	public PermissionsManager getPermissionsManager() {
 		return permissionManager;
-	}
-
-	public File getInternalDataFolder() {
-		return internalDataFolder;
 	}
 
 	public EventsManager getEventsManager() {

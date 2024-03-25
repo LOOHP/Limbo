@@ -63,6 +63,7 @@ import com.loohp.limbo.network.protocol.packets.PacketPlayInPickItem;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInPluginMessaging;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInPosition;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInPositionAndLook;
+import com.loohp.limbo.network.protocol.packets.PacketPlayOutGameStateChange;
 import com.loohp.limbo.network.protocol.packets.ServerboundResourcePackPacket;
 import com.loohp.limbo.network.protocol.packets.ServerboundResourcePackPacket.Action;
 import com.loohp.limbo.network.protocol.packets.PacketPlayInRotation;
@@ -73,7 +74,6 @@ import com.loohp.limbo.network.protocol.packets.PacketPlayInWindowClick;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutDeclareCommands;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutDisconnect;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutEntityMetadata;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutGameState;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutHeldItemChange;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutKeepAlive;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutLogin;
@@ -613,6 +613,8 @@ public class ClientConnection extends Thread {
                 String str = (properties.isLogPlayerIPAddresses() ? inetAddress.getHostName() : "<ip address withheld>") + ":" + clientSocket.getPort() + "|" + player.getName() + "(" + player.getUniqueId() + ")";
                 Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had connected to the Limbo server!");
 
+                PacketPlayOutGameStateChange gameEvent = new PacketPlayOutGameStateChange(PacketPlayOutGameStateChange.GameStateChangeEvent.LEVEL_CHUNKS_LOAD_START, 0);
+                sendPacket(gameEvent);
                 player.playerInteractManager.update();
 
                 PacketPlayOutDeclareCommands declare = DeclareCommands.getDeclareCommandsPacket(player);
@@ -634,7 +636,7 @@ public class ClientConnection extends Thread {
                 Limbo.getInstance().getEventsManager().callEvent(new PlayerJoinEvent(player));
                 
                 if (properties.isAllowFlight()) {
-                    PacketPlayOutGameState state = new PacketPlayOutGameState(3, player.getGamemode().getId());
+                    PacketPlayOutGameStateChange state = new PacketPlayOutGameStateChange(PacketPlayOutGameStateChange.GameStateChangeEvent.CHANGE_GAME_MODE, player.getGamemode().getId());
                     sendPacket(state);
                 }
                 

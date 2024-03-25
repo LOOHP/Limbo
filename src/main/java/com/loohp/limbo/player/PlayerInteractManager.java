@@ -69,7 +69,7 @@ public class PlayerInteractManager {
 	public Player getPlayer() {
 		return player;
 	}
-	
+
 	public void update() throws IOException {
 		if (player.clientConnection.getClientState() != ClientConnection.ClientState.PLAY) {
 			return;
@@ -98,15 +98,15 @@ public class PlayerInteractManager {
 			PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(id);
 			player.clientConnection.sendPacket(packet);
 		}
-		
+
 		entities = entitiesInRange;
-		
+
 		int playerChunkX = (int) location.getX() >> 4;
 		int playerChunkZ = (int) location.getZ() >> 4;
 		World world = location.getWorld();
-		
+
 		Map<ChunkPosition, Chunk> chunksInRange = new HashMap<>();
-		
+
 		for (int x = playerChunkX - viewDistanceChunks; x < playerChunkX + viewDistanceChunks; x++) {
 			for (int z = playerChunkZ - viewDistanceChunks; z < playerChunkZ + viewDistanceChunks; z++) {
 				Chunk chunk = world.getChunkAt(x, z);
@@ -117,7 +117,7 @@ public class PlayerInteractManager {
 				}
 			}
 		}
-		
+
 		for (Entry<ChunkPosition, Chunk> entry : currentViewing.entrySet()) {
 			ChunkPosition chunkPos = entry.getKey();
 			if (!chunksInRange.containsKey(chunkPos)) {
