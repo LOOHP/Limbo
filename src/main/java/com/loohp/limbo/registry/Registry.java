@@ -48,20 +48,17 @@ public class Registry {
 	
 	static {
 		String name = "registries.json";
-        File file = new File(Limbo.getInstance().getInternalDataFolder(), name);
-        if (!file.exists()) {
-        	try (InputStream in = Limbo.class.getClassLoader().getResourceAsStream(name)) {
-                Files.copy(in, file.toPath());
-            } catch (IOException e) {
-            	e.printStackTrace();
-            }
-        }
         
         Map<Key, Integer> blockEntityType = new HashMap<>();
 		Key defaultItemKey = null;
 		BiMap<Key, Integer> itemIds = HashBiMap.create();
 		Map<Key, Integer> menuIds = new HashMap<>();
-        try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
+
+		InputStream inputStream = Limbo.class.getClassLoader().getResourceAsStream(name);
+		if (inputStream == null) {
+			throw new RuntimeException("Failed to load " + name + " from jar!");
+		}
+		try (InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
 			JSONObject json = (JSONObject) new JSONParser().parse(reader);
 			
 			JSONObject blockEntityJson = (JSONObject) ((JSONObject) json.get("minecraft:block_entity_type")).get("entries");
