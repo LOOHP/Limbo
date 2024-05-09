@@ -19,13 +19,14 @@
 
 package com.loohp.limbo.inventory;
 
+import com.loohp.limbo.registry.DataComponentTypes;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.querz.nbt.io.SNBTUtil;
-import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.Tag;
 
-import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class ItemStack implements Cloneable {
@@ -34,36 +35,26 @@ public class ItemStack implements Cloneable {
 
     private final Key material;
     private final int amount;
-    private final CompoundTag nbt;
-
-    private CompoundTag fullTag;
+    private final Map<Key, Tag<?>> components;
 
     public ItemStack(Key material) {
         this(material, 1);
     }
 
     public ItemStack(Key material, int amount) {
-        this(material, amount, null);
+        this(material, amount, Collections.emptyMap());
     }
 
-    public ItemStack(Key material, int amount, CompoundTag nbt) {
+    public ItemStack(Key material, int amount, Map<Key, Tag<?>> components) {
         this.material = material;
         this.amount = amount;
-        this.nbt = nbt;
-        this.fullTag = null;
-    }
-
-    public ItemStack(CompoundTag fullTag) {
-        this.material = Key.key(fullTag.getString("id"));
-        this.amount = fullTag.getInt("Count");
-        this.nbt = fullTag.containsKey("tag") ? fullTag.getCompoundTag("tag") : null;
-        this.fullTag = fullTag.clone();
+        this.components = components;
     }
 
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public ItemStack clone() {
-        return new ItemStack(material, amount, nbt == null ? null : nbt.clone());
+        return new ItemStack(material, amount, components);
     }
 
     public Key type() {
@@ -71,7 +62,7 @@ public class ItemStack implements Cloneable {
     }
 
     public ItemStack type(Key material) {
-        return new ItemStack(material, amount, nbt == null ? null : nbt.clone());
+        return new ItemStack(material, amount, components);
     }
 
     public int amount() {
@@ -79,31 +70,33 @@ public class ItemStack implements Cloneable {
     }
 
     public ItemStack amount(int amount) {
-        return new ItemStack(material, amount, nbt == null ? null : nbt.clone());
+        return new ItemStack(material, amount, components);
     }
 
-    public CompoundTag nbt() {
-        return nbt;
+    public Map<Key, Tag<?>> components() {
+        return new HashMap<>(components);
     }
 
-    public ItemStack nbt(CompoundTag nbt) {
-        return new ItemStack(material, amount, nbt == null ? null : nbt.clone());
+    public ItemStack components(Map<Key, Tag<?>> components) {
+        return new ItemStack(material, amount, components);
+    }
+
+    public <T> T component(DataComponentTypes<T> type) {
+        return type.getCodec().decode(components.get(type.getKey()));
+    }
+
+    public <T> ItemStack component(DataComponentTypes<T> type, T value) {
+        Map<Key, Tag<?>> components = components();
+        components.put(type.getKey(), type.getCodec().encode(value));
+        return components(components);
     }
 
     public Component displayName() {
-        if (type().equals(AIR.type()) || nbt == null) {
-            return null;
-        }
-        CompoundTag displayTag = nbt.getCompoundTag("display");
-        if (displayTag == null) {
-            return null;
-        }
-        String json = displayTag.getString("Name");
-        if (json == null) {
+        if (type().equals(AIR.type()) || components == null) {
             return null;
         }
         try {
-            return GsonComponentSerializer.gson().deserialize(json);
+            return component(DataComponentTypes.CUSTOM_NAME);
         } catch (Exception e) {
             return null;
         }
@@ -113,35 +106,11 @@ public class ItemStack implements Cloneable {
         if (type().equals(AIR.type())) {
             return this;
         }
-        try {
-            String json = GsonComponentSerializer.gson().serialize(component);
-            CompoundTag nbt = this.nbt.clone();
-            CompoundTag displayTag = nbt.getCompoundTag("display");
-            if (displayTag == null) {
-                nbt.put("display", displayTag = new CompoundTag());
-            }
-            displayTag.putString("Name", json);
-            return nbt(nbt);
-        } catch (Exception ignore) {
-        }
-        return this;
+        return component(DataComponentTypes.CUSTOM_NAME, component);
     }
 
     public int getMaxStackSize() {
         return 64;
-    }
-
-    public CompoundTag getFullTag() {
-        if (fullTag != null) {
-            return fullTag;
-        }
-        CompoundTag compoundTag = new CompoundTag();
-        compoundTag.putString("id", material.toString());
-        compoundTag.putInt("Count", amount);
-        if (nbt != null) {
-            compoundTag.put("tag", nbt);
-        }
-        return fullTag = compoundTag;
     }
 
     @Override
@@ -149,25 +118,24 @@ public class ItemStack implements Cloneable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ItemStack itemStack = (ItemStack) o;
-        return amount == itemStack.amount && material.equals(itemStack.material) && Objects.equals(nbt, itemStack.nbt);
+        return amount == itemStack.amount && material.equals(itemStack.material) && Objects.equals(components, itemStack.components);
     }
 
     public boolean isSimilar(ItemStack stack) {
-        return stack != null && material.equals(stack.material) && Objects.equals(nbt, stack.nbt);
+        return stack != null && material.equals(stack.material) && Objects.equals(components, stack.components);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(material, amount, nbt);
+        return Objects.hash(material, amount, components);
     }
 
     @Override
     public String toString() {
-        try {
-            return SNBTUtil.toSNBT(getFullTag());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "";
+        return "ItemStack{" +
+                "material=" + material +
+                ", amount=" + amount +
+                ", components=" + components +
+                '}';
     }
 }

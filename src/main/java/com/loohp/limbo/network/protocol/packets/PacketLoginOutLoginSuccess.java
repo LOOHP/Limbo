@@ -29,12 +29,14 @@ import java.util.UUID;
 
 public class PacketLoginOutLoginSuccess extends PacketOut {
 	
-	private UUID uuid;
-	private String username;
+	private final UUID uuid;
+	private final String username;
+	private final boolean strictErrorHandling;
 	
-	public PacketLoginOutLoginSuccess(UUID uuid, String username) {
+	public PacketLoginOutLoginSuccess(UUID uuid, String username, boolean strictErrorHandling) {
 		this.uuid = uuid;
 		this.username = username;
+		this.strictErrorHandling = strictErrorHandling;
 	}
 	
 	public UUID getUuid() {
@@ -44,7 +46,11 @@ public class PacketLoginOutLoginSuccess extends PacketOut {
 	public String getUsername() {
 		return username;
 	}
-	
+
+	public boolean isStrictErrorHandling() {
+		return strictErrorHandling;
+	}
+
 	@Override
 	public byte[] serializePacket() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -54,6 +60,7 @@ public class PacketLoginOutLoginSuccess extends PacketOut {
 		DataTypeIO.writeUUID(output, uuid);
 		DataTypeIO.writeString(output, username, StandardCharsets.UTF_8);
 		DataTypeIO.writeVarInt(output, 0);
+		output.writeBoolean(strictErrorHandling);
 		
 		return buffer.toByteArray();
 	}

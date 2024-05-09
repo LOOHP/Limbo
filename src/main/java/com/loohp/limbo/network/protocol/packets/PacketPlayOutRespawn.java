@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.RegistryCustom;
 import com.loohp.limbo.utils.DataTypeIO;
 import com.loohp.limbo.utils.GameMode;
 import com.loohp.limbo.world.Environment;
@@ -35,18 +36,16 @@ import java.nio.charset.StandardCharsets;
 public class PacketPlayOutRespawn extends PacketOut {
 
 	private Environment dimension;
-	private String worldName;
-	private CompoundTag dimensionCodec;
+	private World world;
 	private long hashedSeed;
 	private GameMode gamemode;
 	private boolean isDebug;
 	private boolean isFlat;
 	private boolean copyMetaData;
 
-	public PacketPlayOutRespawn(World world, CompoundTag dimensionCodec, long hashedSeed, GameMode gamemode, boolean isDebug, boolean isFlat, boolean copyMetaData) {
+	public PacketPlayOutRespawn(World world, long hashedSeed, GameMode gamemode, boolean isDebug, boolean isFlat, boolean copyMetaData) {
 		this.dimension = world.getEnvironment();
-		this.dimensionCodec = dimensionCodec;
-		this.worldName = Key.key(world.getName()).toString();
+		this.world = world;
 		this.hashedSeed = hashedSeed;
 		this.gamemode = gamemode;
 		this.isDebug = isDebug;
@@ -54,16 +53,12 @@ public class PacketPlayOutRespawn extends PacketOut {
 		this.copyMetaData = copyMetaData;
 	}
 
-	public CompoundTag getDimensionCodec() {
-		return dimensionCodec;
-	}
-
 	public Environment getDimension() {
 		return dimension;
 	}
 
-	public String getWorldName() {
-		return worldName;
+	public World getWorld() {
+		return world;
 	}
 
 	public long getHashedSeed() {
@@ -92,16 +87,9 @@ public class PacketPlayOutRespawn extends PacketOut {
 		
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(Packet.getPlayOut().get(getClass()));
-		CompoundTag tag = null;
-		ListTag<CompoundTag> list = dimensionCodec.getCompoundTag("minecraft:dimension_type").getListTag("value").asCompoundTagList();
-		for (CompoundTag each : list) {
-			if (each.getString("name").equals(dimension.getKey().toString())) {
-				tag = each.getCompoundTag("element");
-				break;
-			}
-		}
-		DataTypeIO.writeTag(output, tag != null ? tag : list.get(0));
-		DataTypeIO.writeString(output, worldName, StandardCharsets.UTF_8);
+
+		DataTypeIO.writeVarInt(output, RegistryCustom.DIMENSION_TYPE.indexOf(world.getEnvironment().getKey()));
+		DataTypeIO.writeString(output, Key.key(world.getName()).toString(), StandardCharsets.UTF_8);
 		output.writeLong(hashedSeed);
         output.writeByte((byte) gamemode.getId());
 		output.writeByte((byte) gamemode.getId());

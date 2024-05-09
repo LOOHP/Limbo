@@ -42,7 +42,7 @@ public class GeneratedBlockDataMappings {
 	private static JSONObject globalPalette = new JSONObject();
 	
 	static {
-		String block = "blocks.json";
+		String block = "reports/blocks.json";
 		InputStream inputStream = Limbo.class.getClassLoader().getResourceAsStream(block);
 		if (inputStream == null) {
 			throw new RuntimeException("Failed to load " + block + " from jar!");

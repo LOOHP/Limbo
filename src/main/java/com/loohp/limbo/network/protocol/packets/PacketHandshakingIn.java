@@ -29,9 +29,10 @@ public class PacketHandshakingIn extends PacketIn {
 	
 	public enum HandshakeType {
 		STATUS(1),
-		LOGIN(2);
+		LOGIN(2),
+		TRANSFER(3);
 		
-		int networkId;
+		private final int networkId;
 		
 		HandshakeType(int networkId) {
 			this.networkId = networkId;

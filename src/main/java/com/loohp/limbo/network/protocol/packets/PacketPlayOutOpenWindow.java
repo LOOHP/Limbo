@@ -19,7 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
-import com.loohp.limbo.registry.Registry;
+import com.loohp.limbo.registry.BuiltInRegistries;
 import com.loohp.limbo.utils.DataTypeIO;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -60,7 +60,7 @@ public class PacketPlayOutOpenWindow extends PacketOut {
         output.writeByte(Packet.getPlayOut().get(getClass()));
 
         DataTypeIO.writeVarInt(output, containerId);
-        DataTypeIO.writeVarInt(output, Registry.MENU_REGISTRY.getId(type));
+        DataTypeIO.writeVarInt(output, BuiltInRegistries.MENU_REGISTRY.getId(type));
         DataTypeIO.writeComponent(output, title);
 
         return buffer.toByteArray();

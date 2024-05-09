@@ -24,14 +24,13 @@ import com.loohp.limbo.inventory.ItemStack;
 import com.loohp.limbo.location.BlockFace;
 import com.loohp.limbo.location.MovingObjectPositionBlock;
 import com.loohp.limbo.location.Vector;
-import com.loohp.limbo.registry.Registry;
+import com.loohp.limbo.registry.BuiltInRegistries;
 import com.loohp.limbo.world.BlockPosition;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.querz.nbt.io.NBTInputStream;
 import net.querz.nbt.io.NBTOutputStream;
-import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.EndTag;
 import net.querz.nbt.tag.Tag;
 
@@ -44,29 +43,43 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class DataTypeIO {
 
 	public static void writeItemStack(DataOutputStream out, ItemStack itemstack) throws IOException {
 		if (itemstack == null || itemstack.isSimilar(ItemStack.AIR) || itemstack.amount() == 0) {
-			out.writeBoolean(false);
+			DataTypeIO.writeVarInt(out, 0);
 		} else {
-			out.writeBoolean(true);
-			writeVarInt(out, Registry.ITEM_REGISTRY.getId(itemstack.type()));
-			out.writeByte(itemstack.amount());
-			writeTag(out, itemstack.nbt());
+			DataTypeIO.writeVarInt(out, itemstack.amount());
+			writeVarInt(out, BuiltInRegistries.ITEM_REGISTRY.getId(itemstack.type()));
+			Map<Key, Tag<?>> components = itemstack.components();
+			DataTypeIO.writeVarInt(out, components.size());
+			DataTypeIO.writeVarInt(out, 0);
+			for (Map.Entry<Key, Tag<?>> entry : components.entrySet()) {
+				DataTypeIO.writeVarInt(out, BuiltInRegistries.DATA_COMPONENT_TYPE.getId(entry.getKey()));
+				DataTypeIO.writeTag(out, entry.getValue());
+			}
 		}
 	}
 
-	public static ItemStack readItemStack(DataInputStream in) throws IOException {
-		if (!in.readBoolean()) {
+    public static ItemStack readItemStack(DataInputStream in) throws IOException {
+		int amount = DataTypeIO.readVarInt(in);
+		if (amount <= 0) {
 			return ItemStack.AIR;
 		} else {
-			Key key = Registry.ITEM_REGISTRY.fromId(readVarInt(in));
-			byte amount = in.readByte();
-			CompoundTag nbt = readTag(in, CompoundTag.class);
-			return new ItemStack(key, amount, nbt);
+			Key key = BuiltInRegistries.ITEM_REGISTRY.fromId(readVarInt(in));
+			int size = DataTypeIO.readVarInt(in);
+			DataTypeIO.readVarInt(in);
+			Map<Key, Tag<?>> components = new HashMap<>();
+			for (int i = 0; i < size; i++) {
+				Key componentKey = BuiltInRegistries.DATA_COMPONENT_TYPE.fromId(DataTypeIO.readVarInt(in));
+				Tag<?> component = readTag(in, Tag.class);
+				components.put(componentKey, component);
+			}
+			return new ItemStack(key, amount, components);
 		}
 	}
 

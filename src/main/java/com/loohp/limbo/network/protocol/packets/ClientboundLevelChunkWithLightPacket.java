@@ -19,7 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
-import com.loohp.limbo.registry.Registry;
+import com.loohp.limbo.registry.BuiltInRegistries;
 import com.loohp.limbo.utils.BitsUtils;
 import com.loohp.limbo.utils.DataTypeIO;
 import com.loohp.limbo.world.Environment;
@@ -247,7 +247,7 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 			int z = each.getInt("z") % 16;
 			output.writeByte(((x & 15) << 4) | (z & 15));
 			output.writeShort(y);
-			Integer id = Registry.BLOCK_ENTITY_TYPE.getId(Key.key(chunk.getBlockStateAt(x, y, z).getString("Name")));
+			Integer id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getId(Key.key(chunk.getBlockStateAt(x, y, z).getString("Name")));
 			DataTypeIO.writeVarInt(output, id == null ? -1 : id);
 			DataTypeIO.writeTag(output, each);
 		}

@@ -19,23 +19,27 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.RegistryCustom;
 import com.loohp.limbo.utils.DataTypeIO;
+import net.kyori.adventure.key.Key;
 import net.querz.nbt.tag.CompoundTag;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 public class ClientboundRegistryDataPacket extends PacketOut {
 
-    private final CompoundTag dimensionCodec;
+    private final RegistryCustom registry;
 
-    public ClientboundRegistryDataPacket(CompoundTag dimensionCodec) {
-        this.dimensionCodec = dimensionCodec;
+    public ClientboundRegistryDataPacket(RegistryCustom registry) {
+        this.registry = registry;
     }
 
-    public CompoundTag getDimensionCodec() {
-        return dimensionCodec;
+    public RegistryCustom getRegistry() {
+        return registry;
     }
 
     @Override
@@ -45,7 +49,18 @@ public class ClientboundRegistryDataPacket extends PacketOut {
         DataOutputStream output = new DataOutputStream(buffer);
         output.writeByte(Packet.getConfigurationOut().get(getClass()));
 
-        DataTypeIO.writeTag(output, dimensionCodec);
+        DataTypeIO.writeString(output, registry.getIdentifier().asString(), StandardCharsets.UTF_8);
+        DataTypeIO.writeVarInt(output, registry.getEntries().size());
+        for (Map.Entry<Key, CompoundTag> entry : registry.getEntries().entrySet()) {
+            DataTypeIO.writeString(output, entry.getKey().asString(), StandardCharsets.UTF_8);
+            CompoundTag data = entry.getValue();
+            if (data == null) {
+                output.writeBoolean(false);
+            } else {
+                output.writeBoolean(true);
+                DataTypeIO.writeTag(output, data);
+            }
+        }
 
         return buffer.toByteArray();
     }

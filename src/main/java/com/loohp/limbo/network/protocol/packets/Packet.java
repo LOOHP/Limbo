@@ -115,6 +115,8 @@ public abstract class Packet {
 		Class<? extends Packet> type = getClass();
 		if (handshakeIn.containsValue(type)) {
 			return ClientConnection.ClientState.HANDSHAKE;
+		} else if (statusIn.containsValue(type) || statusOut.containsKey(type)) {
+			return ClientConnection.ClientState.STATUS;
 		} else if (loginIn.containsValue(type) || loginOut.containsKey(type)) {
 			return ClientConnection.ClientState.LOGIN;
 		} else if (configurationIn.containsValue(type) || configurationOut.containsKey(type)) {
@@ -122,7 +124,7 @@ public abstract class Packet {
 		} else if (playIn.containsValue(type) || playOut.containsKey(type)) {
 			return ClientConnection.ClientState.PLAY;
 		} else {
-			throw new IllegalStateException("This packet is not registered!");
+			throw new IllegalStateException("This packet of class " + type + " is not registered!");
 		}
 	}
 

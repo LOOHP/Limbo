@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.RegistryCustom;
 import com.loohp.limbo.utils.DataTypeIO;
 import com.loohp.limbo.utils.GameMode;
 import com.loohp.limbo.world.Environment;
@@ -36,7 +37,7 @@ public class PacketPlayOutLogin extends PacketOut {
 	private final int entityId;
 	private final boolean isHardcore;
 	private final List<World> worlds;
-	private final byte maxPlayers;
+	private final int maxPlayers;
 	private final int viewDistance;
 	private final int simulationDistance;
 	private final boolean reducedDebugInfo;
@@ -49,8 +50,9 @@ public class PacketPlayOutLogin extends PacketOut {
 	private final boolean isDebug;
 	private final boolean isFlat;
 	private final int portalCooldown;
+	private final boolean enforcesSecureChat;
 
-	public PacketPlayOutLogin(int entityId, boolean isHardcore, List<World> worlds, byte maxPlayers, int viewDistance, int simulationDistance, boolean reducedDebugInfo, boolean enableRespawnScreen, boolean doLimitedCrafting, Environment dimension, World world, long hashedSeed, GameMode gamemode, boolean isDebug, boolean isFlat, int portalCooldown) {
+	public PacketPlayOutLogin(int entityId, boolean isHardcore, List<World> worlds, int maxPlayers, int viewDistance, int simulationDistance, boolean reducedDebugInfo, boolean enableRespawnScreen, boolean doLimitedCrafting, Environment dimension, World world, long hashedSeed, GameMode gamemode, boolean isDebug, boolean isFlat, int portalCooldown, boolean enforcesSecureChat) {
 		this.entityId = entityId;
 		this.isHardcore = isHardcore;
 		this.worlds = worlds;
@@ -67,6 +69,7 @@ public class PacketPlayOutLogin extends PacketOut {
 		this.isDebug = isDebug;
 		this.isFlat = isFlat;
 		this.portalCooldown = portalCooldown;
+		this.enforcesSecureChat = enforcesSecureChat;
 	}
 
 	public int getEntityId() {
@@ -81,7 +84,7 @@ public class PacketPlayOutLogin extends PacketOut {
 		return worlds;
 	}
 
-	public byte getMaxPlayers() {
+	public int getMaxPlayers() {
 		return maxPlayers;
 	}
 
@@ -133,6 +136,10 @@ public class PacketPlayOutLogin extends PacketOut {
 		return portalCooldown;
 	}
 
+	public boolean isEnforcesSecureChat() {
+		return enforcesSecureChat;
+	}
+
 	@Override
 	public byte[] serializePacket() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -151,7 +158,7 @@ public class PacketPlayOutLogin extends PacketOut {
 		output.writeBoolean(reducedDebugInfo);
 		output.writeBoolean(enableRespawnScreen);
 		output.writeBoolean(doLimitedCrafting);
-		DataTypeIO.writeString(output, world.getEnvironment().getKey().toString(), StandardCharsets.UTF_8);
+		DataTypeIO.writeVarInt(output, RegistryCustom.DIMENSION_TYPE.indexOf(world.getEnvironment().getKey()));
 		DataTypeIO.writeString(output, Key.key(world.getName()).toString(), StandardCharsets.UTF_8);
 		output.writeLong(hashedSeed);
         output.writeByte((byte) gamemode.getId());
@@ -160,6 +167,7 @@ public class PacketPlayOutLogin extends PacketOut {
 		output.writeBoolean(isFlat);
 		output.writeBoolean(false);
 		DataTypeIO.writeVarInt(output, portalCooldown);
+		output.writeBoolean(enforcesSecureChat);
 
 		return buffer.toByteArray();
 	}

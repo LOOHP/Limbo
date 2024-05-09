@@ -99,6 +99,7 @@ import com.loohp.limbo.network.protocol.packets.ServerboundLoginAcknowledgedPack
 import com.loohp.limbo.player.Player;
 import com.loohp.limbo.player.PlayerInteractManager;
 import com.loohp.limbo.player.PlayerInventory;
+import com.loohp.limbo.registry.RegistryCustom;
 import com.loohp.limbo.utils.BungeecordAdventureConversionUtils;
 import com.loohp.limbo.utils.CheckedBiConsumer;
 import com.loohp.limbo.utils.CustomStringUtils;
@@ -397,6 +398,7 @@ public class ClientConnection extends Thread {
                     }
                     break;
                 case LOGIN:
+                case TRANSFER:
                     state = ClientState.LOGIN;
                     ServerProperties properties = Limbo.getInstance().getServerProperties();
 
@@ -515,7 +517,7 @@ public class ClientConnection extends Thread {
                                 break;
                             }
 
-                            PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(uuid, username);
+                            PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(uuid, username, false);
                             sendPacket(success);
 
                             player = new Player(this, username, uuid, Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
@@ -539,7 +541,7 @@ public class ClientConnection extends Thread {
                             inetAddress = InetAddress.getByName(data.getIpAddress());
                             forwardedSkin = data.getSkinResponse();
 
-                            PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(data.getUuid(), data.getUsername());
+                            PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(data.getUuid(), data.getUsername(), false);
                             sendPacket(success);
 
                             player = new Player(this, data.getUsername(), data.getUuid(), Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
@@ -557,7 +559,7 @@ public class ClientConnection extends Thread {
 
                     break;
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
                 channel.close();
                 clientSocket.close();
                 state = ClientState.DISCONNECTED;
@@ -567,8 +569,22 @@ public class ClientConnection extends Thread {
 
                 TimeUnit.MILLISECONDS.sleep(500);
 
-                ClientboundRegistryDataPacket registryDataPacket = new ClientboundRegistryDataPacket(Limbo.getInstance().getDimensionRegistry().getCodec());
-                sendPacket(registryDataPacket);
+                ClientboundRegistryDataPacket registryDataPacket1 = new ClientboundRegistryDataPacket(RegistryCustom.WORLDGEN_BIOME);
+                sendPacket(registryDataPacket1);
+                ClientboundRegistryDataPacket registryDataPacket2 = new ClientboundRegistryDataPacket(RegistryCustom.CHAT_TYPE);
+                sendPacket(registryDataPacket2);
+                ClientboundRegistryDataPacket registryDataPacket3 = new ClientboundRegistryDataPacket(RegistryCustom.TRIM_PATTERN);
+                sendPacket(registryDataPacket3);
+                ClientboundRegistryDataPacket registryDataPacket4 = new ClientboundRegistryDataPacket(RegistryCustom.TRIM_MATERIAL);
+                sendPacket(registryDataPacket4);
+                ClientboundRegistryDataPacket registryDataPacket5 = new ClientboundRegistryDataPacket(RegistryCustom.WOLF_VARIANT);
+                sendPacket(registryDataPacket5);
+                ClientboundRegistryDataPacket registryDataPacket6 = new ClientboundRegistryDataPacket(RegistryCustom.DIMENSION_TYPE);
+                sendPacket(registryDataPacket6);
+                ClientboundRegistryDataPacket registryDataPacket7 = new ClientboundRegistryDataPacket(RegistryCustom.DAMAGE_TYPE);
+                sendPacket(registryDataPacket7);
+                ClientboundRegistryDataPacket registryDataPacket8 = new ClientboundRegistryDataPacket(RegistryCustom.BANNER_PATTERN);
+                sendPacket(registryDataPacket8);
 
                 ClientboundFinishConfigurationPacket clientboundFinishConfigurationPacket = new ClientboundFinishConfigurationPacket();
                 sendPacket(clientboundFinishConfigurationPacket);
@@ -587,7 +603,7 @@ public class ClientConnection extends Thread {
                 worldSpawn = spawnEvent.getSpawnLocation();
                 World world = worldSpawn.getWorld();
 
-                PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, Limbo.getInstance().getWorlds(), (byte) properties.getMaxPlayers(), 8, 8, properties.isReducedDebugInfo(), true, false, world.getEnvironment(), world, 0, properties.getDefaultGamemode(), false, true, 0);
+                PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, Limbo.getInstance().getWorlds(), properties.getMaxPlayers(), 8, 8, properties.isReducedDebugInfo(), true, false, world.getEnvironment(), world, 0, properties.getDefaultGamemode(), false, true, 0, false);
                 sendPacket(join);
                 Limbo.getInstance().getUnsafe().a(player, properties.getDefaultGamemode());
 
@@ -861,7 +877,7 @@ public class ClientConnection extends Thread {
                                 }
                             }
                         }
-                    } catch (Exception e) {
+                    } catch (Exception ignored) {
                         break;
                     }
                 }
