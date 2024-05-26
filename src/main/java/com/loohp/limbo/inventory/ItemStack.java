@@ -19,7 +19,7 @@
 
 package com.loohp.limbo.inventory;
 
-import com.loohp.limbo.registry.DataComponentTypes;
+import com.loohp.limbo.registry.DataComponentType;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.querz.nbt.tag.Tag;
@@ -81,11 +81,11 @@ public class ItemStack implements Cloneable {
         return new ItemStack(material, amount, components);
     }
 
-    public <T> T component(DataComponentTypes<T> type) {
+    public <T> T component(DataComponentType<T> type) {
         return type.getCodec().decode(components.get(type.getKey()));
     }
 
-    public <T> ItemStack component(DataComponentTypes<T> type, T value) {
+    public <T> ItemStack component(DataComponentType<T> type, T value) {
         Map<Key, Tag<?>> components = components();
         components.put(type.getKey(), type.getCodec().encode(value));
         return components(components);
@@ -96,7 +96,7 @@ public class ItemStack implements Cloneable {
             return null;
         }
         try {
-            return component(DataComponentTypes.CUSTOM_NAME);
+            return component(DataComponentType.CUSTOM_NAME);
         } catch (Exception e) {
             return null;
         }
@@ -106,7 +106,7 @@ public class ItemStack implements Cloneable {
         if (type().equals(AIR.type())) {
             return this;
         }
-        return component(DataComponentTypes.CUSTOM_NAME, component);
+        return component(DataComponentType.CUSTOM_NAME, component);
     }
 
     public int getMaxStackSize() {

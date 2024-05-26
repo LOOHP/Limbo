@@ -31,13 +31,13 @@ import java.util.Map;
 
 public class PacketPlayInWindowClick extends PacketIn {
 
-	private int containerId;
-	private int stateId;
-	private int slotNum;
-	private int buttonNum;
-	private InventoryClickType clickType;
-	private Map<Integer, ItemStack> changedSlots;
-	private ItemStack carriedItem;
+	private final int containerId;
+	private final int stateId;
+	private final int slotNum;
+	private final int buttonNum;
+	private final InventoryClickType clickType;
+	private final Map<Integer, ItemStack> changedSlots;
+	private final ItemStack carriedItem;
 
 	public PacketPlayInWindowClick(int containerId, int stateId, int slotNum, int buttonNum, InventoryClickType clickType, Map<Integer, ItemStack> changedSlots, ItemStack carriedItem) {
 		this.containerId = containerId;

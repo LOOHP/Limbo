@@ -25,6 +25,7 @@ import com.loohp.limbo.location.BlockFace;
 import com.loohp.limbo.location.MovingObjectPositionBlock;
 import com.loohp.limbo.location.Vector;
 import com.loohp.limbo.registry.BuiltInRegistries;
+import com.loohp.limbo.registry.DataComponentType;
 import com.loohp.limbo.world.BlockPosition;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -56,12 +57,21 @@ public class DataTypeIO {
 			DataTypeIO.writeVarInt(out, itemstack.amount());
 			writeVarInt(out, BuiltInRegistries.ITEM_REGISTRY.getId(itemstack.type()));
 			Map<Key, Tag<?>> components = itemstack.components();
-			DataTypeIO.writeVarInt(out, components.size());
-			DataTypeIO.writeVarInt(out, 0);
+			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+			DataOutputStream componentOut = new DataOutputStream(buffer);
+			int componentSize = 0;
 			for (Map.Entry<Key, Tag<?>> entry : components.entrySet()) {
-				DataTypeIO.writeVarInt(out, BuiltInRegistries.DATA_COMPONENT_TYPE.getId(entry.getKey()));
-				DataTypeIO.writeTag(out, entry.getValue());
+				Key componentKey = entry.getKey();
+				int typeId = BuiltInRegistries.DATA_COMPONENT_TYPE.getId(componentKey);
+				if (typeId >= 0 && DataComponentType.isKnownType(componentKey)) {
+					DataTypeIO.writeVarInt(componentOut, typeId);
+					DataTypeIO.writeTag(componentOut, entry.getValue());
+					componentSize++;
+				}
 			}
+			DataTypeIO.writeVarInt(out, componentSize);
+			DataTypeIO.writeVarInt(out, 0);
+			out.write(buffer.toByteArray());
 		}
 	}
 
@@ -77,7 +87,9 @@ public class DataTypeIO {
 			for (int i = 0; i < size; i++) {
 				Key componentKey = BuiltInRegistries.DATA_COMPONENT_TYPE.fromId(DataTypeIO.readVarInt(in));
 				Tag<?> component = readTag(in, Tag.class);
-				components.put(componentKey, component);
+				if (componentKey != null && DataComponentType.isKnownType(componentKey)) {
+					components.put(componentKey, component);
+				}
 			}
 			return new ItemStack(key, amount, components);
 		}

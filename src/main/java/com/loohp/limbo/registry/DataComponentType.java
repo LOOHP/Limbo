@@ -26,27 +26,40 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.querz.nbt.tag.Tag;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
-public class DataComponentTypes<T> {
+public class DataComponentType<T> {
 
-    public static final DataComponentTypes<Component> CUSTOM_NAME = new DataComponentTypes<>("custom_name", new DataComponentCodec<>(component -> {
+    private static final Map<Key, DataComponentType<?>> REGISTERED_TYPES = new HashMap<>();
+
+    public static final DataComponentType<Component> CUSTOM_NAME = register(new DataComponentType<>("custom_name", new DataComponentCodec<>(component -> {
         JsonElement element = GsonComponentSerializer.gson().serializeToTree(component);
         return NbtComponentSerializer.jsonComponentToTag(element);
     }, tag -> {
         JsonElement element = NbtComponentSerializer.tagComponentToJson(tag);
         return GsonComponentSerializer.gson().deserializeFromTree(element);
-    }));
+    })));
+
+    public static <T> DataComponentType<T> register(DataComponentType<T> type) {
+        REGISTERED_TYPES.put(type.getKey(), type);
+        return type;
+    }
+
+    public static boolean isKnownType(Key key) {
+        return REGISTERED_TYPES.containsKey(key);
+    }
 
     private final Key key;
     private final DataComponentCodec<T> codec;
 
     @SuppressWarnings("PatternValidation")
-    public DataComponentTypes(String key, DataComponentCodec<T> codec) {
+    public DataComponentType(String key, DataComponentCodec<T> codec) {
         this(Key.key(key), codec);
     }
 
-    public DataComponentTypes(Key key, DataComponentCodec<T> codec) {
+    public DataComponentType(Key key, DataComponentCodec<T> codec) {
         this.key = key;
         this.codec = codec;
     }
@@ -69,7 +82,6 @@ public class DataComponentTypes<T> {
             this.decode = decode;
         }
 
-        @SuppressWarnings("unchecked")
         public Tag<?> encode(T t) {
             return encode.apply((T) t);
         }

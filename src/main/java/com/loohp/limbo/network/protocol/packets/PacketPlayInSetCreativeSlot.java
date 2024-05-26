@@ -27,8 +27,8 @@ import java.io.IOException;
 
 public class PacketPlayInSetCreativeSlot extends PacketIn {
 
-	private int slotNumber;
-	private ItemStack itemStack;
+	private final int slotNumber;
+	private final ItemStack itemStack;
 
 	public PacketPlayInSetCreativeSlot(int slotNumber, ItemStack itemStack) {
 		this.slotNumber = slotNumber;

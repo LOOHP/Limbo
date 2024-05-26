@@ -28,10 +28,10 @@ import java.io.IOException;
 
 public class PacketPlayOutSetSlot extends PacketOut {
 
-    private int containerId;
-    private int stateId;
-    private int slot;
-    private ItemStack itemStack;
+    private final int containerId;
+    private final int stateId;
+    private final int slot;
+    private final ItemStack itemStack;
 
     public PacketPlayOutSetSlot(int containerId, int stateId, int slot, ItemStack itemStack) {
         this.containerId = containerId;
