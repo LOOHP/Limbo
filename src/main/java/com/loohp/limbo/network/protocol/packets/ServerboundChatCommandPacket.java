@@ -19,56 +19,26 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
-import com.loohp.limbo.utils.ArgumentSignatures;
 import com.loohp.limbo.utils.DataTypeIO;
-import com.loohp.limbo.utils.LastSeenMessages;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 
 public class ServerboundChatCommandPacket extends PacketIn {
 
-    private String command;
-    private Instant time;
-    private long salt;
-    private ArgumentSignatures argumentSignatures;
-    private LastSeenMessages.b lastSeenMessages;
+    private final String command;
 
-    public ServerboundChatCommandPacket(String command, Instant time, long salt, ArgumentSignatures argumentSignatures, LastSeenMessages.b lastSeenMessages) {
+    public ServerboundChatCommandPacket(String command) {
         this.command = command;
-        this.time = time;
-        this.salt = salt;
-        this.argumentSignatures = argumentSignatures;
-        this.lastSeenMessages = lastSeenMessages;
     }
 
     public ServerboundChatCommandPacket(DataInputStream in) throws IOException {
         this.command = DataTypeIO.readString(in, StandardCharsets.UTF_8);
-        this.time = Instant.ofEpochMilli(in.readLong());
-        this.salt = in.readLong();
-        this.argumentSignatures = new ArgumentSignatures(in);
-        this.lastSeenMessages = new LastSeenMessages.b(in);
     }
 
     public String getCommand() {
         return command;
     }
 
-    public Instant getTime() {
-        return time;
-    }
-
-    public long getSalt() {
-        return salt;
-    }
-
-    public ArgumentSignatures getArgumentSignatures() {
-        return argumentSignatures;
-    }
-
-    public LastSeenMessages.b getLastSeenMessages() {
-        return lastSeenMessages;
-    }
 }
