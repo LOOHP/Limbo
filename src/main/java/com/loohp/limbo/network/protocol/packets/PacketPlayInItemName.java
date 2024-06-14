@@ -27,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 
 public class PacketPlayInItemName extends PacketIn {
 
-	private String name;
+	private final String name;
 
 	public PacketPlayInItemName(String name) {
 		this.name = name;

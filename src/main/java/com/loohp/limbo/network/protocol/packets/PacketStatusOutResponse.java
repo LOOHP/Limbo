@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 
 import java.io.ByteArrayOutputStream;
@@ -28,7 +29,7 @@ import java.nio.charset.StandardCharsets;
 
 public class PacketStatusOutResponse extends PacketOut {
 	
-	private String json;
+	private final String json;
 	
 	public PacketStatusOutResponse(String json) {
 		this.json = json;
@@ -43,7 +44,7 @@ public class PacketStatusOutResponse extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getStatusOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 		DataTypeIO.writeString(output, json, StandardCharsets.UTF_8);
 		
 		return buffer.toByteArray();

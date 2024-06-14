@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 import net.kyori.adventure.text.Component;
 
@@ -30,10 +31,10 @@ import java.util.Optional;
 
 public class PacketPlayOutTabComplete extends PacketOut {
 
-	private int id;
-	private int start;
-	private int length;
-	private TabCompleteMatches[] matches;
+	private final int id;
+	private final int start;
+	private final int length;
+	private final TabCompleteMatches[] matches;
 
 	public PacketPlayOutTabComplete(int id, int start, int length, TabCompleteMatches... matches) {
 		this.id = id;
@@ -63,7 +64,7 @@ public class PacketPlayOutTabComplete extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getPlayOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 		DataTypeIO.writeVarInt(output, id);
 		DataTypeIO.writeVarInt(output, start);
 		DataTypeIO.writeVarInt(output, length);

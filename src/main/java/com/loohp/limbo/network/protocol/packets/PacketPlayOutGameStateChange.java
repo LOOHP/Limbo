@@ -19,6 +19,8 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -52,8 +54,8 @@ public class PacketPlayOutGameStateChange extends PacketOut {
         }
     }
 
-    private GameStateChangeEvent event;
-    private float value;
+    private final GameStateChangeEvent event;
+    private final float value;
 
     public PacketPlayOutGameStateChange(GameStateChangeEvent event, float value) {
         this.event = event;
@@ -72,7 +74,7 @@ public class PacketPlayOutGameStateChange extends PacketOut {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
         DataOutputStream output = new DataOutputStream(buffer);
-        output.writeByte(Packet.getPlayOut().get(getClass()));
+        output.writeByte(PacketRegistry.getPacketId(getClass()));
         output.writeByte(event.getId());
         output.writeFloat(value);
 

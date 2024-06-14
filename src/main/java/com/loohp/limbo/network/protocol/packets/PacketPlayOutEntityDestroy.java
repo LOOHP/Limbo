@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 
 import java.io.ByteArrayOutputStream;
@@ -27,7 +28,7 @@ import java.io.IOException;
 
 public class PacketPlayOutEntityDestroy extends PacketOut {
 	
-	private int[] entityIds;
+	private final int[] entityIds;
 	
 	public PacketPlayOutEntityDestroy(int... entityIds) {
 		this.entityIds = entityIds;
@@ -42,7 +43,7 @@ public class PacketPlayOutEntityDestroy extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getPlayOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 		DataTypeIO.writeVarInt(output, entityIds.length);
 		for (int entityId : entityIds) {
 			DataTypeIO.writeVarInt(output, entityId);

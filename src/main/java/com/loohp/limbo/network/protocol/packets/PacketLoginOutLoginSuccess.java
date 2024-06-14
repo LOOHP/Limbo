@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 
 import java.io.ByteArrayOutputStream;
@@ -56,7 +57,7 @@ public class PacketLoginOutLoginSuccess extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getLoginOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 		DataTypeIO.writeUUID(output, uuid);
 		DataTypeIO.writeString(output, username, StandardCharsets.UTF_8);
 		DataTypeIO.writeVarInt(output, 0);

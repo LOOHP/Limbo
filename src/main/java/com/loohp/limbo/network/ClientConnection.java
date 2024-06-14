@@ -43,7 +43,6 @@ import com.loohp.limbo.inventory.ItemStack;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.network.protocol.packets.ClientboundFinishConfigurationPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundRegistryDataPacket;
-import com.loohp.limbo.network.protocol.packets.Packet;
 import com.loohp.limbo.network.protocol.packets.PacketHandshakingIn;
 import com.loohp.limbo.network.protocol.packets.PacketIn;
 import com.loohp.limbo.network.protocol.packets.PacketLoginInLoginStart;
@@ -99,6 +98,7 @@ import com.loohp.limbo.network.protocol.packets.ServerboundLoginAcknowledgedPack
 import com.loohp.limbo.player.Player;
 import com.loohp.limbo.player.PlayerInteractManager;
 import com.loohp.limbo.player.PlayerInventory;
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.registry.RegistryCustom;
 import com.loohp.limbo.utils.BungeecordAdventureConversionUtils;
 import com.loohp.limbo.utils.CheckedBiConsumer;
@@ -288,26 +288,7 @@ public class ClientConnection extends Thread {
                     DataInput input = read.getDataInput();
                     int size = read.getSize();
                     int packetId = read.getPacketId();
-                    Class<? extends PacketIn> packetType;
-                    switch (state) {
-                        case HANDSHAKE:
-                            packetType = Packet.getHandshakeIn().get(packetId);
-                            break;
-                        case STATUS:
-                            packetType = Packet.getStatusIn().get(packetId);
-                            break;
-                        case LOGIN:
-                            packetType = Packet.getLoginIn().get(packetId);
-                            break;
-                        case CONFIGURATION:
-                            packetType = Packet.getConfigurationIn().get(packetId);
-                            break;
-                        case PLAY:
-                            packetType = Packet.getPlayIn().get(packetId);
-                            break;
-                        default:
-                            throw new IllegalStateException("Illegal ClientState!");
-                    }
+                    Class<? extends PacketIn> packetType = PacketRegistry.getPacketClass(packetId, PacketRegistry.NetworkPhase.fromClientState(state), PacketRegistry.PacketBound.SERVERBOUND);
                     if (packetType == null) {
                         input.skipBytes(size - DataTypeIO.getVarIntLength(packetId));
                         return null;
@@ -569,22 +550,10 @@ public class ClientConnection extends Thread {
 
                 TimeUnit.MILLISECONDS.sleep(500);
 
-                ClientboundRegistryDataPacket registryDataPacket1 = new ClientboundRegistryDataPacket(RegistryCustom.WORLDGEN_BIOME);
-                sendPacket(registryDataPacket1);
-                ClientboundRegistryDataPacket registryDataPacket2 = new ClientboundRegistryDataPacket(RegistryCustom.CHAT_TYPE);
-                sendPacket(registryDataPacket2);
-                ClientboundRegistryDataPacket registryDataPacket3 = new ClientboundRegistryDataPacket(RegistryCustom.TRIM_PATTERN);
-                sendPacket(registryDataPacket3);
-                ClientboundRegistryDataPacket registryDataPacket4 = new ClientboundRegistryDataPacket(RegistryCustom.TRIM_MATERIAL);
-                sendPacket(registryDataPacket4);
-                ClientboundRegistryDataPacket registryDataPacket5 = new ClientboundRegistryDataPacket(RegistryCustom.WOLF_VARIANT);
-                sendPacket(registryDataPacket5);
-                ClientboundRegistryDataPacket registryDataPacket6 = new ClientboundRegistryDataPacket(RegistryCustom.DIMENSION_TYPE);
-                sendPacket(registryDataPacket6);
-                ClientboundRegistryDataPacket registryDataPacket7 = new ClientboundRegistryDataPacket(RegistryCustom.DAMAGE_TYPE);
-                sendPacket(registryDataPacket7);
-                ClientboundRegistryDataPacket registryDataPacket8 = new ClientboundRegistryDataPacket(RegistryCustom.BANNER_PATTERN);
-                sendPacket(registryDataPacket8);
+                for (RegistryCustom registryCustom : RegistryCustom.getRegistries()) {
+                    ClientboundRegistryDataPacket registryDataPacket = new ClientboundRegistryDataPacket(registryCustom);
+                    sendPacket(registryDataPacket);
+                }
 
                 ClientboundFinishConfigurationPacket clientboundFinishConfigurationPacket = new ClientboundFinishConfigurationPacket();
                 sendPacket(clientboundFinishConfigurationPacket);

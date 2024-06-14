@@ -29,16 +29,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServerConnection extends Thread {
-	
+
+	private final String ip;
+	private final int port;
+	private final boolean silent;
 	private ServerSocket serverSocket;
 	private List<ClientConnection> clients;
-	private String ip;
-	private int port;
 
-	public ServerConnection(String ip, int port) {
-		clients = new ArrayList<ClientConnection>();
+	public ServerConnection(String ip, int port, boolean silent) {
+		this.clients = new ArrayList<>();
 		this.ip = ip;
 		this.port = port;
+		this.silent = silent;
 		start();
 	}
 	
@@ -46,7 +48,9 @@ public class ServerConnection extends Thread {
 	public void run() {
 		try {
 			serverSocket = new ServerSocket(port, 50, InetAddress.getByName(ip));
-			Limbo.getInstance().getConsole().sendMessage("Limbo server listening on /" + serverSocket.getInetAddress().getHostName() + ":" + serverSocket.getLocalPort());
+			if (!silent) {
+				Limbo.getInstance().getConsole().sendMessage("Limbo server listening on /" + serverSocket.getInetAddress().getHostName() + ":" + serverSocket.getLocalPort());
+			}
 	        while (true) {
 	            Socket connection = serverSocket.accept();
 	            ClientConnection sc = new ClientConnection(connection);

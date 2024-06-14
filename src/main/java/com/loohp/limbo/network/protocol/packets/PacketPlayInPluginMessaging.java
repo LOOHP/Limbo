@@ -27,8 +27,8 @@ import java.nio.charset.StandardCharsets;
 
 public class PacketPlayInPluginMessaging extends PacketIn {
 
-	private String channel;
-	private byte[] data;
+	private final String channel;
+	private final byte[] data;
 
 	public PacketPlayInPluginMessaging(String channel, byte[] data) {
 		this.channel = channel;

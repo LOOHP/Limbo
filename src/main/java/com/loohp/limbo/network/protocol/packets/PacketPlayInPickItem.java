@@ -26,7 +26,7 @@ import java.io.IOException;
 
 public class PacketPlayInPickItem extends PacketIn {
 
-	private int slot;
+	private final int slot;
 
 	public PacketPlayInPickItem(int slot) {
 		this.slot = slot;

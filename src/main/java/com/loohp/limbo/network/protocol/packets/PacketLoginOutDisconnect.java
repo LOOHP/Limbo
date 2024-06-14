@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 import net.kyori.adventure.text.Component;
 
@@ -28,7 +29,7 @@ import java.io.IOException;
 
 public class PacketLoginOutDisconnect extends PacketOut {
 	
-	private Component reason;
+	private final Component reason;
 
 	public PacketLoginOutDisconnect(Component reason) {
 		this.reason = reason;
@@ -43,7 +44,7 @@ public class PacketLoginOutDisconnect extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getLoginOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 		DataTypeIO.writeComponent(output, reason);
 		
 		return buffer.toByteArray();

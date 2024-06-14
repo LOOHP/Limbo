@@ -24,7 +24,7 @@ import java.io.IOException;
 
 public class PacketPlayInCloseWindow extends PacketIn {
 
-	private int containerId;
+	private final int containerId;
 
 	public PacketPlayInCloseWindow(int containerId) {
 		this.containerId = containerId;

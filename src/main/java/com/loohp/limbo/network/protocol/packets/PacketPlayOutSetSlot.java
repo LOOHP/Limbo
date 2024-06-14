@@ -20,6 +20,7 @@
 package com.loohp.limbo.network.protocol.packets;
 
 import com.loohp.limbo.inventory.ItemStack;
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 
 import java.io.ByteArrayOutputStream;
@@ -61,7 +62,7 @@ public class PacketPlayOutSetSlot extends PacketOut {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
         DataOutputStream output = new DataOutputStream(buffer);
-        output.writeByte(Packet.getPlayOut().get(getClass()));
+        output.writeByte(PacketRegistry.getPacketId(getClass()));
 
         output.writeByte(containerId);
         DataTypeIO.writeVarInt(output, stateId);

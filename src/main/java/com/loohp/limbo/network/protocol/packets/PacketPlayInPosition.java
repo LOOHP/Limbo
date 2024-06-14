@@ -24,10 +24,10 @@ import java.io.IOException;
 
 public class PacketPlayInPosition extends PacketIn {
 	
-	private double x;
-    private double y;
-    private double z;
-    private boolean onGround;
+	private final double x;
+    private final double y;
+    private final double z;
+    private final boolean onGround;
 	
 	public PacketPlayInPosition(double x, double y, double z, boolean onGround) {
 		this.x = x;

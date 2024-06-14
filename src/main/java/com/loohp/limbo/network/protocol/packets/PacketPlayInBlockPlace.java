@@ -27,8 +27,8 @@ import java.io.IOException;
 
 public class PacketPlayInBlockPlace extends PacketIn {
 
-	private EquipmentSlot hand;
-	private int sequence;
+	private final EquipmentSlot hand;
+	private final int sequence;
 
 	public PacketPlayInBlockPlace(EquipmentSlot hand, int sequence) {
 		this.hand = hand;

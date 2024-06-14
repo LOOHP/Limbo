@@ -20,6 +20,7 @@
 package com.loohp.limbo.network.protocol.packets;
 
 import com.loohp.limbo.inventory.ItemStack;
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 
 import java.io.ByteArrayOutputStream;
@@ -29,10 +30,10 @@ import java.util.List;
 
 public class PacketPlayOutWindowItems extends PacketOut {
 
-    private int containerId;
-    private int stateId;
-    private List<ItemStack> items;
-    private ItemStack carriedItem;
+    private final int containerId;
+    private final int stateId;
+    private final List<ItemStack> items;
+    private final ItemStack carriedItem;
 
     public PacketPlayOutWindowItems(int containerId, int stateId, List<ItemStack> items, ItemStack carriedItem) {
         this.containerId = containerId;
@@ -62,7 +63,7 @@ public class PacketPlayOutWindowItems extends PacketOut {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
         DataOutputStream output = new DataOutputStream(buffer);
-        output.writeByte(Packet.getPlayOut().get(getClass()));
+        output.writeByte(PacketRegistry.getPacketId(getClass()));
 
         output.writeByte(containerId);
         DataTypeIO.writeVarInt(output, stateId);

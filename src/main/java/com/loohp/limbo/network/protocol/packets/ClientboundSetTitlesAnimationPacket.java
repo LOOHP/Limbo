@@ -19,15 +19,17 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class ClientboundSetTitlesAnimationPacket extends PacketOut {
 
-	private int fadeIn;
-	private int stay;
-	private int fadeOut;
+	private final int fadeIn;
+	private final int stay;
+	private final int fadeOut;
 
 	public ClientboundSetTitlesAnimationPacket(int fadeIn, int stay, int fadeOut) {
 		this.fadeIn = fadeIn;
@@ -52,7 +54,7 @@ public class ClientboundSetTitlesAnimationPacket extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getPlayOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 		
 		output.writeInt(fadeIn);
 		output.writeInt(stay);

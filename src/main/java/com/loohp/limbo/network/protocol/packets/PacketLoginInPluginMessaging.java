@@ -27,9 +27,9 @@ import java.util.Optional;
 
 public class PacketLoginInPluginMessaging extends PacketIn {
 
-	private int messageId;
-	private boolean successful;
-	private Optional<byte[]> data;
+	private final int messageId;
+	private final boolean successful;
+	private final Optional<byte[]> data;
 
 	public PacketLoginInPluginMessaging(int messageId, boolean successful, byte[] data) {
 		this.messageId = messageId;

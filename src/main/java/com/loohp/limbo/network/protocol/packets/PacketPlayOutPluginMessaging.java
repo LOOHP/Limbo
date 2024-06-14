@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 
 import java.io.ByteArrayOutputStream;
@@ -28,8 +29,8 @@ import java.nio.charset.StandardCharsets;
 
 public class PacketPlayOutPluginMessaging extends PacketOut {
 
-	private String channel;
-	private byte[] data;
+	private final String channel;
+	private final byte[] data;
 
 	public PacketPlayOutPluginMessaging(String channel, byte[] data) {
 		this.channel = channel;
@@ -49,7 +50,7 @@ public class PacketPlayOutPluginMessaging extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getPlayOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 		DataTypeIO.writeString(output, channel, StandardCharsets.UTF_8);
 		output.write(data);
 		

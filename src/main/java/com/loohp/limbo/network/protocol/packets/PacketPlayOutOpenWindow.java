@@ -20,6 +20,7 @@
 package com.loohp.limbo.network.protocol.packets;
 
 import com.loohp.limbo.registry.BuiltInRegistries;
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -30,9 +31,9 @@ import java.io.IOException;
 
 public class PacketPlayOutOpenWindow extends PacketOut {
 
-    private int containerId;
-    private Key type;
-    private Component title;
+    private final int containerId;
+    private final Key type;
+    private final Component title;
 
     public PacketPlayOutOpenWindow(int containerId, Key type, Component title) {
         this.containerId = containerId;
@@ -57,7 +58,7 @@ public class PacketPlayOutOpenWindow extends PacketOut {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
         DataOutputStream output = new DataOutputStream(buffer);
-        output.writeByte(Packet.getPlayOut().get(getClass()));
+        output.writeByte(PacketRegistry.getPacketId(getClass()));
 
         DataTypeIO.writeVarInt(output, containerId);
         DataTypeIO.writeVarInt(output, BuiltInRegistries.MENU_REGISTRY.getId(type));

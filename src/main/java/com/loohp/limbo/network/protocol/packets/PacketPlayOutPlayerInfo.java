@@ -20,6 +20,7 @@
 package com.loohp.limbo.network.protocol.packets;
 
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerInfo.PlayerInfoData.PlayerInfoDataAddPlayer;
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 import com.loohp.limbo.utils.GameMode;
 
@@ -42,9 +43,9 @@ public class PacketPlayOutPlayerInfo extends PacketOut {
 		UPDATE_DISPLAY_NAME;
 	}
 
-	private EnumSet<PlayerInfoAction> actions;
-	private UUID uuid;
-	private PlayerInfoData data;
+	private final EnumSet<PlayerInfoAction> actions;
+	private final UUID uuid;
+	private final PlayerInfoData data;
 
 	public PacketPlayOutPlayerInfo(EnumSet<PlayerInfoAction> actions, UUID uuid, PlayerInfoData data) {
 		this.actions = actions;
@@ -69,7 +70,7 @@ public class PacketPlayOutPlayerInfo extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getPlayOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 
 		DataTypeIO.writeEnumSet(output, actions, PlayerInfoAction.class);
 		DataTypeIO.writeVarInt(output, 1);

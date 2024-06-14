@@ -30,11 +30,11 @@ import java.time.Instant;
 
 public class PacketPlayInChat extends PacketIn {
 	
-	private String message;
-	private Instant time;
-	private long salt;
-	private MessageSignature signature;
-	private LastSeenMessages.b lastSeenMessages;
+	private final String message;
+	private final Instant time;
+	private final long salt;
+	private final MessageSignature signature;
+	private final LastSeenMessages.b lastSeenMessages;
 
 	public PacketPlayInChat(String message, Instant time, long salt, MessageSignature signature, LastSeenMessages.b lastSeenMessages) {
 		this.message = message;

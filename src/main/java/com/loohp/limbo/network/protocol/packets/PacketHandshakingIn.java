@@ -54,10 +54,10 @@ public class PacketHandshakingIn extends PacketIn {
 	
 	//==============================
 	
-	private int protocolVersion;
-	private String serverAddress;
-	private int serverPort;
-	private HandshakeType handshakeType;
+	private final int protocolVersion;
+	private final String serverAddress;
+	private final int serverPort;
+	private final HandshakeType handshakeType;
 
 	public PacketHandshakingIn(int protocolVersion, String serverAddress, int serverPort, HandshakeType handshakeType) {
 		this.protocolVersion = protocolVersion;

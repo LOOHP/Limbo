@@ -19,13 +19,15 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class PacketPlayOutDeclareCommands extends PacketOut {
 	
-	private byte[] data;
+	private final byte[] data;
 	
 	public PacketPlayOutDeclareCommands(byte[] data) {
 		this.data = data;
@@ -40,7 +42,7 @@ public class PacketPlayOutDeclareCommands extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getPlayOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 		output.write(data);
 		
 		return buffer.toByteArray();

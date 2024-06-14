@@ -24,9 +24,9 @@ import java.io.IOException;
 
 public class PacketPlayInRotation extends PacketIn {
 	
-    private float yaw;
-    private float pitch;
-    private boolean onGround;
+    private final float yaw;
+    private final float pitch;
+    private final boolean onGround;
 	
 	public PacketPlayInRotation(float yaw, float pitch, boolean onGround) {
 		this.yaw = yaw;

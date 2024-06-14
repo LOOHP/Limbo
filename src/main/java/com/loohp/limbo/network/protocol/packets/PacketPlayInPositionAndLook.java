@@ -24,12 +24,12 @@ import java.io.IOException;
 
 public class PacketPlayInPositionAndLook extends PacketIn {
 	
-	private double x;
-    private double y;
-    private double z;
-    private float yaw;
-    private float pitch;
-    private boolean onGround;
+	private final double x;
+    private final double y;
+    private final double z;
+    private final float yaw;
+    private final float pitch;
+    private final boolean onGround;
 	
 	public PacketPlayInPositionAndLook(double x, double y, double z, float yaw, float pitch, boolean onGround) {
 		this.x = x;

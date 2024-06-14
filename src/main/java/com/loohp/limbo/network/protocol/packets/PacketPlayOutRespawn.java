@@ -19,14 +19,13 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.registry.RegistryCustom;
 import com.loohp.limbo.utils.DataTypeIO;
 import com.loohp.limbo.utils.GameMode;
 import com.loohp.limbo.world.Environment;
 import com.loohp.limbo.world.World;
 import net.kyori.adventure.key.Key;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.ListTag;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -35,13 +34,13 @@ import java.nio.charset.StandardCharsets;
 
 public class PacketPlayOutRespawn extends PacketOut {
 
-	private Environment dimension;
-	private World world;
-	private long hashedSeed;
-	private GameMode gamemode;
-	private boolean isDebug;
-	private boolean isFlat;
-	private boolean copyMetaData;
+	private final Environment dimension;
+	private final World world;
+	private final long hashedSeed;
+	private final GameMode gamemode;
+	private final boolean isDebug;
+	private final boolean isFlat;
+	private final boolean copyMetaData;
 
 	public PacketPlayOutRespawn(World world, long hashedSeed, GameMode gamemode, boolean isDebug, boolean isFlat, boolean copyMetaData) {
 		this.dimension = world.getEnvironment();
@@ -86,7 +85,7 @@ public class PacketPlayOutRespawn extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getPlayOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 
 		DataTypeIO.writeVarInt(output, RegistryCustom.DIMENSION_TYPE.indexOf(world.getEnvironment().getKey()));
 		DataTypeIO.writeString(output, Key.key(world.getName()).toString(), StandardCharsets.UTF_8);

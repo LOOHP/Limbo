@@ -40,10 +40,10 @@ public class PacketPlayInBlockDig extends PacketIn {
 
 	}
 
-	private PlayerDigType action;
-	private BlockPosition pos;
-	private BlockFace direction;
-	private int sequence;
+	private final PlayerDigType action;
+	private final BlockPosition pos;
+	private final BlockFace direction;
+	private final int sequence;
 
 	public PacketPlayInBlockDig(PlayerDigType action, BlockPosition pos, BlockFace direction, int sequence) {
 		this.action = action;

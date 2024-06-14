@@ -27,8 +27,8 @@ import java.nio.charset.StandardCharsets;
 
 public class PacketPlayInTabComplete extends PacketIn {
 
-	private int id;
-	private String text;
+	private final int id;
+	private final String text;
 
 	public PacketPlayInTabComplete(int id, String text) {
 		this.id = id;

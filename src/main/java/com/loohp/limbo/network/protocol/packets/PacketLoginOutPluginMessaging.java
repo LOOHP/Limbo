@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 import net.kyori.adventure.key.Key;
 
@@ -29,9 +30,9 @@ import java.nio.charset.StandardCharsets;
 
 public class PacketLoginOutPluginMessaging extends PacketOut {
 
-	private int messageId;
-	private Key channel;
-	private byte[] data;
+	private final int messageId;
+	private final Key channel;
+	private final byte[] data;
 
 	public PacketLoginOutPluginMessaging(int messageId, Key channel) {
 		this(messageId, channel, null);
@@ -60,7 +61,7 @@ public class PacketLoginOutPluginMessaging extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getLoginOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 		DataTypeIO.writeVarInt(output, messageId);
 		DataTypeIO.writeString(output, channel.toString(), StandardCharsets.UTF_8);
 		if (data != null) {

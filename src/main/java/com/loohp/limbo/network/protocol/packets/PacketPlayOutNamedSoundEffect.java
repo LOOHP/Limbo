@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.sounds.SoundEffect;
 import com.loohp.limbo.utils.DataTypeIO;
 import net.kyori.adventure.sound.Sound;
@@ -31,14 +32,14 @@ import java.util.Optional;
 
 public class PacketPlayOutNamedSoundEffect extends PacketOut {
 
-    private SoundEffect sound;
-    private Sound.Source source;
-    private int x;
-    private int y;
-    private int z;
-    private float volume;
-    private float pitch;
-    private long seed;
+    private final SoundEffect sound;
+    private final Sound.Source source;
+    private final int x;
+    private final int y;
+    private final int z;
+    private final float volume;
+    private final float pitch;
+    private final long seed;
 
     public PacketPlayOutNamedSoundEffect(SoundEffect sound, Sound.Source source, double x, double y, double z, float volume, float pitch, long seed) {
         this.sound = sound;
@@ -88,7 +89,7 @@ public class PacketPlayOutNamedSoundEffect extends PacketOut {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
         DataOutputStream output = new DataOutputStream(buffer);
-        output.writeByte(Packet.getPlayOut().get(getClass()));
+        output.writeByte(PacketRegistry.getPacketId(getClass()));
 
         DataTypeIO.writeVarInt(output, 0);
         DataTypeIO.writeString(output, sound.getSound().toString(), StandardCharsets.UTF_8);

@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -30,8 +31,8 @@ import java.nio.charset.StandardCharsets;
 
 public class PacketPlayOutStopSound extends PacketOut {
 
-    private Key sound;
-    private Sound.Source source;
+    private final Key sound;
+    private final Sound.Source source;
 
     public PacketPlayOutStopSound(Key sound, Sound.Source source) {
         this.sound = sound;
@@ -51,7 +52,7 @@ public class PacketPlayOutStopSound extends PacketOut {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
         DataOutputStream output = new DataOutputStream(buffer);
-        output.writeByte(Packet.getPlayOut().get(getClass()));
+        output.writeByte(PacketRegistry.getPacketId(getClass()));
 
         if (source != null) {
             if (sound != null) {

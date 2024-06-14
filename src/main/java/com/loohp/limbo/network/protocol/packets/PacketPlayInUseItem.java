@@ -28,9 +28,9 @@ import java.io.IOException;
 
 public class PacketPlayInUseItem extends PacketIn {
 
-	private EquipmentSlot hand;
-	private MovingObjectPositionBlock blockHit;
-	private int sequence;
+	private final EquipmentSlot hand;
+	private final MovingObjectPositionBlock blockHit;
+	private final int sequence;
 
 	public PacketPlayInUseItem(EquipmentSlot hand, MovingObjectPositionBlock blockHit, int sequence) {
 		this.hand = hand;

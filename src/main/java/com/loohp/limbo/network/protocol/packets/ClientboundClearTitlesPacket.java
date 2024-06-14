@@ -19,13 +19,15 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class ClientboundClearTitlesPacket extends PacketOut {
 	
-	private boolean reset;
+	private final boolean reset;
 
 	public ClientboundClearTitlesPacket(boolean reset) {
 		this.reset = reset;
@@ -40,7 +42,7 @@ public class ClientboundClearTitlesPacket extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getPlayOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 		output.writeBoolean(reset);
 		
 		return buffer.toByteArray();

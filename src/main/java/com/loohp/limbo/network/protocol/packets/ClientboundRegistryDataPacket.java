@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.registry.RegistryCustom;
 import com.loohp.limbo.utils.DataTypeIO;
 import net.kyori.adventure.key.Key;
@@ -47,7 +48,7 @@ public class ClientboundRegistryDataPacket extends PacketOut {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
         DataOutputStream output = new DataOutputStream(buffer);
-        output.writeByte(Packet.getConfigurationOut().get(getClass()));
+        output.writeByte(PacketRegistry.getPacketId(getClass()));
 
         DataTypeIO.writeString(output, registry.getIdentifier().asString(), StandardCharsets.UTF_8);
         DataTypeIO.writeVarInt(output, registry.getEntries().size());

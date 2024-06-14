@@ -20,6 +20,7 @@
 package com.loohp.limbo.network.protocol.packets;
 
 import com.loohp.limbo.bossbar.KeyedBossBar;
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 import net.kyori.adventure.bossbar.BossBar;
 
@@ -52,8 +53,8 @@ public class PacketPlayOutBoss extends PacketOut {
         return i;
     }
 
-    private KeyedBossBar bossBar;
-    private BossBarAction action;
+    private final KeyedBossBar bossBar;
+    private final BossBarAction action;
 
     public PacketPlayOutBoss(KeyedBossBar bossBar, BossBarAction action) {
         this.bossBar = bossBar;
@@ -73,7 +74,7 @@ public class PacketPlayOutBoss extends PacketOut {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
         DataOutputStream output = new DataOutputStream(buffer);
-        output.writeByte(Packet.getPlayOut().get(getClass()));
+        output.writeByte(PacketRegistry.getPacketId(getClass()));
 
         DataTypeIO.writeUUID(output, bossBar.getUniqueId());
         DataTypeIO.writeVarInt(output, action.ordinal());

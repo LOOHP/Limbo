@@ -20,6 +20,7 @@
 package com.loohp.limbo.network.protocol.packets;
 
 import com.loohp.limbo.entity.EntityType;
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 
 import java.io.ByteArrayOutputStream;
@@ -29,19 +30,19 @@ import java.util.UUID;
 
 public class PacketPlayOutSpawnEntity extends PacketOut {
 	
-	private int entityId;
-    private UUID uuid;
-    private EntityType type;
-    private double x;
-    private double y;
-    private double z;
-    private float pitch;
-    private float yaw;
-	private float headYaw;
-    private int data;
-    private short velocityX;
-    private short velocityY;
-    private short velocityZ;
+	private final int entityId;
+    private final UUID uuid;
+    private final EntityType type;
+    private final double x;
+    private final double y;
+    private final double z;
+    private final float pitch;
+    private final float yaw;
+	private final float headYaw;
+    private final int data;
+    private final short velocityX;
+    private final short velocityY;
+    private final short velocityZ;
 	
 	public PacketPlayOutSpawnEntity(int entityId, UUID uuid, EntityType type, double x, double y, double z, float pitch, float yaw, float headYaw, int data, short velocityX, short velocityY, short velocityZ) {
 		this.entityId = entityId;
@@ -116,7 +117,7 @@ public class PacketPlayOutSpawnEntity extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getPlayOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 		DataTypeIO.writeVarInt(output, entityId);
 		DataTypeIO.writeUUID(output, uuid);
 		DataTypeIO.writeVarInt(output, type.getTypeId());

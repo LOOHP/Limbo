@@ -20,6 +20,7 @@
 package com.loohp.limbo.network.protocol.packets;
 
 import com.loohp.limbo.registry.BuiltInRegistries;
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.BitsUtils;
 import com.loohp.limbo.utils.DataTypeIO;
 import com.loohp.limbo.world.Environment;
@@ -40,16 +41,16 @@ import java.util.List;
 
 public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 
-	private int chunkX;
-	private int chunkZ;
-	private Chunk chunk;
-	private Environment environment;
-	private long[] skyLightBitMasks;
-	private long[] blockLightBitMasks;
-	private long[] skyLightBitMasksEmpty;
-	private long[] blockLightBitMasksEmpty;
-	private List<Byte[]> skylightArrays;
-	private List<Byte[]> blocklightArrays;
+	private final int chunkX;
+	private final int chunkZ;
+	private final Chunk chunk;
+	private final Environment environment;
+	private final long[] skyLightBitMasks;
+	private final long[] blockLightBitMasks;
+	private final long[] skyLightBitMasksEmpty;
+	private final long[] blockLightBitMasksEmpty;
+	private final List<Byte[]> skylightArrays;
+	private final List<Byte[]> blocklightArrays;
 
 	public ClientboundLevelChunkWithLightPacket(int chunkX, int chunkZ, Chunk chunk, Environment environment, List<Byte[]> skylightArrays, List<Byte[]> blocklightArrays) {
 		this.chunkX = chunkX;
@@ -115,7 +116,7 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getPlayOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 
 		output.writeInt(chunkX);
 		output.writeInt(chunkZ);

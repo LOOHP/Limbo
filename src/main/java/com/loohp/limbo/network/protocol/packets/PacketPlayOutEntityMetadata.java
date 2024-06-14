@@ -23,6 +23,7 @@ import com.loohp.limbo.entity.DataWatcher.WatchableObject;
 import com.loohp.limbo.entity.DataWatcher.WatchableObjectType;
 import com.loohp.limbo.entity.Entity;
 import com.loohp.limbo.entity.Pose;
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 import com.loohp.limbo.utils.Rotation3f;
 import com.loohp.limbo.world.BlockPosition;
@@ -45,9 +46,9 @@ public class PacketPlayOutEntityMetadata extends PacketOut {
 	
 	public static final int END_OFF_METADATA = 0xff;
 	
-	private Entity entity;
-	public boolean allFields;
-	public Field[] fields;
+	private final Entity entity;
+	public final boolean allFields;
+	public final Field[] fields;
 	
 	public PacketPlayOutEntityMetadata(Entity entity, boolean allFields, Field... fields) {
 		this.entity = entity;
@@ -68,7 +69,7 @@ public class PacketPlayOutEntityMetadata extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getPlayOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 		DataTypeIO.writeVarInt(output, entity.getEntityId());
 		Collection<WatchableObject> watches;
 		if (allFields) {

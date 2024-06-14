@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 import com.loohp.limbo.world.BlockPosition;
 
@@ -28,8 +29,8 @@ import java.io.IOException;
 
 public class PacketPlayOutSpawnPosition extends PacketOut {
 	
-	private BlockPosition position;
-	private float angle;
+	private final BlockPosition position;
+	private final float angle;
 	
 	public PacketPlayOutSpawnPosition(BlockPosition position, float angle) {
 		this.position = position;
@@ -48,7 +49,7 @@ public class PacketPlayOutSpawnPosition extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getPlayOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 		DataTypeIO.writeBlockPosition(output, position);
 		output.writeFloat(angle);
 		

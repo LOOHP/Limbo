@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 import net.kyori.adventure.text.Component;
 
@@ -28,8 +29,8 @@ import java.io.IOException;
 
 public class ClientboundSystemChatPacket extends PacketOut {
 
-	private Component message;
-	private boolean overlay;
+	private final Component message;
+	private final boolean overlay;
 
 	public ClientboundSystemChatPacket(Component message, boolean overlay) {
 		this.message = message;
@@ -49,7 +50,7 @@ public class ClientboundSystemChatPacket extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getPlayOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 		DataTypeIO.writeComponent(output, message);
 		output.writeBoolean(overlay);
 		

@@ -32,25 +32,47 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 public class RegistryCustom {
 
-    public static final RegistryCustom WORLDGEN_BIOME = new RegistryCustom("worldgen/biome");
-    public static final RegistryCustom CHAT_TYPE = new RegistryCustom("chat_type");
-    public static final RegistryCustom TRIM_PATTERN = new RegistryCustom("trim_pattern");
-    public static final RegistryCustom TRIM_MATERIAL = new RegistryCustom("trim_material");
-    public static final RegistryCustom WOLF_VARIANT = new RegistryCustom("wolf_variant");
-    public static final RegistryCustom DIMENSION_TYPE = new RegistryCustom("dimension_type");
-    public static final RegistryCustom DAMAGE_TYPE = new RegistryCustom("damage_type");
-    public static final RegistryCustom BANNER_PATTERN = new RegistryCustom("banner_pattern");
+    private static final Map<Key, RegistryCustom> REGISTRIES = new HashMap<>();
+
+    public static final RegistryCustom ADVANCEMENT = register("advancement");
+    public static final RegistryCustom BANNER_PATTERN = register("banner_pattern");
+    public static final RegistryCustom CHAT_TYPE = register("chat_type");
+    public static final RegistryCustom DAMAGE_TYPE = register("damage_type");
+    public static final RegistryCustom DIMENSION_TYPE = register("dimension_type");
+    public static final RegistryCustom ENCHANTMENT = register("enchantment");
+    public static final RegistryCustom JUKEBOX_SONG = register("jukebox_song");
+    public static final RegistryCustom PAINTING_VARIANT = register("painting_variant");
+    public static final RegistryCustom TRIM_MATERIAL = register("trim_material");
+    public static final RegistryCustom TRIM_PATTERN = register("trim_pattern");
+    public static final RegistryCustom WOLF_VARIANT = register("wolf_variant");
+    public static final RegistryCustom WORLDGEN_BIOME = register("worldgen/biome");
+
+    private static RegistryCustom register(String identifier) {
+        RegistryCustom registryCustom = new RegistryCustom(identifier);
+        REGISTRIES.put(registryCustom.getIdentifier(), registryCustom);
+        return registryCustom;
+    }
+
+    public static RegistryCustom getRegistry(Key identifier) {
+        return REGISTRIES.get(identifier);
+    }
+
+    public static Collection<RegistryCustom> getRegistries() {
+        return REGISTRIES.values();
+    }
 
     private final Key identifier;
     private final Map<Key, CompoundTag> entries;
 
-    public RegistryCustom(Key identifier, Map<Key, CompoundTag> entries) {
+    private RegistryCustom(Key identifier, Map<Key, CompoundTag> entries) {
         this.identifier = identifier;
         this.entries = entries;
     }

@@ -24,7 +24,7 @@ import java.io.IOException;
 
 public class PacketPlayInKeepAlive extends PacketIn {
 	
-	private long payload;
+	private final long payload;
 	
 	public PacketPlayInKeepAlive(long payload) {
 		this.payload = payload;

@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 import net.kyori.adventure.text.Component;
 
@@ -28,7 +29,7 @@ import java.io.IOException;
 
 public class ClientboundSetTitleTextPacket extends PacketOut {
 	
-	private Component titleText;
+	private final Component titleText;
 
 	public ClientboundSetTitleTextPacket(Component titleText) {
 		this.titleText = titleText;
@@ -43,7 +44,7 @@ public class ClientboundSetTitleTextPacket extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getPlayOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 		DataTypeIO.writeComponent(output, titleText);
 		
 		return buffer.toByteArray();

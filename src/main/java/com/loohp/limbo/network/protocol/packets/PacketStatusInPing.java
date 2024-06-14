@@ -24,7 +24,7 @@ import java.io.IOException;
 
 public class PacketStatusInPing extends PacketIn {
 	
-	private long payload;
+	private final long payload;
 	
 	public PacketStatusInPing(long payload) {
 		this.payload = payload;

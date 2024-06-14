@@ -19,6 +19,7 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
 
 import java.io.ByteArrayOutputStream;
@@ -48,13 +49,13 @@ public class PacketPlayOutPositionAndLook extends PacketOut {
 		}
 	}
 	
-	private double x;
-    private double y;
-    private double z;
-    private float yaw;
-    private float pitch;
-    private Set<PlayerTeleportFlags> flags;
-    private int teleportId;
+	private final double x;
+    private final double y;
+    private final double z;
+    private final float yaw;
+    private final float pitch;
+    private final Set<PlayerTeleportFlags> flags;
+    private final int teleportId;
 	
 	public PacketPlayOutPositionAndLook(double x, double y, double z, float yaw, float pitch, int teleportId, PlayerTeleportFlags... flags) {
 		this.x = x;
@@ -99,7 +100,7 @@ public class PacketPlayOutPositionAndLook extends PacketOut {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
-		output.writeByte(Packet.getPlayOut().get(getClass()));
+		output.writeByte(PacketRegistry.getPacketId(getClass()));
 		output.writeDouble(x);
 		output.writeDouble(y);
 		output.writeDouble(z);

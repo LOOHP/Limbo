@@ -24,7 +24,7 @@ import java.io.IOException;
 
 public class PacketPlayInHeldItemChange extends PacketIn {
 
-    private short slot;
+    private final short slot;
 
     public PacketPlayInHeldItemChange(short slot) {
         this.slot = slot;
