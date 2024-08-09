@@ -136,7 +136,7 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<finalName>${project.artifactId}-${project.version}-1.21</finalName>
+		<finalName>${project.artifactId}-${project.version}-1.21.1</finalName>
 	</build>
 
 	<profiles>
