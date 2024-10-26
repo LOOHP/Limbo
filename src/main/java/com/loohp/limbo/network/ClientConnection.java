@@ -498,7 +498,7 @@ public class ClientConnection extends Thread {
                                 break;
                             }
 
-                            PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(uuid, username, false);
+                            PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(uuid, username);
                             sendPacket(success);
 
                             player = new Player(this, username, uuid, Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
@@ -522,7 +522,7 @@ public class ClientConnection extends Thread {
                             inetAddress = InetAddress.getByName(data.getIpAddress());
                             forwardedSkin = data.getSkinResponse();
 
-                            PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(data.getUuid(), data.getUsername(), false);
+                            PacketLoginOutLoginSuccess success = new PacketLoginOutLoginSuccess(data.getUuid(), data.getUsername());
                             sendPacket(success);
 
                             player = new Player(this, data.getUsername(), data.getUuid(), Limbo.getInstance().getNextEntityId(), Limbo.getInstance().getServerProperties().getWorldSpawn(), new PlayerInteractManager());
@@ -572,7 +572,7 @@ public class ClientConnection extends Thread {
                 worldSpawn = spawnEvent.getSpawnLocation();
                 World world = worldSpawn.getWorld();
 
-                PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, Limbo.getInstance().getWorlds(), properties.getMaxPlayers(), 8, 8, properties.isReducedDebugInfo(), true, false, world.getEnvironment(), world, 0, properties.getDefaultGamemode(), false, true, 0, false);
+                PacketPlayOutLogin join = new PacketPlayOutLogin(player.getEntityId(), false, Limbo.getInstance().getWorlds(), properties.getMaxPlayers(), 8, 8, properties.isReducedDebugInfo(), true, false, world.getEnvironment(), world, 0, properties.getDefaultGamemode(), false, true, 0, 0, false);
                 sendPacket(join);
                 Limbo.getInstance().getUnsafe().a(player, properties.getDefaultGamemode());
 

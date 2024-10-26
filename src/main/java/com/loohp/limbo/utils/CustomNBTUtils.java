@@ -19,17 +19,11 @@
 
 package com.loohp.limbo.utils;
 
-import net.querz.nbt.tag.ByteTag;
 import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.DoubleTag;
 import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.LongTag;
-import net.querz.nbt.tag.StringTag;
-import net.querz.nbt.tag.Tag;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-@SuppressWarnings("rawtypes")
 public class CustomNBTUtils {
 	
 	public static CompoundTag getCompoundTagFromJson(JSONObject json) {
@@ -57,35 +51,16 @@ public class CustomNBTUtils {
 		return tag;
 	}
 	
-	@SuppressWarnings("ExtractMethodRecommender")
-    public static ListTag<?> getListTagFromJson(JSONArray json) {
+	public static ListTag<?> getListTagFromJson(JSONArray json) {
 		if (json.isEmpty()) {
-			return new ListTag<>(StringTag.class);
+			return ListTag.createUnchecked(null);
 		}
-		Object firstValue = json.get(0);
-		Class<? extends Tag> type;
-		if (firstValue instanceof JSONObject) {
-			type = CompoundTag.class;
-		} else if (firstValue instanceof JSONArray) {
-			type = ListTag.class;
-		} else if (firstValue instanceof Boolean) {
-			type = ByteTag.class;
-		} else if (firstValue instanceof Long) {
-			type = LongTag.class;
-		} else if (firstValue instanceof Double) {
-			type = DoubleTag.class;
-		} else if (firstValue instanceof String) {
-			type = StringTag.class;
-		} else {
-			throw new RuntimeException();
-		}
-
-		ListTag<?> listTag = ListTag.createUnchecked(type);
+		ListTag<?> listTag = ListTag.createUnchecked(null);
 		for (Object rawValue : json) {
 			if (rawValue instanceof JSONObject) {
-				listTag.asCompoundTagList().add(getCompoundTagFromJson((JSONObject) rawValue));
+				listTag.addUnchecked(getCompoundTagFromJson((JSONObject) rawValue));
 			} else if (rawValue instanceof JSONArray) {
-				listTag.asListTagList().add(getListTagFromJson((JSONArray) rawValue));
+				listTag.addUnchecked(getListTagFromJson((JSONArray) rawValue));
 			} else if (rawValue instanceof Boolean) {
 				listTag.addBoolean((boolean) rawValue);
 			} else if (rawValue instanceof Long) {

@@ -32,12 +32,10 @@ public class PacketLoginOutLoginSuccess extends PacketOut {
 	
 	private final UUID uuid;
 	private final String username;
-	private final boolean strictErrorHandling;
 	
-	public PacketLoginOutLoginSuccess(UUID uuid, String username, boolean strictErrorHandling) {
+	public PacketLoginOutLoginSuccess(UUID uuid, String username) {
 		this.uuid = uuid;
 		this.username = username;
-		this.strictErrorHandling = strictErrorHandling;
 	}
 	
 	public UUID getUuid() {
@@ -46,10 +44,6 @@ public class PacketLoginOutLoginSuccess extends PacketOut {
 
 	public String getUsername() {
 		return username;
-	}
-
-	public boolean isStrictErrorHandling() {
-		return strictErrorHandling;
 	}
 
 	@Override
@@ -61,7 +55,6 @@ public class PacketLoginOutLoginSuccess extends PacketOut {
 		DataTypeIO.writeUUID(output, uuid);
 		DataTypeIO.writeString(output, username, StandardCharsets.UTF_8);
 		DataTypeIO.writeVarInt(output, 0);
-		output.writeBoolean(strictErrorHandling);
 		
 		return buffer.toByteArray();
 	}

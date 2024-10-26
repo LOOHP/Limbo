@@ -42,16 +42,10 @@ public class RegistryCustom {
 
     private static final Map<Key, RegistryCustom> REGISTRIES = new HashMap<>();
 
-    public static final RegistryCustom ADVANCEMENT = register("advancement");
-    public static final RegistryCustom BANNER_PATTERN = register("banner_pattern");
     public static final RegistryCustom CHAT_TYPE = register("chat_type");
     public static final RegistryCustom DAMAGE_TYPE = register("damage_type");
     public static final RegistryCustom DIMENSION_TYPE = register("dimension_type");
-    public static final RegistryCustom ENCHANTMENT = register("enchantment");
-    public static final RegistryCustom JUKEBOX_SONG = register("jukebox_song");
     public static final RegistryCustom PAINTING_VARIANT = register("painting_variant");
-    public static final RegistryCustom TRIM_MATERIAL = register("trim_material");
-    public static final RegistryCustom TRIM_PATTERN = register("trim_pattern");
     public static final RegistryCustom WOLF_VARIANT = register("wolf_variant");
     public static final RegistryCustom WORLDGEN_BIOME = register("worldgen/biome");
 

@@ -26,26 +26,67 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PacketPlayOutPositionAndLook extends PacketOut {
-	
-	public enum PlayerTeleportFlags {
-		X((byte) 0x01),
-		Y((byte) 0x02),
-		Z((byte) 0x04),
-		Y_ROT((byte) 0x08),
-		X_ROT((byte) 0x10);
-		
-		private final byte bit;
-		
-		PlayerTeleportFlags(byte bit) {
-			this.bit = bit;
+
+	public enum Relative {
+
+		X(0), Y(1), Z(2), Y_ROT(3), X_ROT(4), DELTA_X(5), DELTA_Y(6), DELTA_Z(7), ROTATE_DELTA(8);
+
+		public static final Set<Relative> ALL = new LinkedHashSet<>(Arrays.asList(values()));
+		public static final Set<Relative> ROTATION = Stream.of(Relative.X_ROT, Relative.Y_ROT).collect(Collectors.toSet());
+		public static final Set<Relative> DELTA = Stream.of(Relative.DELTA_X, Relative.DELTA_Y, Relative.DELTA_Z, Relative.ROTATE_DELTA).collect(Collectors.toSet());
+
+		private final int bit;
+
+		@SafeVarargs
+		public static Set<Relative> union(Set<Relative>... aset) {
+			HashSet<Relative> hashset = new HashSet<>();
+            int i = aset.length;
+            for (Set<Relative> set : aset) {
+                hashset.addAll(set);
+            }
+			return hashset;
 		}
-		
-		public byte getBit() {
-			return bit;
+
+		Relative(final int i) {
+			this.bit = i;
+		}
+
+		private int getMask() {
+			return 1 << this.bit;
+		}
+
+		private boolean isSet(int i) {
+			return (i & this.getMask()) == this.getMask();
+		}
+
+		public static Set<Relative> unpack(int i) {
+			Set<Relative> set = EnumSet.noneOf(Relative.class);
+			Relative[] arelative = values();
+			int j = arelative.length;
+            for (Relative relative : arelative) {
+                if (relative.isSet(i)) {
+                    set.add(relative);
+                }
+            }
+			return set;
+		}
+
+		public static int pack(Set<Relative> set) {
+			int i = 0;
+			Relative relative;
+			for (Iterator<Relative> iterator = set.iterator(); iterator.hasNext(); i |= relative.getMask()) {
+				relative = iterator.next();
+			}
+			return i;
 		}
 	}
 	
@@ -54,17 +95,17 @@ public class PacketPlayOutPositionAndLook extends PacketOut {
     private final double z;
     private final float yaw;
     private final float pitch;
-    private final Set<PlayerTeleportFlags> flags;
+    private final Set<Relative> relatives;
     private final int teleportId;
 	
-	public PacketPlayOutPositionAndLook(double x, double y, double z, float yaw, float pitch, int teleportId, PlayerTeleportFlags... flags) {
+	public PacketPlayOutPositionAndLook(double x, double y, double z, float yaw, float pitch, int teleportId, Relative... relatives) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.yaw = yaw;
 		this.pitch = pitch;
 		this.teleportId = teleportId;
-		this.flags = new HashSet<>(Arrays.asList(flags));
+		this.relatives = new HashSet<>(Arrays.asList(relatives));
 	}
 
 	public double getX() {
@@ -87,8 +128,8 @@ public class PacketPlayOutPositionAndLook extends PacketOut {
 		return pitch;
 	}
 
-	public Set<PlayerTeleportFlags> getFlags() {
-		return flags;
+	public Set<Relative> getRelatives() {
+		return relatives;
 	}
 
 	public int getTeleportId() {
@@ -101,19 +142,16 @@ public class PacketPlayOutPositionAndLook extends PacketOut {
 		
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(PacketRegistry.getPacketId(getClass()));
+		DataTypeIO.writeVarInt(output, teleportId);
 		output.writeDouble(x);
 		output.writeDouble(y);
 		output.writeDouble(z);
+		output.writeDouble(0);
+		output.writeDouble(0);
+		output.writeDouble(0);
 		output.writeFloat(yaw);
 		output.writeFloat(pitch);
-		
-		byte flag = 0;
-		for (PlayerTeleportFlags each : flags) {
-			flag = (byte) (flag | each.getBit());
-		}
-		
-		output.writeByte(flag);
-		DataTypeIO.writeVarInt(output, teleportId);
+		output.writeInt(Relative.pack(relatives));
 		
 		return buffer.toByteArray();
 	}

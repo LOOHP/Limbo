@@ -155,7 +155,7 @@ public class PacketRegistry {
         registerClass(PacketLoginInPluginMessaging.class, "minecraft:custom_query_answer", NetworkPhase.LOGIN, PacketBound.SERVERBOUND);
         registerClass(ServerboundLoginAcknowledgedPacket.class, "minecraft:login_acknowledged", NetworkPhase.LOGIN, PacketBound.SERVERBOUND);
 
-        registerClass(PacketLoginOutLoginSuccess.class, "minecraft:game_profile", NetworkPhase.LOGIN, PacketBound.CLIENTBOUND);
+        registerClass(PacketLoginOutLoginSuccess.class, "minecraft:login_finished", NetworkPhase.LOGIN, PacketBound.CLIENTBOUND);
         registerClass(PacketLoginOutDisconnect.class, "minecraft:login_disconnect", NetworkPhase.LOGIN, PacketBound.CLIENTBOUND);
         registerClass(PacketLoginOutPluginMessaging.class, "minecraft:custom_query", NetworkPhase.LOGIN, PacketBound.CLIENTBOUND);
 
