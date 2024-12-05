@@ -625,83 +625,89 @@
       "minecraft:paddle_boat": {
         "protocol_id": 33
       },
-      "minecraft:pick_item": {
+      "minecraft:pick_item_from_block": {
         "protocol_id": 34
       },
-      "minecraft:ping_request": {
+      "minecraft:pick_item_from_entity": {
         "protocol_id": 35
       },
-      "minecraft:place_recipe": {
+      "minecraft:ping_request": {
         "protocol_id": 36
       },
-      "minecraft:player_abilities": {
+      "minecraft:place_recipe": {
         "protocol_id": 37
       },
-      "minecraft:player_action": {
+      "minecraft:player_abilities": {
         "protocol_id": 38
       },
-      "minecraft:player_command": {
+      "minecraft:player_action": {
         "protocol_id": 39
       },
-      "minecraft:player_input": {
+      "minecraft:player_command": {
         "protocol_id": 40
       },
-      "minecraft:pong": {
+      "minecraft:player_input": {
         "protocol_id": 41
       },
-      "minecraft:recipe_book_change_settings": {
+      "minecraft:player_loaded": {
         "protocol_id": 42
       },
-      "minecraft:recipe_book_seen_recipe": {
+      "minecraft:pong": {
         "protocol_id": 43
       },
-      "minecraft:rename_item": {
+      "minecraft:recipe_book_change_settings": {
         "protocol_id": 44
       },
-      "minecraft:resource_pack": {
+      "minecraft:recipe_book_seen_recipe": {
         "protocol_id": 45
       },
-      "minecraft:seen_advancements": {
+      "minecraft:rename_item": {
         "protocol_id": 46
       },
-      "minecraft:select_trade": {
+      "minecraft:resource_pack": {
         "protocol_id": 47
       },
-      "minecraft:set_beacon": {
+      "minecraft:seen_advancements": {
         "protocol_id": 48
       },
-      "minecraft:set_carried_item": {
+      "minecraft:select_trade": {
         "protocol_id": 49
       },
-      "minecraft:set_command_block": {
+      "minecraft:set_beacon": {
         "protocol_id": 50
       },
-      "minecraft:set_command_minecart": {
+      "minecraft:set_carried_item": {
         "protocol_id": 51
       },
-      "minecraft:set_creative_mode_slot": {
+      "minecraft:set_command_block": {
         "protocol_id": 52
       },
-      "minecraft:set_jigsaw_block": {
+      "minecraft:set_command_minecart": {
         "protocol_id": 53
       },
-      "minecraft:set_structure_block": {
+      "minecraft:set_creative_mode_slot": {
         "protocol_id": 54
       },
-      "minecraft:sign_update": {
+      "minecraft:set_jigsaw_block": {
         "protocol_id": 55
       },
-      "minecraft:swing": {
+      "minecraft:set_structure_block": {
         "protocol_id": 56
       },
-      "minecraft:teleport_to_entity": {
+      "minecraft:sign_update": {
         "protocol_id": 57
       },
-      "minecraft:use_item": {
+      "minecraft:swing": {
+        "protocol_id": 58
+      },
+      "minecraft:teleport_to_entity": {
         "protocol_id": 59
       },
+      "minecraft:use_item": {
+        "protocol_id": 61
+      },
       "minecraft:use_item_on": {
-        "protocol_id": 58
+        "protocol_id": 60
       }
     }
   },
