@@ -121,7 +121,7 @@ public class FileConfiguration {
         options.setIndent(2);
         options.setPrettyFlow(true);
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        Representer customRepresenter = new Representer();
+        Representer customRepresenter = new Representer(options);
         YamlOrder customProperty = new YamlOrder();
         customRepresenter.setPropertyUtils(customProperty);
 		Yaml yaml = new Yaml(customRepresenter, options);
@@ -145,7 +145,7 @@ public class FileConfiguration {
         options.setIndent(2);
         options.setPrettyFlow(true);
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        Representer customRepresenter = new Representer();
+        Representer customRepresenter = new Representer(options);
         YamlOrder customProperty = new YamlOrder();
         customRepresenter.setPropertyUtils(customProperty);
 		Yaml yaml = new Yaml(customRepresenter, options);
