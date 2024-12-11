@@ -19,6 +19,10 @@ IP: mc.loohpjames.com
 ### Downloads (1.17.1-1.21.4)
 - [Jenkins](http://ci.loohpjames.com/job/Limbo/)
 ***
+### Offical Plugins
+- [ViaLimbo](https://github.com/LOOHP/ViaLimbo/) - Allow other Minecraft versions to join through the use of [ViaProxy](https://github.com/ViaVersion/ViaProxy)
+- [Floodgate-Limbo](https://github.com/LOOHP/floodgate-limbo) - [Geyser's](https://geysermc.org/) [floodgate](https://geysermc.org/wiki/floodgate/) plugin implemented for Limbo
+***
 ### Maven
 ```html
 <repository>
