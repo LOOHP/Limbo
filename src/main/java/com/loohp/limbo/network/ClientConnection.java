@@ -320,6 +320,9 @@ public class ClientConnection extends Thread {
         try {
             clientSocket.setKeepAlive(true);
             setChannel(new DataInputStream(clientSocket.getInputStream()), new DataOutputStream(clientSocket.getOutputStream()));
+
+            Limbo.getInstance().getEventsManager().callEvent(new ConnectionEstablishedEvent(this));
+
             int handShakeSize = DataTypeIO.readVarInt(channel.input);
 
             //legacy ping
@@ -341,8 +344,6 @@ public class ClientConnection extends Thread {
                 clientSocket.close();
                 state = ClientState.DISCONNECTED;
             }
-
-            Limbo.getInstance().getEventsManager().callEvent(new ConnectionEstablishedEvent(this));
 
             PacketHandshakingIn handshake = (PacketHandshakingIn) channel.readPacket(handShakeSize);
 

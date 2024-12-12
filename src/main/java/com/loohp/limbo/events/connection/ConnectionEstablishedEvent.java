@@ -24,7 +24,7 @@ import com.loohp.limbo.network.ClientConnection;
 
 public class ConnectionEstablishedEvent extends Event {
 
-    private ClientConnection connection;
+    private final ClientConnection connection;
 
     public ConnectionEstablishedEvent(ClientConnection connection) {
         this.connection = connection;
