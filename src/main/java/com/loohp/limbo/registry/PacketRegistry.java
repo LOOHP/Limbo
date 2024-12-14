@@ -133,7 +133,7 @@ public class PacketRegistry {
                     JSONObject jsonIds = (JSONObject) jsonMappings.get(boundKey);
                     for (Object objPacketKey : jsonIds.keySet()) {
                         String packetKey = (String) objPacketKey;
-                        idMapping.put(Key.key(packetKey), (int) (long) ((JSONObject) jsonIds.get(packetKey)).get("protocol_id"));
+                        idMapping.put(Key.key(packetKey), ((Number) ((JSONObject) jsonIds.get(packetKey)).get("protocol_id")).intValue());
                     }
                     mappings.put(packetBound, idMapping);
                 }
