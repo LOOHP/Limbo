@@ -21,6 +21,9 @@ package com.loohp.limbo.utils;
 
 import net.kyori.adventure.key.Key;
 import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.ListTag;
+import net.querz.nbt.tag.StringTag;
+import net.querz.nbt.tag.Tag;
 
 public class SchematicConversionUtils {
 	
@@ -31,6 +34,27 @@ public class SchematicConversionUtils {
 		tag.putInt("x", pos[0]);
 		tag.putInt("y", pos[1]);
 		tag.putInt("z", pos[2]);
+		for (Tag<?> subTag : tag.values()) {
+			removeStringTagQuote(subTag);
+		}
+		return tag;
+	}
+
+	public static Tag<?> removeStringTagQuote(Tag<?> tag) {
+		if (tag instanceof StringTag) {
+			String value = ((StringTag) tag).getValue();
+			if (value.startsWith("\"") && value.endsWith("\"")) {
+				((StringTag) tag).setValue(value.substring(1, value.length() - 1));
+			}
+		} else if (tag instanceof CompoundTag) {
+			for (Tag<?> subTag : ((CompoundTag) tag).values()) {
+				removeStringTagQuote(subTag);
+			}
+		} else if (tag instanceof ListTag<?>) {
+			for (Tag<?> subTag : (ListTag<?>) tag) {
+				removeStringTagQuote(subTag);
+			}
+		}
 		return tag;
 	}
 	

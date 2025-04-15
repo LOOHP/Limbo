@@ -1,0 +1,13 @@
+{
+  "asset_id": "minecraft:entity/chicken/cold_chicken",
+  "model": "cold",
+  "spawn_conditions": [
+    {
+      "condition": {
+        "type": "minecraft:biome",
+        "biomes": "minecraft:plains"
+      },
+      "priority": 1
+    }
+  ]
+}

@@ -601,6 +601,7 @@ public class ClientConnection extends Thread {
 
                 PacketPlayOutGameStateChange gameEvent = new PacketPlayOutGameStateChange(PacketPlayOutGameStateChange.GameStateChangeEvent.LEVEL_CHUNKS_LOAD_START, 0);
                 sendPacket(gameEvent);
+
                 player.playerInteractManager.update();
 
                 PacketPlayOutDeclareCommands declare = DeclareCommands.getDeclareCommandsPacket(player);

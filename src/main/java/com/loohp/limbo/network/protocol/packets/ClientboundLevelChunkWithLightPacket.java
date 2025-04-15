@@ -28,6 +28,7 @@ import com.loohp.limbo.world.GeneratedBlockDataMappings;
 import net.kyori.adventure.key.Key;
 import net.querz.mca.Chunk;
 import net.querz.mca.Section;
+import net.querz.nbt.io.SNBTUtil;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 
@@ -120,7 +121,14 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 
 		output.writeInt(chunkX);
 		output.writeInt(chunkZ);
-		DataTypeIO.writeTag(output, chunk.getHeightMaps());
+
+		DataTypeIO.writeVarInt(output, 1);
+		DataTypeIO.writeVarInt(output, 4);
+		long[] motionBlocking = chunk.getHeightMaps().getLongArray("MOTION_BLOCKING");
+		DataTypeIO.writeVarInt(output, motionBlocking.length);
+		for (long l : motionBlocking) {
+			output.writeLong(l);
+		}
 
 		ByteArrayOutputStream dataBuffer = new ByteArrayOutputStream();
 		DataOutputStream dataOut = new DataOutputStream(dataBuffer);
@@ -164,7 +172,7 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 					long[] formattedLongs = bits.toLongArray();
 					//Limbo.getInstance().getConsole().sendMessage(longsNeeded + "");
 
-					DataTypeIO.writeVarInt(dataOut, longsNeeded);
+					//DataTypeIO.writeVarInt(dataOut, longsNeeded); ???
 					for (int u = 0; u < longsNeeded; u++) {
 						if (u < formattedLongs.length) {
 							dataOut.writeLong(formattedLongs[u]);
@@ -203,7 +211,7 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 							currentLong = currentLong << 16;
 							currentLong |= id;
 						}
-						DataTypeIO.writeVarInt(dataOut, longsNeeded);
+						//DataTypeIO.writeVarInt(dataOut, longsNeeded); ???
 						for (int j = 0; j < longsNeeded; j++) {
 							if (j < globalLongs.size()) {
 								dataOut.writeLong(globalLongs.get(j));
@@ -219,21 +227,21 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 				dataOut.writeShort(0);
 				dataOut.writeByte(0);
 				DataTypeIO.writeVarInt(dataOut, 0);
-				DataTypeIO.writeVarInt(dataOut, 0);
+				//DataTypeIO.writeVarInt(dataOut, 0); ???
 			}
 			int biome;
 			if (environment.equals(Environment.END)) {
-				biome = 55; //the_end
+				biome = 56; //the_end
 			} else if (environment.equals(Environment.NETHER)) {
 				biome = 34; //nether_waste
 			} else if (environment.equals(Environment.NORMAL)) {
-				biome = 39; //plains
+				biome = 40; //plains
 			} else {
-				biome = 39; //plains
+				biome = 40; //plains
 			}
 			dataOut.writeByte(0);
 			DataTypeIO.writeVarInt(dataOut, biome);
-			DataTypeIO.writeVarInt(dataOut, 0);
+			//DataTypeIO.writeVarInt(dataOut, 0); ???
 		}
 
 		byte[] data = dataBuffer.toByteArray();
@@ -246,10 +254,14 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 			int x = each.getInt("x") % 16;
 			int y = each.getInt("y");
 			int z = each.getInt("z") % 16;
+			Key key = Key.key(chunk.getBlockStateAt(x, y, z).getString("Name"));
+			int id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getId(key);
+			if (id < 0) {
+				new IllegalStateException("Unable to get block entity type for " + key + " (Is this scheme created in the same Minecraft version as Limbo?)").printStackTrace();
+			}
 			output.writeByte(((x & 15) << 4) | (z & 15));
 			output.writeShort(y);
-			Integer id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getId(Key.key(chunk.getBlockStateAt(x, y, z).getString("Name")));
-			DataTypeIO.writeVarInt(output, id == null ? -1 : id);
+			DataTypeIO.writeVarInt(output, Math.max(0, id));
 			DataTypeIO.writeTag(output, each);
 		}
 
@@ -276,9 +288,9 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 			if (array != null) {
 				DataTypeIO.writeVarInt(output, 2048);
 				//System.out.println(Arrays.toString(ArrayUtils.toPrimitive(array)));
-				for (int u = 0; u < array.length; u++) {
-					output.writeByte(array[u]);
-				}
+                for (Byte aByte : array) {
+                    output.writeByte(aByte);
+                }
 			}
 		}
 
@@ -288,9 +300,9 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 			if (array != null) {
 				DataTypeIO.writeVarInt(output, 2048);
 				//System.out.println(Arrays.toString(ArrayUtils.toPrimitive(array)));
-				for (int u = 0; u < array.length; u++) {
-					output.writeByte(array[u]);
-				}
+                for (Byte aByte : array) {
+                    output.writeByte(aByte);
+                }
 			}
 		}
 

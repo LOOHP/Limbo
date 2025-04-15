@@ -65,19 +65,22 @@ public class LastSeenMessages {
 
         private final int offset;
         private final BitSet acknowledged;
+        private final byte checksum;
 
-        public b(int offset, BitSet acknowledged) {
+        public b(int offset, BitSet acknowledged, byte checksum) {
             this.offset = offset;
             this.acknowledged = acknowledged;
+            this.checksum = checksum;
         }
 
         public b(DataInputStream in) throws IOException {
-            this(DataTypeIO.readVarInt(in), DataTypeIO.readFixedBitSet(in, 20));
+            this(DataTypeIO.readVarInt(in), DataTypeIO.readFixedBitSet(in, 20), in.readByte());
         }
 
         public void write(DataOutputStream out) throws IOException {
             DataTypeIO.writeVarInt(out, this.offset);
             DataTypeIO.writeFixedBitSet(out, this.acknowledged, 20);
+            out.writeByte(checksum);
         }
     }
 

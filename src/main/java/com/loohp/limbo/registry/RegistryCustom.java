@@ -42,10 +42,16 @@ public class RegistryCustom {
 
     private static final Map<Key, RegistryCustom> REGISTRIES = new HashMap<>();
 
+    public static final RegistryCustom CAT_VARIANT = register("cat_variant");
     public static final RegistryCustom CHAT_TYPE = register("chat_type");
+    public static final RegistryCustom CHICKEN_VARIANT = register("chicken_variant");
+    public static final RegistryCustom COW_VARIANT = register("cow_variant");
     public static final RegistryCustom DAMAGE_TYPE = register("damage_type");
     public static final RegistryCustom DIMENSION_TYPE = register("dimension_type");
+    public static final RegistryCustom FROG_VARIANT = register("frog_variant");
     public static final RegistryCustom PAINTING_VARIANT = register("painting_variant");
+    public static final RegistryCustom PIG_VARIANT = register("pig_variant");
+    public static final RegistryCustom WOLF_SOUND_VARIANT = register("wolf_sound_variant");
     public static final RegistryCustom WOLF_VARIANT = register("wolf_variant");
     public static final RegistryCustom WORLDGEN_BIOME = register("worldgen/biome");
 

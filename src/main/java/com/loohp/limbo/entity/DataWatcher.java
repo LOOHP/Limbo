@@ -31,8 +31,8 @@ import java.util.Map.Entry;
 
 public class DataWatcher {
 	
-	private Entity entity;
-	private Map<Field, WatchableObject> values;
+	private final Entity entity;
+	private final Map<Field, WatchableObject> values;
 	
 	public DataWatcher(Entity entity) {
 		this.entity = entity;
@@ -147,7 +147,7 @@ public class DataWatcher {
 	
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
-	public static @interface WatchableField {
+	public @interface WatchableField {
 		int MetadataIndex();
 		WatchableObjectType WatchableObjectType();
 		boolean IsOptional() default false;
@@ -155,26 +155,37 @@ public class DataWatcher {
 		int Bitmask() default 0x00;
 	}
 	
-	public static enum WatchableObjectType {
+	public enum WatchableObjectType {
 		BYTE(0), 
-		VARINT(1, 17), 
-		FLOAT(2), 
-		STRING(3), 
-		CHAT(4, 5), 
-		SLOT(6), 
-		BOOLEAN(7), 
-		ROTATION(8), 
-		POSITION(9, 10), 
-		DIRECTION(11), 
-		UUID(-1, 12), 
-		BLOCKID(-1, 13), 
-		NBT(14), 
-		PARTICLE(15), 
-		VILLAGER_DATA(16), 
-		POSE(18);
+		VARINT(1, 20),
+		VARLONG(2, 17),
+		FLOAT(3),
+		STRING(4),
+		CHAT(5, 6),
+		SLOT(7),
+		BOOLEAN(8),
+		ROTATION(9),
+		POSITION(10, 11),
+		DIRECTION(12),
+		UUID(-1, 13),
+		BLOCKID(14, 15),
+		NBT(16),
+		PARTICLE(17),
+		PARTICLES(18),
+		VILLAGER_DATA(19),
+		POSE(21),
+		CAT_VARIANT(22),
+		WOLF_VARIANT(23),
+		FROG_VARIANT(24),
+		GLOBAL_POSITION(-1, 25),
+		PAINTING_VARIANT(26),
+		SNIFFER_STATE(27),
+		ARMADILLO_STATE(28),
+		VECTOR3(29),
+		QUATERNION(30);
 		
-		int typeId;
-		int optionalTypeId;
+		private final int typeId;
+		private final int optionalTypeId;
 		
 		WatchableObjectType(int typeId, int optionalTypeId) {
 			this.typeId = typeId;

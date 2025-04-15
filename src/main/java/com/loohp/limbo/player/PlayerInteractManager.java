@@ -121,7 +121,7 @@ public class PlayerInteractManager {
 		for (Entry<ChunkPosition, Chunk> entry : currentViewing.entrySet()) {
 			ChunkPosition chunkPos = entry.getKey();
 			if (!chunksInRange.containsKey(chunkPos)) {
-				PacketPlayOutUnloadChunk packet = new PacketPlayOutUnloadChunk(chunkPos.getChunkX(), chunkPos.getChunkZ());
+				PacketPlayOutUnloadChunk packet = new PacketPlayOutUnloadChunk(chunkPos);
 				player.clientConnection.sendPacket(packet);
 			}
 		}

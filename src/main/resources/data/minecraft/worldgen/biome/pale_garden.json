@@ -6,6 +6,7 @@
   ],
   "downfall": 0.8,
   "effects": {
+    "dry_foliage_color": 10528412,
     "fog_color": 8484720,
     "foliage_color": 8883574,
     "grass_color": 7832178,
@@ -79,8 +80,9 @@
       "minecraft:pale_garden_flowers",
       "minecraft:flower_pale_garden",
       "minecraft:patch_grass_forest",
+      "minecraft:patch_pumpkin",
       "minecraft:patch_sugar_cane",
-      "minecraft:patch_pumpkin"
+      "minecraft:patch_firefly_bush_near_water"
     ],
     [
       "minecraft:freeze_top_layer"

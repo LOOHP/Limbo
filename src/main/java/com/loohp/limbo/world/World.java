@@ -66,7 +66,7 @@ public class World {
 		EMPTY_CHUNK.cleanupPalettesAndBlockStates();
 		EMPTY_CHUNK.setHeightMaps(HEIGHT_MAP.clone());
 		EMPTY_CHUNK.setBiomes(new int[256]);
-		EMPTY_CHUNK.setTileEntities(new ListTag<CompoundTag>(CompoundTag.class));
+		EMPTY_CHUNK.setTileEntities(new ListTag<>(CompoundTag.class));
 	}
 	
 	private String name;

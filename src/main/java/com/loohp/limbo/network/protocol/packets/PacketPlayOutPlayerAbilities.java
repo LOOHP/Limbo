@@ -72,11 +72,11 @@ public class PacketPlayOutPlayerAbilities extends PacketOut {
 		
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(PacketRegistry.getPacketId(getClass()));
+
 		byte value = 0;
 		for (PlayerAbilityFlags flag : flags) {
 			value = (byte) (value | flag.getValue());
 		}
-		
 		output.writeByte(value);
 		output.writeFloat(flySpeed);
 		output.writeFloat(fieldOfField);

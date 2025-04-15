@@ -132,8 +132,8 @@ public final class Limbo {
 	
 	//===========================
 	
-	public final String SERVER_IMPLEMENTATION_VERSION = "1.21.4";
-	public final int SERVER_IMPLEMENTATION_PROTOCOL = 769;
+	public final String SERVER_IMPLEMENTATION_VERSION = "1.21.5";
+	public final int SERVER_IMPLEMENTATION_PROTOCOL = 770;
 	public final String LIMBO_IMPLEMENTATION_VERSION;
 	
 	private final AtomicBoolean isRunning;
@@ -163,7 +163,6 @@ public final class Limbo {
 	@SuppressWarnings("deprecation")
 	private Unsafe unsafe;
 	
-	@SuppressWarnings("unchecked")
 	public Limbo() throws IOException, ParseException, NumberFormatException, ClassNotFoundException, InterruptedException {
 		instance = this;
 		unsafe = new Unsafe(this);

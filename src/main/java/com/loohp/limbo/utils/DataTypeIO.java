@@ -27,6 +27,7 @@ import com.loohp.limbo.location.Vector;
 import com.loohp.limbo.registry.BuiltInRegistries;
 import com.loohp.limbo.registry.DataComponentType;
 import com.loohp.limbo.world.BlockPosition;
+import com.loohp.limbo.world.ChunkPosition;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -186,7 +187,7 @@ public class DataTypeIO {
 			tag = EndTag.INSTANCE;
 		}
 		out.writeByte(tag.getID());
-		if (tag.getID() != 0) {
+		if (tag.getID() != EndTag.ID) {
 			new NBTOutputStream(out).writeRawTag(tag, Tag.DEFAULT_MAX_DEPTH);
 		}
 	}
@@ -194,7 +195,7 @@ public class DataTypeIO {
 	@SuppressWarnings("unchecked")
 	public static <T extends Tag<?>> T readTag(DataInputStream in, Class<T> type) throws IOException {
 		byte b = in.readByte();
-		if (b == 0) {
+		if (b == EndTag.ID) {
 			return type.isInstance(EndTag.INSTANCE) ? (T) EndTag.INSTANCE : null;
 		}
 		PushbackInputStream buffered = new PushbackInputStream(in);
@@ -226,47 +227,31 @@ public class DataTypeIO {
 	}
 	
 	public static int readVarInt(DataInputStream in) throws IOException {
-	    int numRead = 0;
-	    int result = 0;
-	    byte read;
-	    do {
-	        read = in.readByte();
-	        int value = (read & 0b01111111);
-	        result |= (value << (7 * numRead));
-
-	        numRead++;
-	        if (numRead > 5) {
-	            throw new RuntimeException("VarInt is too big");
-	        }
-	    } while ((read & 0b10000000) != 0);
-
-	    return result;
+		int i = 0;
+		int j = 0;
+		byte b;
+		do {
+			b = in.readByte();
+			i |= (b & 127) << j++ * 7;
+			if (j > 5) {
+				throw new RuntimeException("VarInt too big");
+			}
+		} while ((b & 128) == 128);
+		return i;
 	}
 	
 	public static void writeVarInt(DataOutputStream out, int value) throws IOException {
-	    do {
-	        byte temp = (byte)(value & 0b01111111);
-	        // Note: >>> means that the sign bit is shifted with the rest of the number rather than being left alone
-	        value >>>= 7;
-	        if (value != 0) {
-	            temp |= 0b10000000;
-	        }
-	        out.writeByte(temp);
-	    } while (value != 0);
+		while ((value & -128) != 0) {
+			out.writeByte(value & 127 | 128);
+			value >>>= 7;
+		}
+		out.writeByte(value);
 	}
 	
 	public static int getVarIntLength(int value) throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		DataOutputStream out = new DataOutputStream(buffer);
-	    do {
-	        byte temp = (byte)(value & 0b01111111);
-	        // Note: >>> means that the sign bit is shifted with the rest of the number rather than being left alone
-	        value >>>= 7;
-	        if (value != 0) {
-	            temp |= 0b10000000;
-	        }
-	        out.writeByte(temp);
-	    } while (value != 0);
+	    writeVarInt(out, value);
 	    return buffer.toByteArray().length;
 	}
 	
@@ -314,6 +299,11 @@ public class DataTypeIO {
 		JsonElement json = GsonComponentSerializer.gson().serializeToTree(component);
 		Tag<?> tag = NbtComponentSerializer.jsonComponentToTag(json);
 		writeTag(out, tag);
+	}
+
+	public static void writeChunkPosition(DataOutputStream out, ChunkPosition chunkPosition) throws IOException {
+		long l = (long) chunkPosition.getChunkX() & 4294967295L | ((long) chunkPosition.getChunkZ() & 4294967295L) << 32;
+		out.writeLong(l);
 	}
 
 }

@@ -1,0 +1,12 @@
+{
+  "asset_id": "minecraft:entity/chicken/warm_chicken",
+  "spawn_conditions": [
+    {
+      "condition": {
+        "type": "minecraft:biome",
+        "biomes": "minecraft:plains"
+      },
+      "priority": 1
+    }
+  ]
+}

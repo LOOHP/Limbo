@@ -1,0 +1,13 @@
+{
+  "asset_id": "minecraft:entity/cow/warm_cow",
+  "model": "warm",
+  "spawn_conditions": [
+    {
+      "condition": {
+        "type": "minecraft:biome",
+        "biomes": "minecraft:plains"
+      },
+      "priority": 1
+    }
+  ]
+}

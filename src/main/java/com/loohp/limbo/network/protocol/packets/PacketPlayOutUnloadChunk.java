@@ -20,6 +20,8 @@
 package com.loohp.limbo.network.protocol.packets;
 
 import com.loohp.limbo.registry.PacketRegistry;
+import com.loohp.limbo.utils.DataTypeIO;
+import com.loohp.limbo.world.ChunkPosition;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -27,20 +29,14 @@ import java.io.IOException;
 
 public class PacketPlayOutUnloadChunk extends PacketOut {
 	
-	private final int chunkX;
-	private final int chunkZ;
+	private final ChunkPosition chunkPosition;
 	
-	public PacketPlayOutUnloadChunk(int chunkX, int chunkZ) {
-		this.chunkX = chunkX;
-		this.chunkZ = chunkZ;
+	public PacketPlayOutUnloadChunk(ChunkPosition chunkPosition) {
+		this.chunkPosition = chunkPosition;
 	}
 
-	public int getChunkX() {
-		return chunkX;
-	}
-
-	public int getChunkZ() {
-		return chunkZ;
+	public ChunkPosition getChunkPosition() {
+		return chunkPosition;
 	}
 	
 	@Override
@@ -49,8 +45,7 @@ public class PacketPlayOutUnloadChunk extends PacketOut {
 		
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(PacketRegistry.getPacketId(getClass()));
-		output.writeInt(chunkX);
-		output.writeInt(chunkZ);
+		DataTypeIO.writeChunkPosition(output, chunkPosition);
 		
 		return buffer.toByteArray();
 	}

@@ -6,6 +6,7 @@
   ],
   "downfall": 0.9,
   "effects": {
+    "dry_foliage_color": 8082228,
     "fog_color": 12638463,
     "foliage_color": 6975545,
     "grass_color_modifier": "swamp",
@@ -95,6 +96,8 @@
       "minecraft:red_mushroom_normal",
       "minecraft:patch_sugar_cane_swamp",
       "minecraft:patch_pumpkin",
+      "minecraft:patch_firefly_bush_swamp",
+      "minecraft:patch_firefly_bush_near_water_swamp",
       "minecraft:seagrass_swamp"
     ],
     [
