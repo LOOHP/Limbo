@@ -1,5 +1,6 @@
 # Limbo
 [![Build Status](http://ci.loohpjames.com/job/Limbo/badge/icon)](http://ci.loohpjames.com/job/Limbo/)
+If the webserver is down, then the actions work fine
 ## Standalone Limbo Minecraft Server (Currently 1.21.6)
 
 https://www.spigotmc.org/resources/82468/
