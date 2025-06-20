@@ -12,52 +12,79 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write
+      contents: write  # Required for tagging and release
 
     steps:
-      - name: Checkout source code
+      # 1. Checkout your code
+      - name: Checkout your repo
         uses: actions/checkout@v4
 
+      # 2. Detect Java version or fallback to 21
       - name: Get Java version from pom.xml or fallback to 21
         id: java
         run: |
-          echo "Attempting to extract Java version from pom.xml..."
-          version=$(mvn help:evaluate -Dexpression=maven.compiler.source -q -DforceStdout)
-          if [[ -z "$version" || "$version" == *"[INFO]"* || "$version" == *"BUILD FAILURE"* ]]; then
-            version=$(mvn help:evaluate -Dexpression=java.version -q -DforceStdout)
+          version=$(mvn help:evaluate -Dexpression=maven.compiler.source -q -DforceStdout || echo "")
+          if [[ -z "$version" ]]; then
+            version=$(mvn help:evaluate -Dexpression=java.version -q -DforceStdout || echo "")
           fi
-          if [[ "$version" == "1.8" ]]; then
-            version="8"
-          fi
-          if [[ -z "$version" || "$version" == *"[INFO]"* || "$version" == *"BUILD FAILURE"* ]]; then
-            version="21"
-            echo "Falling back to Java version $version"
-          fi
+          if [[ "$version" == "1.8" ]]; then version="8"; fi
+          if [[ -z "$version" ]]; then version="21"; fi
           echo "java=$version" >> $GITHUB_OUTPUT
 
+      # 3. Setup JDK
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           java-version: ${{ steps.java.outputs.java }}
           distribution: 'temurin'
 
-      - name: Build with Maven
+      # 4. Clone and build ViaLimbo
+      - name: Clone and build ViaLimbo
+        run: |
+          mkdir -p external
+          git clone https://github.com/LOOHP/ViaLimbo.git external/ViaLimbo
+          cd external/ViaLimbo
+          mvn package -DskipTests
+          cd ../../
+
+      # 5. Clone and build Floodgate-Limbo
+      - name: Clone and build Floodgate-Limbo
+        run: |
+          git clone https://github.com/LOOHP/floodgate-limbo.git external/floodgate-limbo
+          cd external/floodgate-limbo
+          mvn package -DskipTests
+          cd ../../
+
+      # 6. Build your project
+      - name: Build your project
         run: mvn package -DskipTests
 
-      - name: Get version from pom.xml
+      # 7. Get your project version from pom.xml
+      - name: Get project version
         id: get_version
         run: |
           version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "version=$version" >> $GITHUB_OUTPUT
 
+      # 8. Create Git tag if it doesn't exist
+      - name: Create Git Tag
+        run: |
+          tag="v${{ steps.get_version.outputs.version }}"
+          if ! git rev-parse "$tag" >/dev/null 2>&1; then
+            git config user.name "github-actions"
+            git config user.email "github-actions@github.com"
+            git tag "$tag"
+            git push origin "$tag"
+          fi
+
+      # 9. Create GitHub Release and upload JARs
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ steps.get_version.outputs.version }}
-          name: Release v${{ steps.get_version.outputs.version }}
+          tag_name: "v${{ steps.get_version.outputs.version }}"
+          name: "Release v${{ steps.get_version.outputs.version }}"
           generate_release_notes: true
-
-      - name: Upload JAR to release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: target/*.jar
+          files: |
+            target/*.jar
+            external/ViaLimbo/target/*.jar
+            external/floodgate-limbo/target/*.jar
