@@ -12,19 +12,22 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write  # Required for creating releases
+      contents: write
 
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Get Java version from pom.xml or fallback to 22
+      - name: Get Java version from pom.xml or fallback to 21
         id: java
         run: |
           echo "Attempting to extract Java version from pom.xml..."
           version=$(mvn help:evaluate -Dexpression=maven.compiler.source -q -DforceStdout)
           if [[ -z "$version" || "$version" == *"[INFO]"* || "$version" == *"BUILD FAILURE"* ]]; then
             version=$(mvn help:evaluate -Dexpression=java.version -q -DforceStdout)
+          fi
+          if [[ "$version" == "1.8" ]]; then
+            version="8"
           fi
           if [[ -z "$version" || "$version" == *"[INFO]"* || "$version" == *"BUILD FAILURE"* ]]; then
             version="21"
@@ -48,7 +51,6 @@ jobs:
           echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
-        id: create_release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.get_version.outputs.version }}
