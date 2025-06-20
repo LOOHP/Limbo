@@ -18,10 +18,24 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Get Java version from pom.xml or fallback to 22
+        id: java
+        run: |
+          echo "Attempting to extract Java version from pom.xml..."
+          version=$(mvn help:evaluate -Dexpression=maven.compiler.source -q -DforceStdout)
+          if [[ -z "$version" || "$version" == *"[INFO]"* || "$version" == *"BUILD FAILURE"* ]]; then
+            version=$(mvn help:evaluate -Dexpression=java.version -q -DforceStdout)
+          fi
+          if [[ -z "$version" || "$version" == *"[INFO]"* || "$version" == *"BUILD FAILURE"* ]]; then
+            version="21"
+            echo "Falling back to Java version $version"
+          fi
+          echo "java=$version" >> $GITHUB_OUTPUT
+
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: ${{ steps.java.outputs.java }}
           distribution: 'temurin'
 
       - name: Build with Maven
