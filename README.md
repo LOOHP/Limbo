@@ -1,6 +1,6 @@
 # Limbo
-[![Build Status](http://ci.loohpjames.com/job/Limbo/badge/icon)](http://ci.loohpjames.com/job/Limbo/)
-If the webserver is down, then the actions work fine
+[![Main Limbo Build Status] (http://ci.loohpjames.com/job/Limbo/badge/icon)](http://ci.loohpjames.com/job/Limbo/) [![Limbo Builds Status](https://github.com/THEMPGUYAlt/LimboBuilds/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/THEMPGUYAlt/LimboBuilds/actions/workflows/build-and-release.yml)
+If the main limbo webserver is down then this one prob has a archive of the builds
 ## Standalone Limbo Minecraft Server (Currently 1.21.6)
 
 https://www.spigotmc.org/resources/82468/
