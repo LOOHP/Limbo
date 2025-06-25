@@ -70,10 +70,11 @@ jobs:
         run: |
           FILE=$(find target -name "*.jar" | head -n 1)
           echo "Found JAR: $FILE"
-          VERSION=$(echo "$FILE" | grep -oP '\d+\.\d+\.\d+')
-          echo "Detected version: $VERSION"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "tag=release-$VERSION" >> $GITHUB_OUTPUT
+          VERSION=$(echo "$FILE" | grep -oP '\d+\.\d+\.\d+' | head -n 1)
+          TAG_NAME="release-${VERSION//./-}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG_NAME" >> "$GITHUB_OUTPUT"
+
 
       # ---------- Create Git Tag ----------
       - name: Auto-tag commit
@@ -90,6 +91,7 @@ jobs:
         with:
           tag_name: ${{ steps.detect-version.outputs.tag }}
           name: Limbo Build ${{ steps.detect-version.outputs.version }}
+
           files: |
             target/*.jar
             external/ViaLimbo/target/*.jar
