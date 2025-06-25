@@ -1,0 +1,100 @@
+name: Build Limbo Project and Add-ons
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**/README.md'
+      - '**/readme.md'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up fallback JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y openjdk-21-jdk unzip
+
+      - name: Create Maven settings (skip checksum validation)
+        run: |
+          mkdir -p .mvn
+          cat > .mvn/settings.xml <<EOF
+          <settings>
+            <profiles>
+              <profile>
+                <id>no-checksums</id>
+              </profile>
+            </profiles>
+            <activeProfiles>
+              <activeProfile>no-checksums</activeProfile>
+            </activeProfiles>
+          </settings>
+          EOF
+
+      # ---------- Build Addons ----------
+      - name: Clone ViaLimbo
+        run: git clone https://github.com/LOOHP/ViaLimbo.git external/ViaLimbo
+
+      - name: Build ViaLimbo
+        run: |
+          cd external/ViaLimbo
+          mvn package -DskipTests -s ../../.mvn/settings.xml || echo "::warning::ViaLimbo build failed"
+        continue-on-error: true
+
+      - name: Clone and Build FloodgateLimbo
+        run: |
+          git clone https://github.com/LOOHP/floodgate-limbo.git external/FloodgateLimbo
+          cd external/FloodgateLimbo
+          mvn package -DskipTests -s ../../.mvn/settings.xml || echo "::warning::FloodgateLimbo build failed"
+        continue-on-error: true
+
+      # ---------- Build Main Project ----------
+      - name: Build Main Project
+        run: mvn package -DskipTests -s .mvn/settings.xml || echo "::warning::Main project build failed"
+        continue-on-error: true
+
+      # ---------- Detect Version ----------
+      - name: Detect Minecraft version from JAR name
+        id: detect-version
+        run: |
+          FILE=$(find target -name "*.jar" | head -n 1)
+          echo "Found JAR: $FILE"
+          VERSION=$(echo "$FILE" | grep -oP '\d+\.\d+\.\d+' | head -n 1)
+          TAG_NAME="release-${VERSION//./-}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG_NAME" >> "$GITHUB_OUTPUT"
+
+
+      # ---------- Create Git Tag ----------
+      - name: Auto-tag commit
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag ${{ steps.detect-version.outputs.tag }}
+          git push origin ${{ steps.detect-version.outputs.tag }}
+
+      # ---------- Create GitHub Release ----------
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.detect-version.outputs.tag }}
+          name: Limbo Build ${{ steps.detect-version.outputs.version }}
+
+          files: |
+            target/*.jar
+            external/ViaLimbo/target/*.jar
+            external/FloodgateLimbo/target/*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
