@@ -1,5 +1,5 @@
 # Limbo
-[![Main Limbo Build Status] (http://ci.loohpjames.com/job/Limbo/badge/icon)](http://ci.loohpjames.com/job/Limbo/) [![Limbo Builds Status](https://github.com/THEMPGUYAlt/LimboBuilds/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/THEMPGUYAlt/LimboBuilds/actions/workflows/build-and-release.yml)
+[![Main Limbo Build Status](http://ci.loohpjames.com/job/Limbo/badge/icon)](http://ci.loohpjames.com/job/Limbo/) [![Limbo Builds Status](https://github.com/THEMPGUYAlt/LimboBuilds/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/THEMPGUYAlt/LimboBuilds/actions/workflows/build-and-release.yml)
 If the main limbo webserver is down then this one prob has a archive of the builds
 ## Standalone Limbo Minecraft Server (Currently 1.21.6)
 
