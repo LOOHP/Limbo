@@ -12,12 +12,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
 
     steps:
-      - name: Checkout source
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up fallback JDK 21
@@ -26,22 +23,14 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Install javap tools
-        run: sudo apt-get update && sudo apt-get install -y openjdk-21-jdk
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y openjdk-21-jdk unzip
 
       - name: Create Maven settings (skip checksum validation)
         run: |
           mkdir -p .mvn
           cat > .mvn/settings.xml <<EOF
           <settings>
-            <mirrors>
-              <mirror>
-                <id>central</id>
-                <name>Maven Central</name>
-                <url>https://repo.maven.apache.org/maven2</url>
-                <mirrorOf>central</mirrorOf>
-              </mirror>
-            </mirrors>
             <profiles>
               <profile>
                 <id>no-checksums</id>
@@ -53,35 +42,9 @@ jobs:
           </settings>
           EOF
 
+      # ---------- Build Addons ----------
       - name: Clone ViaLimbo
         run: git clone https://github.com/LOOHP/ViaLimbo.git external/ViaLimbo
-
-      - name: Resolve ViaLimbo dependencies
-        run: mvn -f external/ViaLimbo/pom.xml dependency:resolve -s .mvn/settings.xml || true
-
-      - name: Detect Java version from class
-        id: detect-java
-        run: |
-          CLASS_FILE=$(find external/ViaLimbo -name "*.class" | head -n 1)
-          if [[ -f "$CLASS_FILE" ]]; then
-            MAJOR=$(javap -verbose "$CLASS_FILE" | grep "major version" | awk '{print $3}')
-            echo "Detected major version: $MAJOR"
-            if [[ "$MAJOR" -eq 61 ]]; then
-              echo "java_version=17" >> $GITHUB_OUTPUT
-            elif [[ "$MAJOR" -eq 65 ]]; then
-              echo "java_version=21" >> $GITHUB_OUTPUT
-            else
-              echo "java_version=21" >> $GITHUB_OUTPUT
-            fi
-          else
-            echo "java_version=21" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Setup Java for ViaLimbo
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: ${{ steps.detect-java.outputs.java_version }}
 
       - name: Build ViaLimbo
         run: |
@@ -89,28 +52,47 @@ jobs:
           mvn package -DskipTests -s ../../.mvn/settings.xml || echo "::warning::ViaLimbo build failed"
         continue-on-error: true
 
-      - name: Clone and Build Floodgate-Limbo
+      - name: Clone and Build FloodgateLimbo
         run: |
           git clone https://github.com/LOOHP/floodgate-limbo.git external/FloodgateLimbo
           cd external/FloodgateLimbo
           mvn package -DskipTests -s ../../.mvn/settings.xml || echo "::warning::FloodgateLimbo build failed"
         continue-on-error: true
 
-      - name: Set up JDK 21 for main project
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-
+      # ---------- Build Main Project ----------
       - name: Build Main Project
         run: mvn package -DskipTests -s .mvn/settings.xml || echo "::warning::Main project build failed"
         continue-on-error: true
 
-      - name: Create GitHub Release (if tagged)
-        if: startsWith(github.ref, 'refs/tags/')
+      # ---------- Detect Version ----------
+      - name: Detect Minecraft version from JAR name
+        id: detect-version
+        run: |
+          FILE=$(find target -name "*.jar" | head -n 1)
+          echo "Found JAR: $FILE"
+          VERSION=$(echo "$FILE" | grep -oP '\d+\.\d+\.\d+')
+          echo "Detected version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=release-$VERSION" >> $GITHUB_OUTPUT
+
+      # ---------- Create Git Tag ----------
+      - name: Auto-tag commit
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag ${{ steps.detect-version.outputs.tag }}
+          git push origin ${{ steps.detect-version.outputs.tag }}
+
+      # ---------- Create GitHub Release ----------
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.detect-version.outputs.tag }}
+          name: Limbo Build ${{ steps.detect-version.outputs.version }}
           files: |
             target/*.jar
             external/ViaLimbo/target/*.jar
             external/FloodgateLimbo/target/*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
