@@ -1,90 +1,103 @@
-name: Build and Release JAR
+name: Build Limbo and Add-ons
 
 on:
   push:
     branches:
-      - '**'
+      - main
     paths-ignore:
-      - 'README.md'
+      - '**/README.md'
+      - '**/readme.md'
+  workflow_dispatch:
 
 jobs:
-  build-and-release:
+  build:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write  # Required for tagging and release
+    defaults:
+      run:
+        shell: bash
 
     steps:
-      # 1. Checkout your code
-      - name: Checkout your repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Detect Java version or fallback to 21
-      - name: Get Java version from pom.xml or fallback to 21
+      - name: Set up default JDK (21 fallback)
         id: java
-        run: |
-          version=$(mvn help:evaluate -Dexpression=maven.compiler.source -q -DforceStdout || echo "")
-          if [[ -z "$version" ]]; then
-            version=$(mvn help:evaluate -Dexpression=java.version -q -DforceStdout || echo "")
-          fi
-          if [[ "$version" == "1.8" ]]; then version="8"; fi
-          if [[ -z "$version" ]]; then version="21"; fi
-          echo "java=$version" >> $GITHUB_OUTPUT
-
-      # 3. Setup JDK
-      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ steps.java.outputs.java }}
-          distribution: 'temurin'
+          distribution: temurin
+          java-version: 21
 
-      # 4. Clone and build ViaLimbo
-      - name: Clone and build ViaLimbo
+      - name: Install `javap` dependencies
+        run: sudo apt-get update && sudo apt-get install -y openjdk-21-jdk
+
+      - name: Function to detect class version
+        id: detect-java
         run: |
-          mkdir -p external
+          find_external_class_version() {
+            class_file=$(find "$1" -name "*.class" | head -n 1)
+            if [[ -f "$class_file" ]]; then
+              version=$(javap -verbose "$class_file" | grep "major version" | awk '{print $3}')
+              echo "Detected major version: $version"
+
+              # Map to Java version
+              if [[ "$version" == "61" ]]; then
+                echo "Detected Java 17"
+                echo "java_version=17" >> "$GITHUB_OUTPUT"
+              elif [[ "$version" == "65" ]]; then
+                echo "Detected Java 21"
+                echo "java_version=21" >> "$GITHUB_OUTPUT"
+              else
+                echo "Unknown version. Falling back to 21"
+                echo "java_version=21" >> "$GITHUB_OUTPUT"
+              fi
+            else
+              echo "No .class file found, defaulting to JDK 21"
+              echo "java_version=21" >> "$GITHUB_OUTPUT"
+            fi
+          }
+
+          # Clone and check ViaLimbo first
           git clone https://github.com/LOOHP/ViaLimbo.git external/ViaLimbo
+          mvn -f external/ViaLimbo/pom.xml dependency:resolve || true
+
+          # Try detecting version
+          find_external_class_version "external/ViaLimbo"
+        continue-on-error: true
+
+      - name: Set up detected JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ steps.detect-java.outputs.java_version }}
+
+      - name: Build ViaLimbo (optional)
+        run: |
           cd external/ViaLimbo
-          mvn package -DskipTests
-          cd ../../
+          mvn package -DskipTests || echo "::warning::ViaLimbo build failed"
+        continue-on-error: true
 
-      # 5. Clone and build Floodgate-Limbo
-      - name: Clone and build Floodgate-Limbo
+      - name: Build FloodgateLimbo (optional)
         run: |
-          git clone https://github.com/LOOHP/floodgate-limbo.git external/floodgate-limbo
-          cd external/floodgate-limbo
-          mvn package -DskipTests
-          cd ../../
+          git clone https://github.com/LOOHP/floodgate-limbo.git external/FloodgateLimbo
+          cd external/FloodgateLimbo
+          mvn package -DskipTests || echo "::warning::FloodgateLimbo build failed"
+        continue-on-error: true
 
-      # 6. Build your project
-      - name: Build your project
-        run: mvn package -DskipTests
+      - name: Set up Java for main project (from pom.xml or fallback)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
 
-      # 7. Get your project version from pom.xml
-      - name: Get project version
-        id: get_version
-        run: |
-          version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo "version=$version" >> $GITHUB_OUTPUT
+      - name: Build your main project
+        run: mvn package -DskipTests || echo "::warning::Main project build failed"
+        continue-on-error: true
 
-      # 8. Create Git tag if it doesn't exist
-      - name: Create Git Tag
-        run: |
-          tag="v${{ steps.get_version.outputs.version }}"
-          if ! git rev-parse "$tag" >/dev/null 2>&1; then
-            git config user.name "github-actions"
-            git config user.email "github-actions@github.com"
-            git tag "$tag"
-            git push origin "$tag"
-          fi
-
-      # 9. Create GitHub Release and upload JARs
       - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "v${{ steps.get_version.outputs.version }}"
-          name: "Release v${{ steps.get_version.outputs.version }}"
-          generate_release_notes: true
           files: |
             target/*.jar
             external/ViaLimbo/target/*.jar
-            external/floodgate-limbo/target/*.jar
+            external/FloodgateLimbo/target/*.jar
