@@ -36,7 +36,7 @@ public class PacketPlayInSetCreativeSlot extends PacketIn {
 	}
 
 	public PacketPlayInSetCreativeSlot(DataInputStream in) throws IOException {
-		this(in.readShort(), DataTypeIO.readItemStack(in));
+		this(in.readShort(), DataTypeIO.readUntrustedItemStack(in));
 	}
 
 	public int getSlotNumber() {

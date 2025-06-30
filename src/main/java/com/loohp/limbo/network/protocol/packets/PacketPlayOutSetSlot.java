@@ -64,7 +64,7 @@ public class PacketPlayOutSetSlot extends PacketOut {
         DataOutputStream output = new DataOutputStream(buffer);
         output.writeByte(PacketRegistry.getPacketId(getClass()));
 
-        output.writeByte(containerId);
+        DataTypeIO.writeVarInt(output, containerId);
         DataTypeIO.writeVarInt(output, stateId);
         output.writeShort(slot);
         DataTypeIO.writeItemStack(output, itemStack);

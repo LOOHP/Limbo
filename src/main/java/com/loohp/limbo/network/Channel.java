@@ -76,6 +76,7 @@ public class Channel implements AutoCloseable {
             ensureOpen();
             size = size < 0 ? DataTypeIO.readVarInt(input) : size;
             int packetId = DataTypeIO.readVarInt(input);
+            System.out.println(packetId);
             ChannelPacketRead read = new ChannelPacketRead(size, packetId, input);
             for (Pair<Key, ChannelPacketHandler> pair : handlers) {
                 read = pair.getSecond().read(read);

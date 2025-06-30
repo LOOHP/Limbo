@@ -76,6 +76,30 @@ public class DataTypeIO {
 		}
 	}
 
+	public static ItemStack readUntrustedItemStack(DataInputStream in) throws IOException {
+		int amount = DataTypeIO.readVarInt(in);
+		if (amount <= 0) {
+			return ItemStack.AIR;
+		} else {
+			Key key = BuiltInRegistries.ITEM_REGISTRY.fromId(readVarInt(in));
+			int size = DataTypeIO.readVarInt(in);
+			int removeSize = DataTypeIO.readVarInt(in);
+			Map<Key, Tag<?>> components = new HashMap<>();
+			for (int i = 0; i < size; i++) {
+				Key componentKey = BuiltInRegistries.DATA_COMPONENT_TYPE.fromId(DataTypeIO.readVarInt(in));
+				DataTypeIO.readVarInt(in);
+				Tag<?> component = readTag(in, Tag.class);
+				if (componentKey != null && DataComponentType.isKnownType(componentKey)) {
+					components.put(componentKey, component);
+				}
+			}
+			for (int i = 0; i < removeSize; i++) {
+				DataTypeIO.readVarInt(in);
+			}
+			return new ItemStack(key, amount, components);
+		}
+	}
+
     public static ItemStack readItemStack(DataInputStream in) throws IOException {
 		int amount = DataTypeIO.readVarInt(in);
 		if (amount <= 0) {
@@ -83,7 +107,7 @@ public class DataTypeIO {
 		} else {
 			Key key = BuiltInRegistries.ITEM_REGISTRY.fromId(readVarInt(in));
 			int size = DataTypeIO.readVarInt(in);
-			DataTypeIO.readVarInt(in);
+			int removeSize = DataTypeIO.readVarInt(in);
 			Map<Key, Tag<?>> components = new HashMap<>();
 			for (int i = 0; i < size; i++) {
 				Key componentKey = BuiltInRegistries.DATA_COMPONENT_TYPE.fromId(DataTypeIO.readVarInt(in));
@@ -91,6 +115,9 @@ public class DataTypeIO {
 				if (componentKey != null && DataComponentType.isKnownType(componentKey)) {
 					components.put(componentKey, component);
 				}
+			}
+			for (int i = 0; i < removeSize; i++) {
+				DataTypeIO.readVarInt(in);
 			}
 			return new ItemStack(key, amount, components);
 		}
@@ -107,6 +134,7 @@ public class DataTypeIO {
 		out.writeFloat((float) (vector.getY() - (double) blockposition.getY()));
 		out.writeFloat((float) (vector.getZ() - (double) blockposition.getZ()));
 		out.writeBoolean(movingobjectpositionblock.isInside());
+		out.writeBoolean(movingobjectpositionblock.isWorldBorderHit());
 	}
 
 	public static MovingObjectPositionBlock readBlockHitResult(DataInputStream in) throws IOException {
@@ -116,8 +144,9 @@ public class DataTypeIO {
 		float f1 = in.readFloat();
 		float f2 = in.readFloat();
 		boolean flag = in.readBoolean();
+		boolean flag1 = in.readBoolean();
 
-		return new MovingObjectPositionBlock(new Vector((double) blockposition.getX() + (double) f, (double) blockposition.getY() + (double) f1, (double) blockposition.getZ() + (double) f2), direction, blockposition, flag);
+		return new MovingObjectPositionBlock(new Vector((double) blockposition.getX() + (double) f, (double) blockposition.getY() + (double) f1, (double) blockposition.getZ() + (double) f2), direction, blockposition, flag, flag1);
 	}
 
 	public static <E extends Enum<E>> void writeEnumSet(DataOutputStream out, EnumSet<E> enumset, Class<E> oclass) throws IOException {
@@ -304,6 +333,22 @@ public class DataTypeIO {
 	public static void writeChunkPosition(DataOutputStream out, ChunkPosition chunkPosition) throws IOException {
 		long l = (long) chunkPosition.getChunkX() & 4294967295L | ((long) chunkPosition.getChunkZ() & 4294967295L) << 32;
 		out.writeLong(l);
+	}
+
+	public static void consumeHashedStack(DataInputStream in) throws IOException {
+		if (in.readBoolean()) {
+			DataTypeIO.readVarInt(in);
+			DataTypeIO.readVarInt(in);
+			int addedSize = DataTypeIO.readVarInt(in);
+			for (int i = 0; i < addedSize; i++) {
+				DataTypeIO.readVarInt(in);
+				in.readInt();
+			}
+			int removedSize = DataTypeIO.readVarInt(in);
+			for (int i = 0; i < removedSize; i++) {
+				DataTypeIO.readVarInt(in);
+			}
+		}
 	}
 
 }

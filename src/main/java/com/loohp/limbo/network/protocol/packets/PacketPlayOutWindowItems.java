@@ -65,7 +65,7 @@ public class PacketPlayOutWindowItems extends PacketOut {
         DataOutputStream output = new DataOutputStream(buffer);
         output.writeByte(PacketRegistry.getPacketId(getClass()));
 
-        output.writeByte(containerId);
+        DataTypeIO.writeVarInt(output, containerId);
         DataTypeIO.writeVarInt(output, stateId);
         DataTypeIO.writeVarInt(output, items.size());
         for (ItemStack itemStack : items) {

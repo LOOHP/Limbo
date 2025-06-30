@@ -20,14 +20,13 @@
 package com.loohp.limbo.network.protocol.packets;
 
 import com.loohp.limbo.inventory.InventoryClickType;
-import com.loohp.limbo.inventory.ItemStack;
 import com.loohp.limbo.utils.DataTypeIO;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 public class PacketPlayInWindowClick extends PacketIn {
 
@@ -36,34 +35,32 @@ public class PacketPlayInWindowClick extends PacketIn {
 	private final int slotNum;
 	private final int buttonNum;
 	private final InventoryClickType clickType;
-	private final Map<Integer, ItemStack> changedSlots;
-	private final ItemStack carriedItem;
+	private final Set<Integer> changedSlots;
 
-	public PacketPlayInWindowClick(int containerId, int stateId, int slotNum, int buttonNum, InventoryClickType clickType, Map<Integer, ItemStack> changedSlots, ItemStack carriedItem) {
+	public PacketPlayInWindowClick(int containerId, int stateId, int slotNum, int buttonNum, InventoryClickType clickType, Set<Integer> changedSlots) {
 		this.containerId = containerId;
 		this.stateId = stateId;
 		this.slotNum = slotNum;
 		this.buttonNum = buttonNum;
 		this.clickType = clickType;
 		this.changedSlots = changedSlots;
-		this.carriedItem = carriedItem;
 	}
 
 	public PacketPlayInWindowClick(DataInputStream in) throws IOException {
-		this.containerId = in.readByte();
+		this.containerId = DataTypeIO.readVarInt(in);
 		this.stateId = DataTypeIO.readVarInt(in);
 		this.slotNum = in.readShort();
 		this.buttonNum = in.readByte();
 		this.clickType = InventoryClickType.values()[DataTypeIO.readVarInt(in)];
-		Map<Integer, ItemStack> changedSlots = new HashMap<>();
+		Set<Integer> changedSlots = new HashSet<>();
 		int size = DataTypeIO.readVarInt(in);
 		for (int i = 0; i < size; i++) {
 			int slot = in.readShort();
-			ItemStack itemStack = DataTypeIO.readItemStack(in);
-			changedSlots.put(slot, itemStack);
+			DataTypeIO.consumeHashedStack(in);
+			changedSlots.add(slot);
 		}
-		this.changedSlots = Collections.unmodifiableMap(changedSlots);
-		this.carriedItem = DataTypeIO.readItemStack(in);
+		this.changedSlots = Collections.unmodifiableSet(changedSlots);
+		DataTypeIO.consumeHashedStack(in);
 	}
 
 	public int getContainerId() {
@@ -86,11 +83,11 @@ public class PacketPlayInWindowClick extends PacketIn {
 		return clickType;
 	}
 
-	public Map<Integer, ItemStack> getChangedSlots() {
+	public Set<Integer> getChangedSlots() {
 		return changedSlots;
 	}
 
-	public ItemStack getCarriedItem() {
-		return carriedItem;
-	}
+//	public ItemStack getCarriedItem() {
+//		return carriedItem;
+//	}
 }
