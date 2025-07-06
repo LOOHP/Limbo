@@ -45,6 +45,7 @@ import com.loohp.limbo.network.protocol.packets.ClientboundSetSubtitleTextPacket
 import com.loohp.limbo.network.protocol.packets.ClientboundSetTitleTextPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundSetTitlesAnimationPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundSystemChatPacket;
+import com.loohp.limbo.network.protocol.packets.ClientboundTransferPacket;
 import com.loohp.limbo.network.protocol.packets.PacketOut;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutCloseWindow;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutGameStateChange;
@@ -650,4 +651,13 @@ public class Player extends LivingEntity implements CommandSender, InventoryHold
 	public InventoryHolder getHolder() {
 		return this;
 	}
+
+    public void transfer(String host, int port) {
+        try {
+            ClientboundTransferPacket transferPacket = new ClientboundTransferPacket(host, port);
+            clientConnection.sendPacket(transferPacket);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

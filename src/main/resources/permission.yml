@@ -4,6 +4,7 @@ groups:
     - limboserver.kick
     - limboserver.say
     - limboserver.gamemode
+    - limboserver.transfer
   default:
     - limboserver.spawn
     - limboserver.chat

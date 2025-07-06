@@ -41,6 +41,7 @@ import com.loohp.limbo.player.Player;
 import com.loohp.limbo.plugins.LimboPlugin;
 import com.loohp.limbo.plugins.PluginManager;
 import com.loohp.limbo.scheduler.LimboScheduler;
+import com.loohp.limbo.scheduler.LimboTask;
 import com.loohp.limbo.scheduler.Tick;
 import com.loohp.limbo.utils.CustomStringUtils;
 import com.loohp.limbo.utils.ImageUtils;
@@ -542,4 +543,31 @@ public final class Limbo {
 		}
 	}
 
+    public void transferAll(String host, int port, int batchDelayTicks, int batchSize) {
+        if (batchDelayTicks <= 0 || batchSize <= 0) {
+            for (Player player : getPlayers()) {
+                player.transfer(host, port);
+            }
+        } else {
+            long totalDelay = 0;
+            Set<Player> currentBatch = new HashSet<>();
+            List<Player> players = new ArrayList<>(getPlayers());
+
+            for (int i = 0; i < players.size(); i++) {
+                currentBatch.add(players.get(i));
+                if (currentBatch.size() < batchSize && i != players.size() - 1) {
+                    continue;
+                }
+                Set<Player> batch = new HashSet<>(currentBatch);
+                LimboTask task = () -> {
+                    for (Player p : batch) {
+                        p.transfer(host, port);
+                    }
+                };
+                Limbo.getInstance().getScheduler().runTaskLater(null, task, totalDelay);
+                totalDelay += batchDelayTicks;
+                currentBatch.clear();
+            }
+        }
+    }
 }

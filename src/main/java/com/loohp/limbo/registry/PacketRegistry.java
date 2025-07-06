@@ -35,6 +35,7 @@ import com.loohp.limbo.network.protocol.packets.ClientboundSetSubtitleTextPacket
 import com.loohp.limbo.network.protocol.packets.ClientboundSetTitleTextPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundSetTitlesAnimationPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundSystemChatPacket;
+import com.loohp.limbo.network.protocol.packets.ClientboundTransferPacket;
 import com.loohp.limbo.network.protocol.packets.Packet;
 import com.loohp.limbo.network.protocol.packets.PacketHandshakingIn;
 import com.loohp.limbo.network.protocol.packets.PacketLoginInLoginStart;
@@ -220,6 +221,7 @@ public class PacketRegistry {
         registerClass(PacketPlayOutWindowData.class, "minecraft:container_set_data", NetworkPhase.PLAY, PacketBound.CLIENTBOUND);
         registerClass(ClientboundChunkBatchFinishedPacket.class, "minecraft:chunk_batch_finished", NetworkPhase.PLAY, PacketBound.CLIENTBOUND);
         registerClass(ClientboundChunkBatchStartPacket.class, "minecraft:chunk_batch_start", NetworkPhase.PLAY, PacketBound.CLIENTBOUND);
+        registerClass(ClientboundTransferPacket.class, "minecraft:transfer", NetworkPhase.PLAY, PacketBound.CLIENTBOUND);
     }
 
     private static void registerClass(Class<? extends Packet> packetClass, String key, NetworkPhase networkPhase, PacketBound packetBound) {

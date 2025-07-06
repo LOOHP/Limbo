@@ -180,6 +180,77 @@ public class DefaultCommands implements CommandExecutor, TabCompletor {
 			}
 			return;
 		}
+
+        if (args[0].equalsIgnoreCase("transfer")) {
+            if (sender.hasPermission("limboserver.transfer")) {
+                if (args.length == 4) {
+                    Player player = Limbo.getInstance().getPlayer(args[1]);
+                    if (player != null) {
+                        String host = args[2];
+                        int port;
+                        try {
+                            port = Integer.parseInt(args[3]);
+                        } catch (NumberFormatException e) {
+                            sender.sendMessage(ChatColor.RED + "Invalid port number!");
+                            return;
+                        }
+                        player.transfer(host, port);
+                        sender.sendMessage(ChatColor.GOLD + "Transferred " + player.getName() + " to " + host + ":" + port);
+                    } else {
+                        sender.sendMessage(ChatColor.RED + "Player is not online!");
+                    }
+                } else {
+                    sender.sendMessage(ChatColor.RED + "Invalid usage! Use: /transfer <player> <host> <port>");
+                }
+            } else {
+                sender.sendMessage(ChatColor.RED + "You do not have permission to use that command!");
+            }
+            return;
+        }
+
+        if (args[0].equalsIgnoreCase("transferall")) {
+            if (sender.hasPermission("limboserver.transfer")) {
+                if (args.length >= 3 && args.length <= 5) {
+                    String host = args[1];
+                    int port;
+                    int batchDelay;
+                    int batchSize;
+                    try {
+                        port = Integer.parseInt(args[2]);
+                    } catch (NumberFormatException e) {
+                        sender.sendMessage(ChatColor.RED + "Invalid port!");
+                        return;
+                    }
+                    if (args.length == 4) {
+                        try {
+                            batchDelay = Integer.parseInt(args[3]);
+                        } catch (NumberFormatException e) {
+                            sender.sendMessage(ChatColor.RED + "Invalid batch delay ticks!");
+                            return;
+                        }
+                        batchSize = 1;
+                    } else if (args.length == 5) {
+                        try {
+                            batchDelay = Integer.parseInt(args[3]);
+                            batchSize = Integer.parseInt(args[4]);
+                        } catch (NumberFormatException e) {
+                            sender.sendMessage(ChatColor.RED + "Invalid batch delay ticks or size!");
+                            return;
+                        }
+                    } else {
+                        batchDelay = 1;
+                        batchSize = 10;
+                    }
+                    Limbo.getInstance().transferAll(host, port, batchDelay, batchSize);
+                    sender.sendMessage(ChatColor.GOLD + "Transferred all players to " + host + ":" + port);
+                } else {
+                    sender.sendMessage(ChatColor.RED + "Invalid usage! Use: /transferall <host> <port> [<batchDelayTicks> <batchSize>]");
+                }
+            } else {
+                sender.sendMessage(ChatColor.RED + "You do not have permission to use that command!");
+            }
+            return;
+        }
 	}
 	
 	@Override
@@ -202,6 +273,10 @@ public class DefaultCommands implements CommandExecutor, TabCompletor {
 			if (sender.hasPermission("limboserver.gamemode")) {
 				tab.add("gamemode");
 			}
+            if (sender.hasPermission("limboserver.transfer")) {
+                tab.add("transfer");
+                tab.add("transferall");
+            }
 			break;
 		case 1:
 			if (sender.hasPermission("limboserver.spawn")) {
@@ -229,6 +304,14 @@ public class DefaultCommands implements CommandExecutor, TabCompletor {
 					tab.add("gamemode");
 				}
 			}
+            if (sender.hasPermission("limboserver.transfer")) {
+                if ("transfer".startsWith(args[0].toLowerCase())) {
+                    tab.add("transfer");
+                }
+                if ("transferall".startsWith(args[0].toLowerCase())) {
+                    tab.add("transferall");
+                }
+            }
 			break;
 		case 2:
 			if (sender.hasPermission("limboserver.kick")) {
@@ -249,6 +332,15 @@ public class DefaultCommands implements CommandExecutor, TabCompletor {
 					}
 				}
 			}
+            if (sender.hasPermission("limboserver.transfer")) {
+                if (args[0].equalsIgnoreCase("transfer")) {
+                    for (Player player : Limbo.getInstance().getPlayers()) {
+                        if (player.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
+                            tab.add(player.getName());
+                        }
+                    }
+                }
+            }
 			break;
 		case 3:
 			if (sender.hasPermission("limboserver.gamemode")) {
