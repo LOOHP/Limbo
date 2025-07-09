@@ -27,29 +27,39 @@ public class MovingObjectPositionBlock extends MovingObjectPosition {
     private final BlockPosition blockPos;
     private final boolean miss;
     private final boolean inside;
+    private final boolean worldBorderHit;
 
     public static MovingObjectPositionBlock miss(Vector vec3d, BlockFace direction, BlockPosition blockposition) {
-        return new MovingObjectPositionBlock(true, vec3d, direction, blockposition, false);
+        return new MovingObjectPositionBlock(true, vec3d, direction, blockposition, false, false);
     }
 
     public MovingObjectPositionBlock(Vector vec3d, BlockFace direction, BlockPosition blockposition, boolean flag) {
-        this(false, vec3d, direction, blockposition, flag);
+        this(false, vec3d, direction, blockposition, flag, false);
     }
 
-    private MovingObjectPositionBlock(boolean flag, Vector vec3d, BlockFace direction, BlockPosition blockposition, boolean flag1) {
+    public MovingObjectPositionBlock(Vector vec3d, BlockFace direction, BlockPosition blockposition, boolean flag, boolean flag1) {
+        this(false, vec3d, direction, blockposition, flag, flag1);
+    }
+
+    private MovingObjectPositionBlock(boolean flag, Vector vec3d, BlockFace direction, BlockPosition blockposition, boolean flag1, boolean flag2) {
         super(vec3d);
         this.miss = flag;
         this.direction = direction;
         this.blockPos = blockposition;
         this.inside = flag1;
+        this.worldBorderHit = flag2;
     }
 
     public MovingObjectPositionBlock withDirection(BlockFace direction) {
-        return new MovingObjectPositionBlock(this.miss, this.location, direction, this.blockPos, this.inside);
+        return new MovingObjectPositionBlock(this.miss, this.location, direction, this.blockPos, this.inside, this.worldBorderHit);
     }
 
     public MovingObjectPositionBlock withPosition(BlockPosition blockposition) {
-        return new MovingObjectPositionBlock(this.miss, this.location, this.direction, blockposition, this.inside);
+        return new MovingObjectPositionBlock(this.miss, this.location, this.direction, blockposition, this.inside, this.worldBorderHit);
+    }
+
+    public MovingObjectPositionBlock hitBorder() {
+        return new MovingObjectPositionBlock(this.miss, this.location, this.direction, this.blockPos, this.inside, true);
     }
 
     public BlockPosition getBlockPos() {
@@ -67,5 +77,9 @@ public class MovingObjectPositionBlock extends MovingObjectPosition {
 
     public boolean isInside() {
         return this.inside;
+    }
+
+    public boolean isWorldBorderHit() {
+        return worldBorderHit;
     }
 }

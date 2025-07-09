@@ -36,7 +36,6 @@ import net.querz.nbt.tag.ListTag;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;

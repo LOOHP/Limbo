@@ -28,7 +28,6 @@ import com.loohp.limbo.world.GeneratedBlockDataMappings;
 import net.kyori.adventure.key.Key;
 import net.querz.mca.Chunk;
 import net.querz.mca.Section;
-import net.querz.nbt.io.SNBTUtil;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.ListTag;
 

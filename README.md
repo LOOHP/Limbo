@@ -1,7 +1,5 @@
 # Limbo
-[![Main Limbo Build Status](http://ci.loohpjames.com/job/Limbo/badge/icon)](http://ci.loohpjames.com/job/Limbo/) [![Limbo Builds Status](https://github.com/THEMPGUYAlt/LimboBuilds/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/THEMPGUYAlt/LimboBuilds/actions/workflows/build-and-release.yml)
-If the main limbo webserver is down then this one prob has a archive of the builds
-## Standalone Limbo Minecraft Server (Currently 1.21.6)
+
 
 https://www.spigotmc.org/resources/82468/
 
@@ -19,7 +17,7 @@ IP: mc.loohpjames.com
 ```
 ![Server Banner](https://api.loohpjames.com/serverbanner.png?ip=mc.loohpjames.com&width=918&name=IP:%20mc.loohpjames.com)
 ***
-### Downloads (1.17.1-1.21.6)
+### Downloads (1.17.1-1.21.7)
 - [Jenkins](http://ci.loohpjames.com/job/Limbo/)
 ***
 ### Offical Plugins

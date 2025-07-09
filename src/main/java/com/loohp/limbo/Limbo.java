@@ -96,7 +96,7 @@ public final class Limbo {
 	private static Limbo instance;
 	public static boolean noGui = false;
 	
-	public static void main(String args[]) throws IOException, ParseException, NumberFormatException, ClassNotFoundException, InterruptedException {
+	public static void main(String[] args) throws IOException, ParseException, NumberFormatException, ClassNotFoundException, InterruptedException {
 		for (String flag : args) {
 			if (flag.equals("--nogui") || flag.equals("nogui")) {
 				noGui = true;
@@ -132,8 +132,8 @@ public final class Limbo {
 	
 	//===========================
 	
-	public final String SERVER_IMPLEMENTATION_VERSION = "1.21.6";
-	public final int SERVER_IMPLEMENTATION_PROTOCOL = 771;
+	public final String SERVER_IMPLEMENTATION_VERSION = "1.21.7";
+	public final int SERVER_IMPLEMENTATION_PROTOCOL = 772;
 	public final String LIMBO_IMPLEMENTATION_VERSION;
 	
 	private final AtomicBoolean isRunning;

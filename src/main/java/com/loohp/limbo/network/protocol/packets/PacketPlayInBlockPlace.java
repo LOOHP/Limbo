@@ -29,14 +29,18 @@ public class PacketPlayInBlockPlace extends PacketIn {
 
 	private final EquipmentSlot hand;
 	private final int sequence;
+	private final float yRot;
+	private final float xRot;
 
-	public PacketPlayInBlockPlace(EquipmentSlot hand, int sequence) {
+	public PacketPlayInBlockPlace(EquipmentSlot hand, int sequence, float yRot, float xRot) {
 		this.hand = hand;
 		this.sequence = sequence;
-	}
+        this.yRot = yRot;
+        this.xRot = xRot;
+    }
 
-	public PacketPlayInBlockPlace(DataInputStream in) throws IOException {
-		this(EquipmentSlot.values()[DataTypeIO.readVarInt(in)], DataTypeIO.readVarInt(in));
+	public PacketPlayInBlockPlace(DataInputStream in, float yRot, float xRot) throws IOException {
+		this(EquipmentSlot.values()[DataTypeIO.readVarInt(in)], DataTypeIO.readVarInt(in), in.readFloat(), in.readFloat());
 	}
 
 	public EquipmentSlot getHand() {
@@ -45,5 +49,13 @@ public class PacketPlayInBlockPlace extends PacketIn {
 
 	public int getSequence() {
 		return sequence;
+	}
+
+	public float getYRot() {
+		return yRot;
+	}
+
+	public float getXRot() {
+		return xRot;
 	}
 }
