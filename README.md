@@ -1,6 +1,5 @@
 # Limbo
-[![Build Status](http://ci.loohpjames.com/job/Limbo/badge/icon)](http://ci.loohpjames.com/job/Limbo/)
-## Standalone Limbo Minecraft Server (Currently 1.21.7)
+
 
 https://www.spigotmc.org/resources/82468/
 
