@@ -26,8 +26,8 @@ import com.loohp.limbo.scheduler.LimboScheduler.LimboSchedulerTask;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -37,7 +37,7 @@ public class Tick {
 	private AtomicLong tick = new AtomicLong(0);
 	
 	private List<Thread> threads = new ArrayList<>();
-	private Queue<LimboSchedulerTask> asyncTasksQueue = new ConcurrentLinkedQueue<>();
+	private BlockingQueue<LimboSchedulerTask> asyncTasksQueue = new LinkedBlockingQueue<>();
 	
 	public Tick(Limbo instance) {
 		new Thread(() -> {
@@ -46,22 +46,19 @@ public class Tick {
 			for (int i = 0; i < 4; i++) {
 				Thread thread = new Thread(() -> {
 					while (instance.isRunning()) {
-						LimboSchedulerTask task = asyncTasksQueue.poll();
-						if (task == null) {
-							try {
-								TimeUnit.NANOSECONDS.sleep(10000);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						} else {
-							LimboTask limboTask = task.getTask();
-							try {
-								limboTask.run();
-							} catch (Throwable e) {
-								System.err.println("Task " + task.getTaskId() + " threw an exception: " + e.getLocalizedMessage());
-								e.printStackTrace();
-							}
-						}
+                        try {
+                            LimboSchedulerTask task = asyncTasksQueue.take();
+                            LimboTask limboTask = task.getTask();
+                            try {
+                                limboTask.run();
+                            } catch (Throwable e) {
+                                System.err.println("Task " + task.getTaskId() + " threw an exception: " + e.getLocalizedMessage());
+                                e.printStackTrace();
+                            }
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            e.printStackTrace();
+                        }
 					}
 				});
 				thread.start();
@@ -124,7 +121,6 @@ public class Tick {
 		return tick.get();
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void waitAndKillThreads(long waitTime) {
 		long end = System.currentTimeMillis() + waitTime;
 		for (Thread thread : threads) {
@@ -132,9 +128,6 @@ public class Tick {
 				thread.join(Math.max(end - System.currentTimeMillis(), 1));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
-			if (thread.isAlive()) {
-				thread.stop();
 			}
 		}
 	}
