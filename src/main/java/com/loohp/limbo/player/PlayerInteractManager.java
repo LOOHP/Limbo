@@ -22,6 +22,7 @@ package com.loohp.limbo.player;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.entity.Entity;
 import com.loohp.limbo.location.Location;
+import com.loohp.limbo.location.Vector;
 import com.loohp.limbo.network.ClientConnection;
 import com.loohp.limbo.network.protocol.packets.ClientboundChunkBatchFinishedPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundChunkBatchStartPacket;
@@ -81,7 +82,7 @@ public class PlayerInteractManager {
 		Set<Entity> entitiesInRange = player.getWorld().getEntities().stream().filter(each -> each.getLocation().distanceSquared(location) < viewDistanceBlocks * viewDistanceBlocks).collect(Collectors.toSet());
 		for (Entity entity : entitiesInRange) {
 			if (!entities.contains(entity)) {
-				PacketPlayOutSpawnEntity packet = new PacketPlayOutSpawnEntity(entity.getEntityId(), entity.getUniqueId(), entity.getType(), entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch(), entity.getPitch(), 0, (short) 0, (short) 0, (short) 0);
+				PacketPlayOutSpawnEntity packet = new PacketPlayOutSpawnEntity(entity.getEntityId(), entity.getUniqueId(), entity.getType(), entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch(), entity.getPitch(), 0, new Vector(0, 0, 0));
 				player.clientConnection.sendPacket(packet);
 
 				PacketPlayOutEntityMetadata meta = new PacketPlayOutEntityMetadata(entity);

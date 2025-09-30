@@ -94,7 +94,7 @@ public class MojangAPIUtils {
             connection.addRequestProperty("Cache-Control", "no-cache, no-store, must-revalidate");
             connection.addRequestProperty("Pragma", "no-cache");
 	        if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
-	            String reply = String.join("", new BufferedReader(new InputStreamReader(connection.getInputStream())).lines().collect(Collectors.toList())).replace(" ", "");
+	            String reply = new BufferedReader(new InputStreamReader(connection.getInputStream())).lines().collect(Collectors.joining("")).replace(" ", "");
 	            String skin = reply.split("\"value\":\"")[1].split("\"")[0];
 	            String signature = reply.split("\"signature\":\"")[1].split("\"")[0];
 	            return new SkinResponse(skin, signature);

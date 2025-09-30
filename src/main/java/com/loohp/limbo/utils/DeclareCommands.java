@@ -33,11 +33,11 @@ public class DeclareCommands {
 	
 	public static PacketPlayOutDeclareCommands getDeclareCommandsPacket(CommandSender sender) throws IOException {
 		List<String> commands = Limbo.getInstance().getPluginManager().getTabOptions(sender, new String[0]);
-		
+
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();		
 		DataOutputStream output = new DataOutputStream(buffer);
 
-		if (commands.isEmpty()) {
+        if (commands.isEmpty()) {
             DataTypeIO.writeVarInt(output, 1);
 
             output.writeByte(0);
