@@ -39,6 +39,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -49,6 +50,9 @@ import java.util.zip.GZIPOutputStream;
 @SuppressWarnings("unchecked")
 public class Metrics {
 
+    // The name of the server software
+    private static final String SERVER_SOFTWARE = "Limbo";
+
     // The version of this bStats class
     public static final int B_STATS_VERSION = 1;
 
@@ -58,29 +62,15 @@ public class Metrics {
     // Should failed requests be logged?
     private static boolean logFailedRequests = false;
 
-    // The name of the server software
-    private final String name;
-
     // The uuid of the server
     private final String serverUUID;
-    
-    private final String limboVersion;
 
     // A list with all custom charts
     private final List<CustomChart> charts = new ArrayList<>();
 
-    /**
-     * Class constructor.
-     *
-     * @param name The name of the server software.
-     * @param serverUUID The uuid of the server.
-     * @param logFailedRequests Whether failed requests should be logged or not.
-     * @param logger The logger for the failed requests.
-     * @throws IOException 
-     */
+    private final AtomicInteger maxPlayerCountInPeriod = new AtomicInteger(0);
+
     public Metrics() throws IOException {
-    	name = "Limbo";
-    	
     	// Get the config file
    	 	File configFile = new File("plugins/bStats", "config.yml");		
         FileConfiguration config = new FileConfiguration(configFile);
@@ -108,8 +98,6 @@ public class Metrics {
             	e.printStackTrace();
             }
         }
-        
-        limboVersion = Limbo.getInstance().LIMBO_IMPLEMENTATION_VERSION;
 
         // Load the data
         serverUUID = config.get("serverUuid", String.class);
@@ -118,26 +106,16 @@ public class Metrics {
             startSubmitting();
         }       
         
-        addCustomChart(new Metrics.SingleLineChart("players", new Callable<Integer>() {
-	        @Override
-	        public Integer call() throws Exception {
-	            return Limbo.getInstance().getPlayers().size();
-	        }
-	    }));
-		
-		addCustomChart(new Metrics.SimplePie("limbo_version", new Callable<String>() {
-	        @Override
-	        public String call() throws Exception {
-	            return limboVersion;
-	        }
-	    }));
+        addCustomChart(new Metrics.SingleLineChart("players", () -> maxPlayerCountInPeriod.getAndSet(0)));
+		addCustomChart(new Metrics.SimplePie("limbo_version", () -> Limbo.getInstance().LIMBO_IMPLEMENTATION_VERSION));
+		addCustomChart(new Metrics.SimplePie("minecraftVersion", () -> Limbo.getInstance().SERVER_IMPLEMENTATION_VERSION));
+    }
 
-		addCustomChart(new Metrics.SimplePie("minecraftVersion", new Callable<String>() {
-	        @Override
-	        public String call() throws Exception {
-	            return Limbo.getInstance().SERVER_IMPLEMENTATION_VERSION;
-	        }
-	    }));
+    /**
+     * Record the max player count for the last update period.
+     */
+    public void updatePlayersCount() {
+        maxPlayerCountInPeriod.getAndUpdate(i -> Math.max(i, Limbo.getInstance().getPlayers().size()));
     }
 
     /**
@@ -176,7 +154,7 @@ public class Metrics {
 	private JSONObject getPluginData() {
         JSONObject data = new JSONObject();
 
-        data.put("pluginName", name); // Append the name of the server software
+        data.put("pluginName", SERVER_SOFTWARE); // Append the name of the server software
         JSONArray customCharts = new JSONArray();
         for (CustomChart customChart : charts) {
             // Add the data of the custom charts
@@ -232,7 +210,7 @@ public class Metrics {
         } catch (Exception e) {
             // Something went wrong! :(
             if (logFailedRequests) {
-                Limbo.getInstance().getConsole().sendMessage("Could not submit stats of " + name + "\n" + e);
+                Limbo.getInstance().getConsole().sendMessage("Could not submit stats of " + SERVER_SOFTWARE + "\n" + e);
             }
         }
     }
