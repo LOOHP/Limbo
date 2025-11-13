@@ -3,6 +3,7 @@
 ## Standalone Limbo Minecraft Server (Currently 1.21.10)
 
 https://www.spigotmc.org/resources/82468/
+https://modrinth.com/mod/limbo-server
 
 ### Starting the server
 Use the following command lines to start the limbo server just like any other Minecraft server
