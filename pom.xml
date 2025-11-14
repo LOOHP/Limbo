@@ -24,7 +24,7 @@
 	<groupId>com.loohp</groupId>
 	<artifactId>Limbo</artifactId>
 	<name>Limbo</name>
-	<version>0.7.15-ALPHA</version>
+	<version>0.7.16-ALPHA</version>
 	
 	<description>Standalone Limbo Minecraft Server.</description>
 	<url>https://github.com/LOOHP/Limbo</url>
@@ -136,7 +136,7 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<finalName>${project.artifactId}-${project.version}-1.21.8</finalName>
+		<finalName>${project.artifactId}-${project.version}-1.21.10</finalName>
 	</build>
 
 	<profiles>
@@ -264,31 +264,31 @@
 		<dependency>
 			<groupId>net.kyori</groupId>
 			<artifactId>adventure-text-serializer-gson</artifactId>
-			<version>4.24.0</version>
+			<version>4.25.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.kyori</groupId>
 			<artifactId>adventure-text-serializer-legacy</artifactId>
-			<version>4.24.0</version>
+			<version>4.25.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.kyori</groupId>
 			<artifactId>adventure-text-serializer-plain</artifactId>
-			<version>4.24.0</version>
+			<version>4.25.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.kyori</groupId>
 			<artifactId>adventure-api</artifactId>
-			<version>4.24.0</version>
+			<version>4.25.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.kyori</groupId>
 			<artifactId>adventure-nbt</artifactId>
-			<version>4.24.0</version>
+			<version>4.25.0</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

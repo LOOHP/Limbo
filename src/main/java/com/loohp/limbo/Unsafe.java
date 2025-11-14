@@ -85,6 +85,7 @@ public class Unsafe {
 	public void a(Player player) {
 		instance.playersByName.put(player.getName(), player);
 		instance.playersByUUID.put(player.getUniqueId(), player);
+		instance.getMetrics().updatePlayersCount();
 	}
 
 	@Deprecated

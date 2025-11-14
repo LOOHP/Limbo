@@ -351,4 +351,38 @@ public class DataTypeIO {
 		}
 	}
 
+    private static double sanitize(double d0) {
+        return Double.isNaN(d0) ? 0.0D : Math.min(Math.max(d0, -1.7179869183E10D), 1.7179869183E10D);
+    }
+
+    private static long pack(double d0) {
+        return Math.round((d0 * 0.5D + 0.5D) * 32766.0D);
+    }
+
+    public static void writeLpVec3(DataOutputStream out, Vector vec3d) throws IOException {
+        double d0 = sanitize(vec3d.getX());
+        double d1 = sanitize(vec3d.getY());
+        double d2 = sanitize(vec3d.getZ());
+        double d3 = Math.max(Math.abs(d0), Math.max(Math.abs(d1), Math.abs(d2)));
+
+        if (d3 < 3.051944088384301E-5D) {
+            out.writeByte(0);
+        } else {
+            long i = (long) Math.ceil(d3);
+            boolean flag = (i & 3L) != i;
+            long j = flag ? i & 3L | 4L : i;
+            long k = pack(d0 / (double) i) << 3;
+            long l = pack(d1 / (double) i) << 18;
+            long i1 = pack(d2 / (double) i) << 33;
+            long j1 = j | k | l | i1;
+
+            out.writeByte((byte) ((int) j1));
+            out.writeByte((byte) ((int) (j1 >> 8)));
+            out.writeInt((int) (j1 >> 16));
+            if (flag) {
+                writeVarInt(out, (int) (i >> 2));
+            }
+        }
+    }
+
 }

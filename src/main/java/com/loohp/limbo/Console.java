@@ -86,7 +86,7 @@ public class Console implements CommandSender {
 	protected final PrintStream logs;
 	
 	public Console(InputStream in, PrintStream out, PrintStream err) throws IOException {
-		String fileName = new SimpleDateFormat("yyyy'-'MM'-'dd'_'HH'-'mm'-'ss'_'zzz'.log'").format(new Date());
+		String fileName = new SimpleDateFormat("yyyy'-'MM'-'dd'_'HH'-'mm'-'ss'_'zzz'.log'").format(new Date()).replace(":", "");
         File dir = new File("logs");
         dir.mkdirs();
         File logs = new File(dir, fileName);

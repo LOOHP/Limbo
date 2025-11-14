@@ -19,39 +19,49 @@
 
 package com.loohp.limbo.network.protocol.packets;
 
+import com.loohp.limbo.location.GlobalPos;
 import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.utils.DataTypeIO;
-import com.loohp.limbo.world.BlockPosition;
+import net.kyori.adventure.key.Key;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class PacketPlayOutSpawnPosition extends PacketOut {
 	
-	private final BlockPosition position;
-	private final float angle;
+	private final GlobalPos position;
+	private final float yaw;
+    private final float pitch;
 	
-	public PacketPlayOutSpawnPosition(BlockPosition position, float angle) {
+	public PacketPlayOutSpawnPosition(GlobalPos position, float yaw, float pitch) {
 		this.position = position;
-		this.angle = angle;
+		this.yaw = yaw;
+        this.pitch = pitch;
 	}
 
-	public BlockPosition getPosition() {
-		return position;
-	}
-	
-	public float getAngle() {
-		return angle;
-	}
-	
-	public byte[] serializePacket() throws IOException {
+    public GlobalPos getPosition() {
+        return position;
+    }
+
+    public float getYaw() {
+        return yaw;
+    }
+
+    public float getPitch() {
+        return pitch;
+    }
+
+    public byte[] serializePacket() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		
 		DataOutputStream output = new DataOutputStream(buffer);
 		output.writeByte(PacketRegistry.getPacketId(getClass()));
-		DataTypeIO.writeBlockPosition(output, position);
-		output.writeFloat(angle);
+        DataTypeIO.writeString(output, Key.key(position.getWorld().getName()).toString(), StandardCharsets.UTF_8);
+		DataTypeIO.writeBlockPosition(output, position.getPos());
+		output.writeFloat(yaw);
+        output.writeFloat(pitch);
 		
 		return buffer.toByteArray();
 	}

@@ -40,8 +40,10 @@ import com.loohp.limbo.file.ServerProperties;
 import com.loohp.limbo.inventory.AnvilInventory;
 import com.loohp.limbo.inventory.Inventory;
 import com.loohp.limbo.inventory.ItemStack;
+import com.loohp.limbo.location.GlobalPos;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.network.protocol.packets.ClientboundFinishConfigurationPacket;
+import com.loohp.limbo.network.protocol.packets.ClientboundLevelChunkWithLightPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundRegistryDataPacket;
 import com.loohp.limbo.network.protocol.packets.PacketHandshakingIn;
 import com.loohp.limbo.network.protocol.packets.PacketIn;
@@ -588,12 +590,12 @@ public class ClientConnection implements Runnable {
                 ByteArrayOutputStream brandOut = new ByteArrayOutputStream();
                 DataTypeIO.writeString(new DataOutputStream(brandOut), properties.getServerModName(), StandardCharsets.UTF_8);
                 sendPluginMessage(BRAND_ANNOUNCE_CHANNEL, brandOut.toByteArray());
-                
+
                 SkinResponse skinresponce = (isVelocityModern || isBungeeGuard || isBungeecord) && forwardedSkin != null ? forwardedSkin : MojangAPIUtils.getSkinFromMojangServer(player.getName());
                 PlayerSkinProperty skin = skinresponce != null ? new PlayerSkinProperty(skinresponce.getSkin(), skinresponce.getSignature()) : null;
                 PacketPlayOutPlayerInfo info = new PacketPlayOutPlayerInfo(EnumSet.of(PlayerInfoAction.ADD_PLAYER, PlayerInfoAction.UPDATE_GAME_MODE, PlayerInfoAction.UPDATE_LISTED, PlayerInfoAction.UPDATE_LATENCY, PlayerInfoAction.UPDATE_DISPLAY_NAME), player.getUniqueId(), new PlayerInfoData.PlayerInfoDataAddPlayer(player.getName(), true, Optional.ofNullable(skin), properties.getDefaultGamemode(), 0, false, Optional.empty()));
                 sendPacket(info);
-                
+
                 Set<PlayerAbilityFlags> flags = new HashSet<>();
                 if (properties.isAllowFlight()) {
                     flags.add(PlayerAbilityFlags.FLY);
@@ -603,7 +605,7 @@ public class ClientConnection implements Runnable {
                 }
                 PacketPlayOutPlayerAbilities abilities = new PacketPlayOutPlayerAbilities(0.05F, 0.1F, flags.toArray(new PlayerAbilityFlags[flags.size()]));
                 sendPacket(abilities);
-                
+
                 String str = (properties.isLogPlayerIPAddresses() ? inetAddress.getHostName() : "<ip address withheld>") + ":" + clientSocket.getPort() + "|" + player.getName() + "(" + player.getUniqueId() + ")";
                 Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player had connected to the Limbo server!");
 
@@ -616,18 +618,18 @@ public class ClientConnection implements Runnable {
                 if (declare != null) {
                     sendPacket(declare);
                 }
-                
-                PacketPlayOutSpawnPosition spawnPos = new PacketPlayOutSpawnPosition(BlockPosition.from(worldSpawn), worldSpawn.getPitch());
+
+                PacketPlayOutSpawnPosition spawnPos = new PacketPlayOutSpawnPosition(GlobalPos.from(worldSpawn), worldSpawn.getYaw(), worldSpawn.getPitch());
                 sendPacket(spawnPos);
-                
+
                 PacketPlayOutPositionAndLook positionLook = new PacketPlayOutPositionAndLook(worldSpawn.getX(), worldSpawn.getY(), worldSpawn.getZ(), worldSpawn.getYaw(), worldSpawn.getPitch(), 1);
                 Limbo.getInstance().getUnsafe().a(player, new Location(world, worldSpawn.getX(), worldSpawn.getY(), worldSpawn.getZ(), worldSpawn.getYaw(), worldSpawn.getPitch()));
                 sendPacket(positionLook);
-                
+
                 player.getDataWatcher().update();
                 PacketPlayOutEntityMetadata show = new PacketPlayOutEntityMetadata(player, false, Player.class.getDeclaredField("skinLayers"));
                 sendPacket(show);
-                
+
                 Limbo.getInstance().getEventsManager().callEvent(new PlayerJoinEvent(player));
                 
                 if (properties.isAllowFlight()) {
