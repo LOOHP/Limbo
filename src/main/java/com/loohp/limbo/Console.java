@@ -118,7 +118,7 @@ public class Console implements CommandSender {
 		reader.setExpandEvents(false);
 		reader.setHandleUserInterrupt(false);
 		
-		terminal = TerminalBuilder.builder().streams(in, out).system(true).jansi(true).build();
+		terminal = TerminalBuilder.builder().streams(in, out).jansi(true).build();
 		tabReader = LineReaderBuilder.builder().terminal(terminal).completer(new Completer() {
 			@Override
 			public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
