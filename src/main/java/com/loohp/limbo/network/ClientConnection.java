@@ -151,15 +151,18 @@ import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-public class ClientConnection extends Thread {
+public class ClientConnection implements Runnable {
 
     private static final Key DEFAULT_HANDLER_NAMESPACE = Key.key("default");
     private static final String BRAND_ANNOUNCE_CHANNEL = Key.key("brand").toString();
 
     private final Random random = new Random();
     private final Socket clientSocket;
+    private final Lock packetSendLock = new ReentrantLock();
     protected Channel channel;
     private boolean running;
     private volatile ClientState state;
@@ -234,9 +237,14 @@ public class ClientConnection extends Thread {
         sendPacket(packet);
     }
 
-    public synchronized void sendPacket(PacketOut packet) throws IOException {
-        if (channel.writePacket(packet)) {
-            setLastPacketTimestamp(System.currentTimeMillis());
+    public void sendPacket(PacketOut packet) throws IOException {
+        packetSendLock.lock();
+        try {
+            if (channel.writePacket(packet)) {
+                setLastPacketTimestamp(System.currentTimeMillis());
+            }
+        } finally {
+            packetSendLock.unlock();
         }
     }
 

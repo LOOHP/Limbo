@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      # See https://github.com/actions/checkout/releases
+      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+    - name: Set up JDK 21
+      # See https://github.com/actions/setup-java/releases
+      uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00
+      with:
+        java-version: 21
+        distribution: temurin
+    - name: Build with Maven
+      run: mvn clean package
+    - name: Archive Artifacts
+      # See https://github.com/actions/upload-artifact/releases
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: success()
+      with:
+        name: Limbo
+        path: target/Limbo-*.jar
+        if-no-files-found: error
