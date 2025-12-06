@@ -53,4 +53,4 @@ It also **supports my development**, take it as an alternative way to donate whi
 
 **https://www.bisecthosting.com/loohp**
 
-![https://www.bisecthosting.com/loohp](https://www.bisecthosting.com/partners/custom-banners/96e11ee5-50e4-494f-854d-8c1708813abd.png)
+[![](https://www.bisecthosting.com/partners/custom-banners/96e11ee5-50e4-494f-854d-8c1708813abd.png)](https://www.bisecthosting.com/loohp)
