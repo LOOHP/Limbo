@@ -4,7 +4,7 @@
     {
       "condition": {
         "type": "minecraft:biome",
-        "biomes": "#minecraft:spawns_cold_variant_frogs"
+        "biomes": "minecraft:plains"
       },
       "priority": 1
     }

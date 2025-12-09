@@ -8,7 +8,7 @@
     {
       "condition": {
         "type": "minecraft:biome",
-        "biomes": "#minecraft:is_savanna"
+        "biomes": "minecraft:savanna"
       },
       "priority": 1
     }
