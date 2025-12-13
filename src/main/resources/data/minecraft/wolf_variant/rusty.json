@@ -8,7 +8,7 @@
     {
       "condition": {
         "type": "minecraft:biome",
-        "biomes": "#minecraft:is_jungle"
+        "biomes": "minecraft:jungle"
       },
       "priority": 1
     }

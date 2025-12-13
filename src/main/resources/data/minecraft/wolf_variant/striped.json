@@ -8,7 +8,7 @@
     {
       "condition": {
         "type": "minecraft:biome",
-        "biomes": "#minecraft:is_badlands"
+        "biomes": "minecraft:badlands"
       },
       "priority": 1
     }

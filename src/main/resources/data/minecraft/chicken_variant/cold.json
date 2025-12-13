@@ -5,7 +5,7 @@
     {
       "condition": {
         "type": "minecraft:biome",
-        "biomes": "#minecraft:spawns_cold_variant_farm_animals"
+        "biomes": "minecraft:plains"
       },
       "priority": 1
     }

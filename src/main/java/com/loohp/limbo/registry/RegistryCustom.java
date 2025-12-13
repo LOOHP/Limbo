@@ -51,9 +51,11 @@ public class RegistryCustom {
     public static final RegistryCustom FROG_VARIANT = register("frog_variant");
     public static final RegistryCustom PAINTING_VARIANT = register("painting_variant");
     public static final RegistryCustom PIG_VARIANT = register("pig_variant");
+    public static final RegistryCustom TIMELINE = register("timelime");
     public static final RegistryCustom WOLF_SOUND_VARIANT = register("wolf_sound_variant");
     public static final RegistryCustom WOLF_VARIANT = register("wolf_variant");
     public static final RegistryCustom WORLDGEN_BIOME = register("worldgen/biome");
+    public static final RegistryCustom ZOMBIE_NAUTILUS_VARIANT = register("zombie_nautilus_variant");
 
     private static RegistryCustom register(String identifier) {
         RegistryCustom registryCustom = new RegistryCustom(identifier);

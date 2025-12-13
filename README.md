@@ -1,6 +1,6 @@
 [![Build Status](http://ci.loohpjames.com/job/Limbo/badge/icon)](http://ci.loohpjames.com/job/Limbo/)
 # Limbo
-## Standalone Limbo Minecraft Server (Currently 1.21.10)
+## Standalone Limbo Minecraft Server (Currently 1.21.11)
 
 https://www.spigotmc.org/resources/82468/<br>
 https://modrinth.com/mod/limbo-server
@@ -19,7 +19,7 @@ IP: mc.loohpjames.com
 ```
 ![Server Banner](https://api.loohpjames.com/serverbanner.png?ip=mc.loohpjames.com&width=918&name=IP:%20mc.loohpjames.com)
 ***
-### Downloads (1.17.1-1.21.10)
+### Downloads (1.17.1-1.21.11)
 - [Jenkins](http://ci.loohpjames.com/job/Limbo/)
 ***
 ### Offical Plugins
@@ -53,4 +53,4 @@ It also **supports my development**, take it as an alternative way to donate whi
 
 **https://www.bisecthosting.com/loohp**
 
-![https://www.bisecthosting.com/loohp](https://www.bisecthosting.com/partners/custom-banners/fc7f7b10-8d1a-4478-a23a-8a357538a180.png)
+[![](https://www.bisecthosting.com/partners/custom-banners/96e11ee5-50e4-494f-854d-8c1708813abd.png)](https://www.bisecthosting.com/loohp)

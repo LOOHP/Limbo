@@ -269,9 +269,6 @@
       "minecraft:game_test_highlight_pos": {
         "protocol_id": 39
       },
-      "minecraft:horse_screen_open": {
-        "protocol_id": 40
-      },
       "minecraft:hurt_animation": {
         "protocol_id": 41
       },
@@ -301,6 +298,9 @@
       },
       "minecraft:merchant_offers": {
         "protocol_id": 50
+      },
+      "minecraft:mount_screen_open": {
+        "protocol_id": 40
       },
       "minecraft:move_entity_pos": {
         "protocol_id": 51
