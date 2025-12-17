@@ -25,16 +25,7 @@ import com.loohp.limbo.events.connection.ConnectionEstablishedEvent;
 import com.loohp.limbo.events.inventory.AnvilRenameInputEvent;
 import com.loohp.limbo.events.inventory.InventoryCloseEvent;
 import com.loohp.limbo.events.inventory.InventoryCreativeEvent;
-import com.loohp.limbo.events.player.PlayerInteractEvent;
-import com.loohp.limbo.events.player.PlayerJoinEvent;
-import com.loohp.limbo.events.player.PlayerLoginEvent;
-import com.loohp.limbo.events.player.PlayerMoveEvent;
-import com.loohp.limbo.events.player.PlayerQuitEvent;
-import com.loohp.limbo.events.player.PlayerResourcePackStatusEvent;
-import com.loohp.limbo.events.player.PlayerSelectedSlotChangeEvent;
-import com.loohp.limbo.events.player.PlayerSpawnEvent;
-import com.loohp.limbo.events.player.PlayerSwapHandItemsEvent;
-import com.loohp.limbo.events.player.PluginMessageEvent;
+import com.loohp.limbo.events.player.*;
 import com.loohp.limbo.events.status.StatusPingEvent;
 import com.loohp.limbo.file.ServerProperties;
 import com.loohp.limbo.inventory.AnvilInventory;
@@ -42,77 +33,20 @@ import com.loohp.limbo.inventory.Inventory;
 import com.loohp.limbo.inventory.ItemStack;
 import com.loohp.limbo.location.GlobalPos;
 import com.loohp.limbo.location.Location;
-import com.loohp.limbo.network.protocol.packets.ClientboundFinishConfigurationPacket;
-import com.loohp.limbo.network.protocol.packets.ClientboundLevelChunkWithLightPacket;
-import com.loohp.limbo.network.protocol.packets.ClientboundRegistryDataPacket;
-import com.loohp.limbo.network.protocol.packets.PacketHandshakingIn;
-import com.loohp.limbo.network.protocol.packets.PacketIn;
-import com.loohp.limbo.network.protocol.packets.PacketLoginInLoginStart;
-import com.loohp.limbo.network.protocol.packets.PacketLoginInPluginMessaging;
-import com.loohp.limbo.network.protocol.packets.PacketLoginOutDisconnect;
-import com.loohp.limbo.network.protocol.packets.PacketLoginOutLoginSuccess;
-import com.loohp.limbo.network.protocol.packets.PacketLoginOutPluginMessaging;
-import com.loohp.limbo.network.protocol.packets.PacketOut;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInBlockDig;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInBlockPlace;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInChat;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInCloseWindow;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInHeldItemChange;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInItemName;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInKeepAlive;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInPickItem;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInPluginMessaging;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInPosition;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInPositionAndLook;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInRotation;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInSetCreativeSlot;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInTabComplete;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInUseItem;
-import com.loohp.limbo.network.protocol.packets.PacketPlayInWindowClick;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutDeclareCommands;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutDisconnect;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutEntityMetadata;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutGameStateChange;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutHeldItemChange;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutKeepAlive;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutLogin;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerAbilities;
+import com.loohp.limbo.network.protocol.packets.*;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerAbilities.PlayerAbilityFlags;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerInfo;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerInfo.PlayerInfoAction;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerInfo.PlayerInfoData;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutPlayerInfo.PlayerInfoData.PlayerInfoDataAddPlayer.PlayerSkinProperty;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutPluginMessaging;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutPositionAndLook;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutSpawnPosition;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutTabComplete;
 import com.loohp.limbo.network.protocol.packets.PacketPlayOutTabComplete.TabCompleteMatches;
-import com.loohp.limbo.network.protocol.packets.PacketPlayOutUpdateViewPosition;
-import com.loohp.limbo.network.protocol.packets.PacketStatusInPing;
-import com.loohp.limbo.network.protocol.packets.PacketStatusInRequest;
-import com.loohp.limbo.network.protocol.packets.PacketStatusOutPong;
-import com.loohp.limbo.network.protocol.packets.PacketStatusOutResponse;
-import com.loohp.limbo.network.protocol.packets.ServerboundChatCommandPacket;
-import com.loohp.limbo.network.protocol.packets.ServerboundFinishConfigurationPacket;
-import com.loohp.limbo.network.protocol.packets.ServerboundLoginAcknowledgedPacket;
-import com.loohp.limbo.network.protocol.packets.ServerboundResourcePackPacket;
 import com.loohp.limbo.network.protocol.packets.ServerboundResourcePackPacket.Action;
 import com.loohp.limbo.player.Player;
 import com.loohp.limbo.player.PlayerInteractManager;
 import com.loohp.limbo.player.PlayerInventory;
 import com.loohp.limbo.registry.PacketRegistry;
 import com.loohp.limbo.registry.RegistryCustom;
-import com.loohp.limbo.utils.BungeecordAdventureConversionUtils;
-import com.loohp.limbo.utils.CheckedBiConsumer;
-import com.loohp.limbo.utils.CustomStringUtils;
-import com.loohp.limbo.utils.DataTypeIO;
-import com.loohp.limbo.utils.DeclareCommands;
-import com.loohp.limbo.utils.ForwardingUtils;
-import com.loohp.limbo.utils.GameMode;
-import com.loohp.limbo.utils.InventoryClickUtils;
-import com.loohp.limbo.utils.MojangAPIUtils;
+import com.loohp.limbo.utils.*;
 import com.loohp.limbo.utils.MojangAPIUtils.SkinResponse;
-import com.loohp.limbo.world.BlockPosition;
 import com.loohp.limbo.world.BlockState;
 import com.loohp.limbo.world.World;
 import net.kyori.adventure.key.Key;
@@ -127,28 +61,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -157,6 +75,7 @@ public class ClientConnection extends Thread {
 
     private static final Key DEFAULT_HANDLER_NAMESPACE = Key.key("default");
     private static final String BRAND_ANNOUNCE_CHANNEL = Key.key("brand").toString();
+    private final AtomicLong lastKeepAliveResponse = new AtomicLong(System.currentTimeMillis());
 
     private final Random random = new Random();
     private final Socket clientSocket;
@@ -646,27 +565,24 @@ public class ClientConnection extends Thread {
                 player.sendPlayerListHeaderAndFooter(properties.getTabHeader(), properties.getTabFooter());
                 
                 ready = true;
-                
+
                 keepAliveTask = new TimerTask() {
                     @Override
                     public void run() {
-                        if (state.equals(ClientState.DISCONNECTED)) {
-                            this.cancel();
-                        } else if (ready && state.equals(ClientState.PLAY)) {
-                            long now = System.currentTimeMillis();
-                            if (now - getLastPacketTimestamp() > 15000) {
-                                PacketPlayOutKeepAlive keepAlivePacket = new PacketPlayOutKeepAlive(now);
-                                try {
-                                    sendPacket(keepAlivePacket);
-                                    setLastKeepAlivePayLoad(now);
-                                } catch (Exception e) {
-                                }
-                            }
-                        }
+                        if (state != ClientState.PLAY || !ready) return;
+
+                        long now = System.currentTimeMillis();
+                        PacketPlayOutKeepAlive keepAlive = new PacketPlayOutKeepAlive(now);
+                        try {
+                            sendPacket(keepAlive);
+                            setLastKeepAlivePayLoad(now);
+                        } catch (IOException ignored) {}
                     }
                 };
-                new Timer().schedule(keepAliveTask, 5000, 10000);
-                
+
+                new Timer().schedule(keepAliveTask, 0, 10_000);
+
+
                 while (clientSocket.isConnected()) {
                     try {
                         CheckedBiConsumer<PlayerMoveEvent, Location, IOException> processMoveEvent = (event, originalTo) -> {
@@ -717,12 +633,12 @@ public class ClientConnection extends Thread {
                                 processMoveEvent.consume(event, to);
                             }
                         } else if (packetIn instanceof PacketPlayInKeepAlive) {
-                            long lastPayload = getLastKeepAlivePayLoad();
                             PacketPlayInKeepAlive alive = (PacketPlayInKeepAlive) packetIn;
-                            if (lastPayload == -1) {
-                                Limbo.getInstance().getConsole().sendMessage("Unsolicited KeepAlive packet for player " + player.getName());
-                            } else if (alive.getPayload() != lastPayload) {
-                                Limbo.getInstance().getConsole().sendMessage("Incorrect Payload received in KeepAlive packet for player " + player.getName());
+
+                            if (alive.getPayload() == getLastKeepAlivePayLoad()) {
+                                lastKeepAliveResponse.set(System.currentTimeMillis());
+                            } else {
+                                disconnect(Component.text("Bad keepalive payload"));
                                 break;
                             }
                         } else if (packetIn instanceof PacketPlayInTabComplete) {
