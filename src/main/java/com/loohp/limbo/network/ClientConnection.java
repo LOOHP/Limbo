@@ -569,14 +569,14 @@ public class ClientConnection extends Thread {
                 keepAliveTask = new TimerTask() {
                     @Override
                     public void run() {
-                        if (state != ClientState.PLAY || !ready) return;
+                        if (state != ClientState.PLAY || !ready) this.cancel(); // oops
 
                         long now = System.currentTimeMillis();
                         PacketPlayOutKeepAlive keepAlive = new PacketPlayOutKeepAlive(now);
                         try {
                             sendPacket(keepAlive);
                             setLastKeepAlivePayLoad(now);
-                        } catch (IOException ignored) {}
+                        } catch (IOException ignored) {cancel();}
                     }
                 };
 
