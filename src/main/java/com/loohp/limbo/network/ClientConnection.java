@@ -155,7 +155,6 @@ public class ClientConnection extends Thread {
 
     private static final Key DEFAULT_HANDLER_NAMESPACE = Key.key("default");
     private static final String BRAND_ANNOUNCE_CHANNEL = Key.key("brand").toString();
-    private final AtomicLong lastKeepAliveResponse = new AtomicLong(System.currentTimeMillis());
 
     private final Random random = new Random();
     private final Socket clientSocket;
@@ -163,10 +162,12 @@ public class ClientConnection extends Thread {
     private boolean running;
     private volatile ClientState state;
 
+    private final AtomicLong lastPacketTimestamp;
+    private final AtomicLong lastKeepAlivePayLoad;
+    private final AtomicLong lastKeepAliveResponse;
+
     private Player player;
     private TimerTask keepAliveTask;
-    private AtomicLong lastPacketTimestamp;
-    private AtomicLong lastKeepAlivePayLoad;
     private InetAddress inetAddress;
     private boolean ready;
 
@@ -175,6 +176,7 @@ public class ClientConnection extends Thread {
         this.inetAddress = clientSocket.getInetAddress();
         this.lastPacketTimestamp = new AtomicLong(-1);
         this.lastKeepAlivePayLoad = new AtomicLong(-1);
+        this.lastKeepAliveResponse = new AtomicLong(-1);
         this.channel = null;
         this.running = false;
         this.ready = false;
@@ -190,6 +192,10 @@ public class ClientConnection extends Thread {
 
     public void setLastKeepAlivePayLoad(long payLoad) {
         this.lastKeepAlivePayLoad.set(payLoad);
+    }
+
+    public long getLastKeepAliveResponse() {
+        return lastKeepAliveResponse.get();
     }
 
     public long getLastPacketTimestamp() {
