@@ -250,6 +250,9 @@ public class ClientConnection extends Thread {
         } catch (IOException ignored) {
         }
         try {
+            ServerProperties properties = Limbo.getInstance().getServerProperties();
+            String str = (properties.isLogPlayerIPAddresses() ? inetAddress.getHostName() : "<ip address withheld>") + ":" + clientSocket.getPort();
+            Limbo.getInstance().getConsole().sendMessage("[/" + str + "] <-> Player disconnected with the reason " + PlainTextComponentSerializer.plainText().serialize(reason));
             clientSocket.close();
         } catch (IOException ignored) {
         }
@@ -649,19 +652,21 @@ public class ClientConnection extends Thread {
                 keepAliveTask = new TimerTask() {
                     @Override
                     public void run() {
-                        if (state != ClientState.PLAY || !ready) this.cancel();
+                        if (state != ClientState.PLAY || !ready) {
+                            this.cancel();
+                        }
 
                         long now = System.currentTimeMillis();
                         PacketPlayOutKeepAlive keepAlive = new PacketPlayOutKeepAlive(now);
                         try {
                             sendPacket(keepAlive);
                             setLastKeepAlivePayLoad(now);
-                        } catch (IOException ignored) {cancel();}
+                        } catch (IOException e) {
+                            cancel();
+                        }
                     }
                 };
-
-                new Timer().schedule(keepAliveTask, 0, 10_000);
-
+                new Timer().schedule(keepAliveTask, 0, 10000);
 
                 while (clientSocket.isConnected()) {
                     try {
@@ -718,7 +723,7 @@ public class ClientConnection extends Thread {
                             if (alive.getPayload() == getLastKeepAlivePayLoad()) {
                                 lastKeepAliveResponse.set(System.currentTimeMillis());
                             } else {
-                                disconnect(Component.text("Bad keepalive payload"));
+                                disconnect(Component.text("Bad Keepalive Payload"));
                                 break;
                             }
                         } else if (packetIn instanceof PacketPlayInTabComplete) {
