@@ -35,18 +35,21 @@ public class ServerConnection extends Thread {
 	private final String ip;
 	private final int port;
 	private final boolean silent;
-    private final ExecutorService virtualThreadExecutor = Executors.newVirtualThreadPerTaskExecutor();
+	private final ExecutorService executorService;
+	private final List<ClientConnection> clients;
+
 	private ServerSocket serverSocket;
-	private List<ClientConnection> clients;
 
 	public ServerConnection(String ip, int port, boolean silent) {
 		this.clients = new ArrayList<>();
 		this.ip = ip;
 		this.port = port;
 		this.silent = silent;
+		this.executorService = Executors.newVirtualThreadPerTaskExecutor();
 		start();
 	}
 	
+	@SuppressWarnings("InfiniteLoopStatement")
 	@Override
 	public void run() {
 		try {
@@ -58,9 +61,9 @@ public class ServerConnection extends Thread {
 	            Socket connection = serverSocket.accept();
 	            ClientConnection clientTask  = new ClientConnection(connection);
 	            clients.add(clientTask);
-	            virtualThreadExecutor.submit(clientTask);
+	            executorService.submit(clientTask);
 	        }
-	    } catch(IOException e) {
+	    } catch (IOException e) {
 	        e.printStackTrace();
 	    }
 	}
