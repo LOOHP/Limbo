@@ -21,13 +21,13 @@ package com.loohp.limbo.consolegui;
 
 import com.loohp.limbo.Limbo;
 
-import java.lang.management.ManagementFactory;
 import java.text.NumberFormat;
 import java.util.concurrent.TimeUnit;
 
 public class SystemInfo {
 	
-	public static void printInfo() {
+	@SuppressWarnings("InfiniteLoopStatement")
+    public static void printInfo() {
 		if (!Limbo.noGui) {
 			while (true) {
 				Runtime runtime = Runtime.getRuntime();
@@ -47,11 +47,11 @@ public class SystemInfo {
 
 				try {
 					@SuppressWarnings("restriction")
-					com.sun.management.OperatingSystemMXBean operatingSystemMXBean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+					com.sun.management.OperatingSystemMXBean operatingSystemMXBean = (com.sun.management.OperatingSystemMXBean) java.lang.management.ManagementFactory.getOperatingSystemMXBean();
 					@SuppressWarnings("restriction")
 					double processLoad = operatingSystemMXBean.getProcessCpuLoad();
 					@SuppressWarnings("restriction")
-					double systemLoad = operatingSystemMXBean.getSystemCpuLoad();				
+					double systemLoad = operatingSystemMXBean.getCpuLoad();
 					int processors = runtime.availableProcessors();
 					
 					sb.append("Available Processors: ").append(processors).append("\n");

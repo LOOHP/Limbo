@@ -27,23 +27,29 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ServerConnection extends Thread {
 
 	private final String ip;
 	private final int port;
 	private final boolean silent;
+	private final ExecutorService executorService;
+	private final List<ClientConnection> clients;
+
 	private ServerSocket serverSocket;
-	private List<ClientConnection> clients;
 
 	public ServerConnection(String ip, int port, boolean silent) {
 		this.clients = new ArrayList<>();
 		this.ip = ip;
 		this.port = port;
 		this.silent = silent;
+		this.executorService = Executors.newVirtualThreadPerTaskExecutor();
 		start();
 	}
 	
+	@SuppressWarnings("InfiniteLoopStatement")
 	@Override
 	public void run() {
 		try {
@@ -53,11 +59,11 @@ public class ServerConnection extends Thread {
 			}
 	        while (true) {
 	            Socket connection = serverSocket.accept();
-	            ClientConnection sc = new ClientConnection(connection);
-	            clients.add(sc);
-	            sc.start();
+	            ClientConnection clientTask  = new ClientConnection(connection);
+	            clients.add(clientTask);
+	            executorService.submit(clientTask);
 	        }
-	    } catch(IOException e) {
+	    } catch (IOException e) {
 	        e.printStackTrace();
 	    }
 	}
