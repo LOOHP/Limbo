@@ -22,7 +22,6 @@ package com.loohp.limbo;
 import com.loohp.limbo.commands.CommandSender;
 import com.loohp.limbo.consolegui.ConsoleTextOutput;
 import com.loohp.limbo.utils.CustomStringUtils;
-import jline.console.ConsoleReader;
 import net.kyori.adventure.audience.MessageType;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.identity.Identity;
@@ -45,6 +44,7 @@ import org.jline.reader.LineReader.SuggestionType;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.ParsedLine;
 import org.jline.reader.UserInterruptException;
+import org.jline.terminal.Size;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
@@ -76,7 +76,6 @@ public class Console implements CommandSender {
 	
 	private final Terminal terminal;
 	private final LineReader tabReader;
-	private final ConsoleReader reader;
 	
 	private final InputStream in;
 	@SuppressWarnings("unused")
@@ -114,10 +113,6 @@ public class Console implements CommandSender {
         }) : err, this.logs));
 		this.err = System.err;
 		
-		reader = new ConsoleReader(in, out);
-		reader.setExpandEvents(false);
-		reader.setHandleUserInterrupt(false);
-		
 		terminal = TerminalBuilder.builder().streams(in, out).jansi(true).build();
 		tabReader = LineReaderBuilder.builder().terminal(terminal).completer(new Completer() {
 			@Override
@@ -129,7 +124,13 @@ public class Console implements CommandSender {
 				}
 			}
 		}).build();
+		tabReader.unsetOpt(LineReader.Option.INSERT_TAB);
+		tabReader.setVariable(LineReader.SECONDARY_PROMPT_PATTERN, "");
 		tabReader.setAutosuggestion(SuggestionType.NONE);
+
+		if (terminal.getWidth() <= 0 || terminal.getHeight() <= 0) {
+			terminal.setSize(new Size(80, 24));
+		}
 	}
 	
 	@Override
@@ -242,13 +243,9 @@ public class Console implements CommandSender {
 		String date = new SimpleDateFormat("HH':'mm':'ss").format(new Date());
 		ConsoleTextOutput.appendText(ChatColor.stripColor("[" + date + " Info] " + message), true);
     	logs.println(ChatColor.stripColor("[" + date + " Info] " + message));
-		try {
-			reader.getOutput().append("[" + date + " Info] " + translateToConsole(message) + "\n");
-			reader.getOutput().flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		unstashLine();
+        terminal.writer().append("[").append(date).append(" Info] ").append(translateToConsole(message)).append("\n");
+        terminal.writer().flush();
+        unstashLine();
 	}
 	
 	protected void run() {
