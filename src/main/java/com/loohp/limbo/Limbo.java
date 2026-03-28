@@ -1,8 +1,8 @@
 /*
  * This file is part of Limbo.
  *
- * Copyright (C) 2022. LoohpJames <jamesloohp@gmail.com>
- * Copyright (C) 2022. Contributors
+ * Copyright (C) 2026. LoohpJames <jamesloohp@gmail.com>
+ * Copyright (C) 2026. Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,8 +132,8 @@ public final class Limbo {
 	
 	//===========================
 	
-	public final String SERVER_IMPLEMENTATION_VERSION = "1.21.11";
-	public final int SERVER_IMPLEMENTATION_PROTOCOL = 774;
+	public final String SERVER_IMPLEMENTATION_VERSION = "26.1";
+	public final int SERVER_IMPLEMENTATION_PROTOCOL = 775;
 	public final String LIMBO_IMPLEMENTATION_VERSION;
 	
 	private final AtomicBoolean isRunning;

@@ -1,8 +1,8 @@
 /*
  * This file is part of Limbo.
  *
- * Copyright (C) 2022. LoohpJames <jamesloohp@gmail.com>
- * Copyright (C) 2022. Contributors
+ * Copyright (C) 2026. LoohpJames <jamesloohp@gmail.com>
+ * Copyright (C) 2026. Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,6 +146,7 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 					}
 				}
 				dataOut.writeShort(counter);
+				dataOut.writeShort(0);
 
 				int newBits = 32 - Integer.numberOfLeadingZeros(section.getPalette().size() - 1);
 				newBits = Math.max(newBits, 4);
@@ -223,6 +224,7 @@ public class ClientboundLevelChunkWithLightPacket extends PacketOut {
 					}
 				}
 			} else {
+				dataOut.writeShort(0);
 				dataOut.writeShort(0);
 				dataOut.writeByte(0);
 				DataTypeIO.writeVarInt(dataOut, 0);

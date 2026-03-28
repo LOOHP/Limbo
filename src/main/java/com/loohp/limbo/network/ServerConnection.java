@@ -1,8 +1,8 @@
 /*
  * This file is part of Limbo.
  *
- * Copyright (C) 2022. LoohpJames <jamesloohp@gmail.com>
- * Copyright (C) 2022. Contributors
+ * Copyright (C) 2026. LoohpJames <jamesloohp@gmail.com>
+ * Copyright (C) 2026. Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class ServerConnection extends Thread {
 	private final String ip;
 	private final int port;
 	private final boolean silent;
-	private final ExecutorService executorService;
+    private final ExecutorService executorService;
 	private final List<ClientConnection> clients;
 
 	private ServerSocket serverSocket;
@@ -50,7 +50,7 @@ public class ServerConnection extends Thread {
 	}
 	
 	@SuppressWarnings("InfiniteLoopStatement")
-	@Override
+    @Override
 	public void run() {
 		try {
 			serverSocket = new ServerSocket(port, 50, InetAddress.getByName(ip));
@@ -61,7 +61,7 @@ public class ServerConnection extends Thread {
 	            Socket connection = serverSocket.accept();
 	            ClientConnection clientTask  = new ClientConnection(connection);
 	            clients.add(clientTask);
-	            executorService.submit(clientTask);
+				executorService.submit(clientTask);
 	        }
 	    } catch (IOException e) {
 	        e.printStackTrace();

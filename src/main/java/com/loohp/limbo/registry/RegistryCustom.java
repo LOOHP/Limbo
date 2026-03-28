@@ -1,8 +1,8 @@
 /*
  * This file is part of Limbo.
  *
- * Copyright (C) 2024. LoohpJames <jamesloohp@gmail.com>
- * Copyright (C) 2024. Contributors
+ * Copyright (C) 2026. LoohpJames <jamesloohp@gmail.com>
+ * Copyright (C) 2026. Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,11 @@ package com.loohp.limbo.registry;
 import com.loohp.limbo.Limbo;
 import com.loohp.limbo.utils.ClasspathResourcesUtils;
 import com.loohp.limbo.utils.CustomNBTUtils;
+import java.util.ArrayList;
+import java.util.List;
 import net.kyori.adventure.key.Key;
 import net.querz.nbt.tag.CompoundTag;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -42,16 +45,24 @@ public class RegistryCustom {
 
     private static final Map<Key, RegistryCustom> REGISTRIES = new HashMap<>();
 
+    public static final RegistryCustom BANNER_PATTERN = register("banner_pattern");
+    public static final RegistryCustom CAT_SOUND_VARIANT = register("cat_sound_variant");
     public static final RegistryCustom CAT_VARIANT = register("cat_variant");
     public static final RegistryCustom CHAT_TYPE = register("chat_type");
+    public static final RegistryCustom CHICKEN_SOUND_VARIANT = register("chicken_sound_variant");
     public static final RegistryCustom CHICKEN_VARIANT = register("chicken_variant");
+    public static final RegistryCustom COW_SOUND_VARIANT = register("cow_sound_variant");
     public static final RegistryCustom COW_VARIANT = register("cow_variant");
     public static final RegistryCustom DAMAGE_TYPE = register("damage_type");
     public static final RegistryCustom DIMENSION_TYPE = register("dimension_type");
     public static final RegistryCustom FROG_VARIANT = register("frog_variant");
+    public static final RegistryCustom INSTRUMENT = register("instrument");
+    public static final RegistryCustom JUKEBOX_SONG = register("jukebox_song");
     public static final RegistryCustom PAINTING_VARIANT = register("painting_variant");
+    public static final RegistryCustom PIG_SOUND_VARIANT = register("pig_sound_variant");
     public static final RegistryCustom PIG_VARIANT = register("pig_variant");
-    public static final RegistryCustom TIMELINE = register("timeline");
+    public static final RegistryCustom TRIM_MATERIAL = register("trim_material");
+    public static final RegistryCustom TRIM_PATTERN = register("trim_pattern");
     public static final RegistryCustom WOLF_SOUND_VARIANT = register("wolf_sound_variant");
     public static final RegistryCustom WOLF_VARIANT = register("wolf_variant");
     public static final RegistryCustom WORLDGEN_BIOME = register("worldgen/biome");
@@ -73,10 +84,12 @@ public class RegistryCustom {
 
     private final Key identifier;
     private final Map<Key, CompoundTag> entries;
+    private final Map<Key, List<Tag>> tags;
 
-    private RegistryCustom(Key identifier, Map<Key, CompoundTag> entries) {
+    private RegistryCustom(Key identifier, Map<Key, CompoundTag> entries, Map<Key, List<Tag>> tags) {
         this.identifier = identifier;
         this.entries = entries;
+        this.tags = tags;
     }
 
     @SuppressWarnings("PatternValidation")
@@ -84,16 +97,21 @@ public class RegistryCustom {
         this(Key.key(identifier));
     }
 
-    @SuppressWarnings("PatternValidation")
     public RegistryCustom(Key identifier) {
         this.identifier = identifier;
+        this.entries = loadEntries();
+        this.tags = loadTags();
+    }
+
+    @SuppressWarnings("PatternValidation")
+    private Map<Key, CompoundTag> loadEntries() {
         Map<Key, CompoundTag> entries = new LinkedHashMap<>();
         String pathStart = "data/" + identifier.namespace() + "/" + identifier.value() + "/";
         Pattern pattern = Pattern.compile(Pattern.quote(pathStart) + ".*");
         for (String path : ClasspathResourcesUtils.getResources(pattern)) {
             if (path.endsWith(".json")) {
                 try (InputStream inputStream = Limbo.class.getClassLoader().getResourceAsStream(path)) {
-                    Key entryKey = Key.key(identifier.namespace(), path.substring(path.lastIndexOf('/') + 1, path.lastIndexOf(".")));
+                    Key entryKey = Key.key(identifier.namespace(), path.substring(path.indexOf(identifier.value()) + identifier.value().length() + 1, path.lastIndexOf(".")));
                     JSONObject jsonObject = (JSONObject) new JSONParser().parse(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                     CompoundTag value = CustomNBTUtils.getCompoundTagFromJson(jsonObject);
                     entries.put(entryKey, value);
@@ -102,7 +120,39 @@ public class RegistryCustom {
                 }
             }
         }
-        this.entries = entries;
+        return entries;
+    }
+
+    @SuppressWarnings("PatternValidation")
+    private Map<Key, List<Tag>> loadTags() {
+        Map<Key, List<Tag>> entries = new LinkedHashMap<>();
+        String pathStart = "data/" + identifier.namespace() + "/tags/" + identifier.value() + "/";
+        Pattern pattern = Pattern.compile(Pattern.quote(pathStart) + ".*");
+        for (String path : ClasspathResourcesUtils.getResources(pattern)) {
+            if (path.endsWith(".json")) {
+                try (InputStream inputStream = Limbo.class.getClassLoader().getResourceAsStream(path)) {
+                    Key entryKey = Key.key(identifier.namespace(), path.substring(path.indexOf(identifier.value()) + identifier.value().length() + 1, path.lastIndexOf(".")));
+                    JSONObject jsonObject = (JSONObject) new JSONParser().parse(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+                    JSONArray valuesArray = (JSONArray) jsonObject.get("values");
+                    List<Tag> values = new ArrayList<>();
+                    if (valuesArray != null) {
+                        for (Object value : valuesArray) {
+                            if (value instanceof String) {
+                                if (((String) value).startsWith("#")) {
+                                    values.add(new Tag(Key.key(((String) value).substring(1)), true));
+                                } else {
+                                    values.add(new Tag(Key.key((String) value), false));
+                                }
+                            }
+                        }
+                    }
+                    entries.put(entryKey, values);
+                } catch (IOException | ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return entries;
     }
 
     public Key getIdentifier() {
@@ -111,6 +161,10 @@ public class RegistryCustom {
 
     public Map<Key, CompoundTag> getEntries() {
         return entries;
+    }
+
+    public Map<Key, List<Tag>> getTags() {
+        return tags;
     }
 
     public int indexOf(Key key) {
@@ -123,5 +177,7 @@ public class RegistryCustom {
         }
         return -1;
     }
+
+    public record Tag(Key key, boolean isReference) {}
 
 }

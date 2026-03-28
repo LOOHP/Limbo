@@ -1,8 +1,8 @@
 /*
  * This file is part of Limbo.
  *
- * Copyright (C) 2024. LoohpJames <jamesloohp@gmail.com>
- * Copyright (C) 2024. Contributors
+ * Copyright (C) 2026. LoohpJames <jamesloohp@gmail.com>
+ * Copyright (C) 2026. Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import com.loohp.limbo.network.protocol.packets.ClientboundSetSubtitleTextPacket
 import com.loohp.limbo.network.protocol.packets.ClientboundSetTitleTextPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundSetTitlesAnimationPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundSystemChatPacket;
+import com.loohp.limbo.network.protocol.packets.ClientboundUpdateTagsPacket;
 import com.loohp.limbo.network.protocol.packets.Packet;
 import com.loohp.limbo.network.protocol.packets.PacketHandshakingIn;
 import com.loohp.limbo.network.protocol.packets.PacketLoginInLoginStart;
@@ -162,6 +163,7 @@ public class PacketRegistry {
         registerClass(ServerboundFinishConfigurationPacket.class, "minecraft:finish_configuration", NetworkPhase.CONFIGURATION, PacketBound.SERVERBOUND);
 
         registerClass(ClientboundRegistryDataPacket.class, "minecraft:registry_data", NetworkPhase.CONFIGURATION, PacketBound.CLIENTBOUND);
+        registerClass(ClientboundUpdateTagsPacket.class, "minecraft:update_tags", NetworkPhase.CONFIGURATION, PacketBound.CLIENTBOUND);
         registerClass(ClientboundFinishConfigurationPacket.class, "minecraft:finish_configuration", NetworkPhase.CONFIGURATION, PacketBound.CLIENTBOUND);
 
         registerClass(PacketPlayInKeepAlive.class, "minecraft:keep_alive", NetworkPhase.PLAY, PacketBound.SERVERBOUND);

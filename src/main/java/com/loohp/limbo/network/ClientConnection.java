@@ -1,8 +1,8 @@
 /*
  * This file is part of Limbo.
  *
- * Copyright (C) 2022. LoohpJames <jamesloohp@gmail.com>
- * Copyright (C) 2022. Contributors
+ * Copyright (C) 2026. LoohpJames <jamesloohp@gmail.com>
+ * Copyright (C) 2026. Contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import com.loohp.limbo.location.GlobalPos;
 import com.loohp.limbo.location.Location;
 import com.loohp.limbo.network.protocol.packets.ClientboundFinishConfigurationPacket;
 import com.loohp.limbo.network.protocol.packets.ClientboundRegistryDataPacket;
+import com.loohp.limbo.network.protocol.packets.ClientboundUpdateTagsPacket;
 import com.loohp.limbo.network.protocol.packets.PacketHandshakingIn;
 import com.loohp.limbo.network.protocol.packets.PacketIn;
 import com.loohp.limbo.network.protocol.packets.PacketLoginInLoginStart;
@@ -573,6 +574,9 @@ public class ClientConnection implements Runnable {
                     ClientboundRegistryDataPacket registryDataPacket = new ClientboundRegistryDataPacket(registryCustom);
                     sendPacket(registryDataPacket);
                 }
+
+                ClientboundUpdateTagsPacket updateTagsPacket = new ClientboundUpdateTagsPacket(RegistryCustom.getRegistries());
+                sendPacket(updateTagsPacket);
 
                 ClientboundFinishConfigurationPacket clientboundFinishConfigurationPacket = new ClientboundFinishConfigurationPacket();
                 sendPacket(clientboundFinishConfigurationPacket);

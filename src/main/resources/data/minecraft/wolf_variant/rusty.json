@@ -4,11 +4,16 @@
     "tame": "minecraft:entity/wolf/wolf_rusty_tame",
     "wild": "minecraft:entity/wolf/wolf_rusty"
   },
+  "baby_assets": {
+    "angry": "minecraft:entity/wolf/wolf_rusty_angry_baby",
+    "tame": "minecraft:entity/wolf/wolf_rusty_tame_baby",
+    "wild": "minecraft:entity/wolf/wolf_rusty_baby"
+  },
   "spawn_conditions": [
     {
       "condition": {
         "type": "minecraft:biome",
-        "biomes": "minecraft:jungle"
+        "biomes": "#minecraft:is_jungle"
       },
       "priority": 1
     }

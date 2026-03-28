@@ -3,6 +3,10 @@
   "model": "warm",
   "spawn_conditions": [
     {
+      "condition": {
+        "type": "minecraft:biome",
+        "biomes": "#minecraft:spawns_coral_variant_zombie_nautilus"
+      },
       "priority": 1
     }
   ]
