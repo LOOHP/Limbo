@@ -5,7 +5,9 @@
     {
       "condition": {
         "type": "minecraft:structure",
-        "structures": "#minecraft:cats_spawn_as_black"
+        "structures": [
+          "minecraft:swamp_hut"
+        ]
       },
       "priority": 1
     },

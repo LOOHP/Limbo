@@ -35,7 +35,11 @@
   "has_fixed_time": true,
   "has_skylight": true,
   "height": 256,
-  "infiniburn": "#minecraft:infiniburn_end",
+  "infiniburn": [
+    "minecraft:netherrack",
+    "minecraft:magma_block",
+    "minecraft:bedrock"
+  ],
   "logical_height": 256,
   "min_y": 0,
   "monster_spawn_block_light_limit": 0,

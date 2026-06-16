@@ -13,7 +13,11 @@
     {
       "condition": {
         "type": "minecraft:biome",
-        "biomes": "#minecraft:is_savanna"
+        "biomes": [
+          "minecraft:savanna",
+          "minecraft:savanna_plateau",
+          "minecraft:windswept_savanna"
+        ]
       },
       "priority": 1
     }

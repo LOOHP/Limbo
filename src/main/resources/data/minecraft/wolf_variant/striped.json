@@ -13,7 +13,11 @@
     {
       "condition": {
         "type": "minecraft:biome",
-        "biomes": "#minecraft:is_badlands"
+        "biomes": [
+          "minecraft:badlands",
+          "minecraft:eroded_badlands",
+          "minecraft:wooded_badlands"
+        ]
       },
       "priority": 1
     }

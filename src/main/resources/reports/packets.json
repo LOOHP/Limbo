@@ -757,7 +757,7 @@
       "minecraft:sign_update": {
         "protocol_id": 61
       },
-      "minecraft:spectate_entity": {
+      "minecraft:spectator_action": {
         "protocol_id": 62
       },
       "minecraft:swing": {

@@ -32,10 +32,12 @@ public class PacketLoginOutLoginSuccess extends PacketOut {
 	
 	private final UUID uuid;
 	private final String username;
+	private final UUID sessionId;
 	
-	public PacketLoginOutLoginSuccess(UUID uuid, String username) {
+	public PacketLoginOutLoginSuccess(UUID uuid, String username, UUID sessionId) {
 		this.uuid = uuid;
 		this.username = username;
+		this.sessionId = sessionId;
 	}
 	
 	public UUID getUuid() {
@@ -44,6 +46,10 @@ public class PacketLoginOutLoginSuccess extends PacketOut {
 
 	public String getUsername() {
 		return username;
+	}
+
+	public UUID getSessionId() {
+		return sessionId;
 	}
 
 	@Override
@@ -55,6 +61,7 @@ public class PacketLoginOutLoginSuccess extends PacketOut {
 		DataTypeIO.writeUUID(output, uuid);
 		DataTypeIO.writeString(output, username, StandardCharsets.UTF_8);
 		DataTypeIO.writeVarInt(output, 0);
+		DataTypeIO.writeUUID(output, sessionId);
 		
 		return buffer.toByteArray();
 	}

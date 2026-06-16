@@ -52,9 +52,10 @@ public class PacketPlayOutLogin extends PacketOut {
 	private final boolean isFlat;
 	private final int portalCooldown;
 	private final int seaLevel;
+	private final boolean onlineMode;
 	private final boolean enforcesSecureChat;
 
-	public PacketPlayOutLogin(int entityId, boolean isHardcore, List<World> worlds, int maxPlayers, int viewDistance, int simulationDistance, boolean reducedDebugInfo, boolean enableRespawnScreen, boolean doLimitedCrafting, Environment dimension, World world, long hashedSeed, GameMode gamemode, boolean isDebug, boolean isFlat, int portalCooldown, int seaLevel, boolean enforcesSecureChat) {
+	public PacketPlayOutLogin(int entityId, boolean isHardcore, List<World> worlds, int maxPlayers, int viewDistance, int simulationDistance, boolean reducedDebugInfo, boolean enableRespawnScreen, boolean doLimitedCrafting, Environment dimension, World world, long hashedSeed, GameMode gamemode, boolean isDebug, boolean isFlat, int portalCooldown, int seaLevel, boolean onlineMode, boolean enforcesSecureChat) {
 		this.entityId = entityId;
 		this.isHardcore = isHardcore;
 		this.worlds = worlds;
@@ -72,6 +73,7 @@ public class PacketPlayOutLogin extends PacketOut {
 		this.isFlat = isFlat;
 		this.portalCooldown = portalCooldown;
 		this.seaLevel = seaLevel;
+		this.onlineMode = onlineMode;
 		this.enforcesSecureChat = enforcesSecureChat;
 	}
 
@@ -143,6 +145,10 @@ public class PacketPlayOutLogin extends PacketOut {
 		return seaLevel;
 	}
 
+	public boolean isOnlineMode() {
+		return onlineMode;
+	}
+
 	public boolean isEnforcesSecureChat() {
 		return enforcesSecureChat;
 	}
@@ -175,6 +181,7 @@ public class PacketPlayOutLogin extends PacketOut {
 		output.writeBoolean(false);
 		DataTypeIO.writeVarInt(output, portalCooldown);
 		DataTypeIO.writeVarInt(output, seaLevel);
+		output.writeBoolean(onlineMode);
 		output.writeBoolean(enforcesSecureChat);
 
 		return buffer.toByteArray();

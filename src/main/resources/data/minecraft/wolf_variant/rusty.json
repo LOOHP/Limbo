@@ -13,7 +13,11 @@
     {
       "condition": {
         "type": "minecraft:biome",
-        "biomes": "#minecraft:is_jungle"
+        "biomes": [
+          "minecraft:bamboo_jungle",
+          "minecraft:jungle",
+          "minecraft:sparse_jungle"
+        ]
       },
       "priority": 1
     }

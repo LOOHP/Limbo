@@ -5,7 +5,27 @@
     {
       "condition": {
         "type": "minecraft:biome",
-        "biomes": "#minecraft:spawns_warm_variant_farm_animals"
+        "biomes": [
+          "minecraft:desert",
+          "minecraft:warm_ocean",
+          "minecraft:bamboo_jungle",
+          "minecraft:jungle",
+          "minecraft:sparse_jungle",
+          "minecraft:savanna",
+          "minecraft:savanna_plateau",
+          "minecraft:windswept_savanna",
+          "minecraft:nether_wastes",
+          "minecraft:soul_sand_valley",
+          "minecraft:crimson_forest",
+          "minecraft:warped_forest",
+          "minecraft:basalt_deltas",
+          "minecraft:badlands",
+          "minecraft:eroded_badlands",
+          "minecraft:wooded_badlands",
+          "minecraft:mangrove_swamp",
+          "minecraft:deep_lukewarm_ocean",
+          "minecraft:lukewarm_ocean"
+        ]
       },
       "priority": 1
     }

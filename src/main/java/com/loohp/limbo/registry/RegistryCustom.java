@@ -131,7 +131,7 @@ public class RegistryCustom {
         for (String path : ClasspathResourcesUtils.getResources(pattern)) {
             if (path.endsWith(".json")) {
                 try (InputStream inputStream = Limbo.class.getClassLoader().getResourceAsStream(path)) {
-                    Key entryKey = Key.key(identifier.namespace(), path.substring(path.indexOf(identifier.value()) + identifier.value().length() + 1, path.lastIndexOf(".")));
+                    Key entryKey = Key.key(identifier.namespace(), path.substring(pathStart.length(), path.lastIndexOf(".")));
                     JSONObject jsonObject = (JSONObject) new JSONParser().parse(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                     JSONArray valuesArray = (JSONArray) jsonObject.get("values");
                     List<Tag> values = new ArrayList<>();

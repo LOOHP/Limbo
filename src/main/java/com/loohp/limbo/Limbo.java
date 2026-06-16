@@ -132,8 +132,9 @@ public final class Limbo {
 	
 	//===========================
 	
-	public final String SERVER_IMPLEMENTATION_VERSION = "26.1.2";
-	public final int SERVER_IMPLEMENTATION_PROTOCOL = 775;
+	public final String SERVER_IMPLEMENTATION_VERSION = "26.2";
+	public final int SERVER_IMPLEMENTATION_PROTOCOL = 776;
+	public final UUID SERVER_SESSION_ID = UUID.randomUUID();
 	public final String LIMBO_IMPLEMENTATION_VERSION;
 	
 	private final AtomicBoolean isRunning;
@@ -487,7 +488,7 @@ public final class Limbo {
 	}
 	
 	public int getNextEntityId() {
-		return entityIdCount.getAndUpdate(i -> i == Integer.MAX_VALUE ? 0 : ++i);
+		return entityIdCount.updateAndGet(i -> i == Integer.MAX_VALUE ? 1 : i + 1);
 	}
 	
 	public void dispatchCommand(CommandSender sender, String str) {

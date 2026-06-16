@@ -5,7 +5,9 @@
     {
       "condition": {
         "type": "minecraft:biome",
-        "biomes": "#minecraft:spawns_coral_variant_zombie_nautilus"
+        "biomes": [
+          "minecraft:warm_ocean"
+        ]
       },
       "priority": 1
     }

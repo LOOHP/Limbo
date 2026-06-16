@@ -51,8 +51,15 @@ public class ClientboundUpdateTagsPacket extends PacketOut {
         DataOutputStream output = new DataOutputStream(buffer);
         output.writeByte(PacketRegistry.getPacketId(getClass()));
 
-        DataTypeIO.writeVarInt(output, registries.size());
+        List<RegistryCustom> registriesWithTags = new ArrayList<>();
         for (RegistryCustom registry : registries) {
+            if (!registry.getTags().isEmpty()) {
+                registriesWithTags.add(registry);
+            }
+        }
+
+        DataTypeIO.writeVarInt(output, registriesWithTags.size());
+        for (RegistryCustom registry : registriesWithTags) {
             DataTypeIO.writeString(output, registry.getIdentifier().asString(), StandardCharsets.UTF_8);
             DataTypeIO.writeVarInt(output, registry.getTags().size());
             for (Map.Entry<Key, List<RegistryCustom.Tag>> entry : registry.getTags().entrySet()) {
