@@ -1,6 +1,6 @@
 [![Build Status](http://ci.loohpjames.com/job/Limbo/badge/icon)](http://ci.loohpjames.com/job/Limbo/)
 # Limbo
-## Standalone Limbo Minecraft Server (Currently 26.1.2)
+## Standalone Limbo Minecraft Server (Currently 26.2)
 
 https://www.spigotmc.org/resources/82468/<br>
 https://modrinth.com/mod/limbo-server
@@ -19,7 +19,7 @@ IP: mc.loohpjames.com
 ```
 ![Server Banner](https://api.loohpjames.com/serverbanner.png?ip=mc.loohpjames.com&width=918&name=IP:%20mc.loohpjames.com)
 ***
-### Downloads (1.17.1-26.1.2)
+### Downloads (1.17.1-26.2)
 - [Jenkins](http://ci.loohpjames.com/job/Limbo/)
 ***
 ### Offical Plugins
